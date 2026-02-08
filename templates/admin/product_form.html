@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - {{ config.BUSINESS_NAME }} Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar Navigation -->
+    <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar py-3" style="min-height: calc(100vh - 76px);">
+      <div class="sidebar-sticky px-3">
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+          <span>Admin Menu</span>
+        </h6>
+
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">
+              <i class="fas fa-home me-2"></i>Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white active" href="{{ url_for('admin_products') }}">
+              <i class="fas fa-cube me-2"></i>Products
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin_categories') }}">
+              <i class="fas fa-tags me-2"></i>Categories
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin_orders') }}">
+              <i class="fas fa-shopping-bag me-2"></i>Orders
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin_inquiries') }}">
+              <i class="fas fa-envelope me-2"></i>Inquiries
+            </a>
+          </li>
+          <li class="nav-item">
+            <hr class="bg-secondary">
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('home') }}" target="_blank">
+              <i class="fas fa-globe me-2"></i>View Site
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin_logout') }}">
+              <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+      <!-- Page Header -->
+      <div class="mb-4">
+        <h1 class="h2">{{ title }}</h1>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('admin_products') }}">Products</a></li>
+            <li class="breadcrumb-item active">{{ 'Add New' if product is none else 'Edit' }}</li>
+          </ol>
+        </nav>
+      </div>
+
+      <!-- Product Form -->
+      <form method="POST" enctype="multipart/form-data" action="{% if product is none %}{{ url_for('admin_product_add') }}{% else %}{{ url_for('admin_product_edit', product_id=product.id) }}{% endif %}" id="productForm">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basicInfo" type="button" role="tab">
+              <i class="fas fa-info-circle me-2"></i>Basic Info
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab">
+              <i class="fas fa-cogs me-2"></i>Details
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" type="button" role="tab">
+              <i class="fas fa-images me-2"></i>Images
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="seo-tab" data-bs-toggle="tab" data-bs-target="#seo" type="button" role="tab">
+              <i class="fas fa-search me-2"></i>SEO
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- Basic Info Tab -->
+          <div class="tab-pane fade show active" id="basicInfo" role="tabpanel">
+            <div class="card mb-4">
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-8">
+                    <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="name" name="name" required value="{{ product.name if product else '' }}" placeholder="Enter product name">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                    <select class="form-select" id="category" name="category_id" required>
+                      <option value="">-- Select Category --</option>
+                      {% for cat in categories %}
+                      <option value="{{ cat.id }}" {% if product and product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="short_desc" class="form-label">Short Description</label>
+                  <input type="text" class="form-control" id="short_desc" name="short_description" maxlength="300" value="{{ product.short_description if product else '' }}" placeholder="Max 300 characters">
+                  <small class="form-text text-muted">Max 300 characters</small>
+                </div>
+
+                <div class="mb-3">
+                  <label for="description" class="form-label">Full Description</label>
+                  <textarea class="form-control" id="description" name="description" rows="6" placeholder="Enter detailed product description">{{ product.description if product else '' }}</textarea>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="price" class="form-label">Price (₹) <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="price" name="price" required step="0.01" min="0" value="{{ product.price if product else '' }}" placeholder="0.00">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="original_price" class="form-label">Original Price (₹)</label>
+                    <input type="number" class="form-control" id="original_price" name="original_price" step="0.01" min="0" value="{{ product.original_price if product else '' }}" placeholder="For showing discounts">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Details Tab -->
+          <div class="tab-pane fade" id="details" role="tabpanel">
+            <div class="card mb-4">
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="material" class="form-label">Material</label>
+                    <input type="text" class="form-control" id="material" name="material" value="{{ product.material if product else 'PLA' }}" placeholder="e.g., PLA">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="colors" class="form-label">Colors</label>
+                    <input type="text" class="form-control" id="colors" name="colors" value="{{ product.colors if product else '' }}" placeholder="Comma-separated (e.g., Red, Blue, Green)">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="dimensions" class="form-label">Dimensions</label>
+                  <input type="text" class="form-control" id="dimensions" name="dimensions" value="{{ product.dimensions if product else '' }}" placeholder="e.g., 10cm x 10cm x 10cm">
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="weight" class="form-label">Weight (grams)</label>
+                    <input type="number" class="form-control" id="weight" name="weight_grams" step="0.01" min="0" value="{{ product.weight_grams if product else '' }}" placeholder="Weight in grams">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="stock_status" class="form-label">Stock Status <span class="text-danger">*</span></label>
+                    <select class="form-select" id="stock_status" name="stock_status" required>
+                      <option value="in_stock" {% if product and product.stock_status == 'in_stock' %}selected{% elif not product %}selected{% endif %}>In Stock</option>
+                      <option value="low_stock" {% if product and product.stock_status == 'low_stock' %}selected{% endif %}>Low Stock</option>
+                      <option value="out_of_stock" {% if product and product.stock_status == 'out_of_stock' %}selected{% endif %}>Out of Stock</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="featured" name="is_featured" {% if product and product.is_featured %}checked{% endif %}>
+                  <label class="form-check-label" for="featured">Mark as Featured</label>
+                </div>
+
+                <div class="form-check form-switch mt-2">
+                  <input class="form-check-input" type="checkbox" id="active" name="is_active" {% if product and product.is_active or not product %}checked{% endif %}>
+                  <label class="form-check-label" for="active">Active (Visible on website)</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Images Tab -->
+          <div class="tab-pane fade" id="images" role="tabpanel">
+            <div class="card mb-4">
+              <div class="card-body">
+                <!-- Main Image -->
+                <div class="mb-4">
+                  <label for="image_main" class="form-label">Main Image</label>
+                  <div class="input-group mb-3">
+                    <input type="file" class="form-control" id="image_main" name="image_main" accept="image/*">
+                  </div>
+                  {% if product and product.image_main %}
+                  <div class="mt-3">
+                    <img src="{{ url_for('static', filename='uploads/' + product.image_main) }}" alt="{{ product.name }}" style="max-width: 200px; max-height: 200px;">
+                    <div class="form-check mt-2">
+                      <input class="form-check-input" type="checkbox" id="remove_main" name="remove_image_main">
+                      <label class="form-check-label" for="remove_main">Remove current image</label>
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+
+                <!-- Additional Images -->
+                {% for i in range(2, 5) %}
+                <div class="mb-4">
+                  <label for="image_{{ i }}" class="form-label">Image {{ i }}</label>
+                  <div class="input-group mb-3">
+                    <input type="file" class="form-control" id="image_{{ i }}" name="image_{{ i }}" accept="image/*">
+                  </div>
+                  {% set img_attr = 'image_' + i|string %}
+                  {% if product and product[img_attr] %}
+                  <div class="mt-3">
+                    <img src="{{ url_for('static', filename='uploads/' + product[img_attr]) }}" alt="{{ product.name }} - Image {{ i }}" style="max-width: 200px; max-height: 200px;">
+                    <div class="form-check mt-2">
+                      <input class="form-check-input" type="checkbox" id="remove_{{ i }}" name="remove_image_{{ i }}">
+                      <label class="form-check-label" for="remove_{{ i }}">Remove this image</label>
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <!-- SEO Tab -->
+          <div class="tab-pane fade" id="seo" role="tabpanel">
+            <div class="card mb-4">
+              <div class="card-body">
+                <div class="mb-3">
+                  <label for="meta_title" class="form-label">Meta Title</label>
+                  <input type="text" class="form-control" id="meta_title" name="meta_title" value="{{ product.meta_title if product else '' }}" placeholder="For search engines">
+                  <small class="form-text text-muted">Recommended: 50-60 characters</small>
+                </div>
+
+                <div class="mb-3">
+                  <label for="meta_description" class="form-label">Meta Description</label>
+                  <textarea class="form-control" id="meta_description" name="meta_description" rows="3" placeholder="For search engines">{{ product.meta_description if product else '' }}</textarea>
+                  <small class="form-text text-muted">Recommended: 150-160 characters</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-save me-2"></i>{{ 'Create Product' if product is none else 'Save Changes' }}
+          </button>
+          <a href="{{ url_for('admin_products') }}" class="btn btn-secondary btn-lg">
+            <i class="fas fa-times me-2"></i>Cancel
+          </a>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>
+{% endblock %}

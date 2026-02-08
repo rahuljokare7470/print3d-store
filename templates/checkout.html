@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - {{ config.BUSINESS_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Title -->
+    <div class="mb-4">
+        <h1 class="display-5">Checkout</h1>
+    </div>
+
+    <div class="row g-4">
+        <!-- Checkout Form -->
+        <div class="col-lg-8">
+            <form method="POST" action="{{ url_for('checkout') }}" id="checkoutForm" novalidate>
+                <!-- Customer Details Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-user me-2"></i>Customer Details
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <div class="invalid-feedback">Please provide a full name.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="invalid-feedback">Please provide a valid email address.</div>
+                        </div>
+
+                        <div class="mb-0">
+                            <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 " required>
+                            <div class="invalid-feedback">Please provide a valid phone number.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Address Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-map-marker-alt me-2"></i>Delivery Address
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter your full address" required></textarea>
+                            <div class="invalid-feedback">Please provide an address.</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="city" name="city" value="Pune" required>
+                                <div class="invalid-feedback">Please provide a city.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="pincode" class="form-label">Pincode <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="pincode" name="pincode" placeholder="e.g., 411001" required>
+                                <div class="invalid-feedback">Please provide a valid pincode.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-credit-card me-2"></i>Payment Method
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="payment_method" id="paymentCOD" value="COD" checked>
+                            <label class="form-check-label" for="paymentCOD">
+                                <strong>Cash on Delivery (COD)</strong>
+                                <small class="text-muted d-block">Pay when you receive your order</small>
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="payment_method" id="paymentUPI" value="UPI">
+                            <label class="form-check-label" for="paymentUPI">
+                                <strong>UPI Payment</strong>
+                                <small class="text-muted d-block">Pay using Google Pay, PhonePe, Paytm, etc.</small>
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="paymentBank" value="Bank Transfer">
+                            <label class="form-check-label" for="paymentBank">
+                                <strong>Bank Transfer</strong>
+                                <small class="text-muted d-block">Direct bank transfer details will be provided</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Notes Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-sticky-note me-2"></i>Order Notes (Optional)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <textarea class="form-control" name="order_notes" rows="3" placeholder="Add any special instructions or customization requirements..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Terms & Conditions -->
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                    <label class="form-check-label" for="termsCheck">
+                        I agree to the <a href="#" class="text-decoration-none">Terms and Conditions</a>
+                    </label>
+                </div>
+
+                <!-- Place Order Button -->
+                <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                    <i class="fas fa-check me-2"></i>Place Order
+                </button>
+
+                <a href="{{ url_for('cart') }}" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Cart
+                </a>
+            </form>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="card-title mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Cart Items -->
+                    <div class="mb-4" style="max-height: 300px; overflow-y: auto;">
+                        {% for item in cart_items %}
+                            <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 small">{{ item.product.name }}</h6>
+                                    <small class="text-muted">Qty: {{ item.quantity }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <strong>₹{{ (item.product.price * item.quantity)|int }}</strong>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Price Breakdown -->
+                    <div class="mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal</span>
+                            <strong>₹{{ subtotal }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Delivery</span>
+                            {% if delivery == 0 %}
+                                <span class="badge bg-success">FREE</span>
+                            {% else %}
+                                <strong>₹{{ delivery }}</strong>
+                            {% endif %}
+                        </div>
+                        {% if tax %}
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tax</span>
+                                <strong>₹{{ tax }}</strong>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Grand Total -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Grand Total</h5>
+                            <h4 class="text-primary mb-0">₹{{ grand_total }}</h4>
+                        </div>
+                    </div>
+
+                    <!-- Info Box -->
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>Your order will be confirmed via email and WhatsApp.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form validation
+    (function() {
+        'use strict';
+        const form = document.getElementById('checkoutForm');
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    })();
+</script>
+{% endblock %}

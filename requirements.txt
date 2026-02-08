@@ -1,0 +1,18 @@
+# ─── Core Framework ─────────────────────────────────────
+Flask==3.0.0              # Web framework (handles routes, templates, etc.)
+Flask-SQLAlchemy==3.1.1   # Database ORM (talk to SQLite easily)
+Flask-Login==0.6.3        # User authentication (admin login)
+Flask-Mail==0.9.1         # Send emails (order confirmations)
+Flask-WTF==1.2.1          # Form handling and validation
+
+# ─── Database ───────────────────────────────────────────
+SQLAlchemy==2.0.23        # Database toolkit
+
+# ─── Image Processing ──────────────────────────────────
+Pillow==10.1.0            # Resize and optimize product images
+
+# ─── Utilities ──────────────────────────────────────────
+python-dotenv==1.0.0      # Load settings from .env file
+Werkzeug==3.0.1           # Password hashing and file uploads
+email-validator==2.1.0    # Validate email addresses in forms
+gunicorn==21.2.0          # Production server (for deployment)

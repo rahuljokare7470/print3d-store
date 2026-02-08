@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - {{ config.BUSINESS_NAME }}{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<section class="bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-3 fw-bold mb-4">About {{ config.BUSINESS_NAME }}</h1>
+                <p class="lead">Transforming ideas into reality, one layer at a time</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Story Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="ratio ratio-16x9">
+                    <div class="bg-light d-flex align-items-center justify-content-center rounded-3">
+                        <i class="fas fa-cube fa-5x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <h2 class="h3 fw-bold mb-4">Our Story</h2>
+                <p class="text-muted mb-3">
+                    {{ config.BUSINESS_NAME }} was founded in {{ config.BUSINESS_ADDRESS.split(',')[0] }} with a simple yet ambitious vision: to democratize 3D printing technology and make it accessible to everyone. What started as a passion project has grown into a thriving hub for innovation and creativity.
+                </p>
+                <p class="text-muted mb-3">
+                    We believe that 3D printing is not just a technology—it's a revolution in how we design, create, and manufacture. Our team combines deep technical expertise with a genuine passion for helping customers bring their ideas to life, whether they're hobbyists, entrepreneurs, or established businesses.
+                </p>
+                <p class="text-muted">
+                    Every product we create reflects our commitment to excellence. We invest in cutting-edge equipment, continuous training, and customer-centric processes to ensure that each print exceeds expectations. Our journey has been remarkable, and we're just getting started.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Process Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="h3 fw-bold text-center mb-5">Our Process</h2>
+        <div class="row g-4">
+            <!-- Step 1: Design -->
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-lightbulb fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Design</h5>
+                    <p class="text-muted small">Share your idea with us and discuss requirements</p>
+                </div>
+            </div>
+
+            <!-- Step 2: Model -->
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center">
+                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-cube fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Model</h5>
+                    <p class="text-muted small">We create a 3D model from your design</p>
+                </div>
+            </div>
+
+            <!-- Step 3: Print -->
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center">
+                    <div class="rounded-circle bg-info text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-print fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Print</h5>
+                    <p class="text-muted small">High-quality 3D printing with precision</p>
+                </div>
+            </div>
+
+            <!-- Step 4: Deliver -->
+            <div class="col-md-6 col-lg-3">
+                <div class="text-center">
+                    <div class="rounded-circle bg-warning text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-box fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Deliver</h5>
+                    <p class="text-muted small">Careful packaging and timely delivery</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                <div class="p-4">
+                    <h3 class="display-5 fw-bold text-primary mb-2">500+</h3>
+                    <p class="text-muted">Products Created</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                <div class="p-4">
+                    <h3 class="display-5 fw-bold text-success mb-2">200+</h3>
+                    <p class="text-muted">Happy Customers</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                <div class="p-4">
+                    <h3 class="display-5 fw-bold text-info mb-2">3+</h3>
+                    <p class="text-muted">Years Experience</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="p-4">
+                    <h3 class="display-5 fw-bold text-warning mb-2">10+</h3>
+                    <p class="text-muted">Cities Served</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Values Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="h3 fw-bold text-center mb-5">Our Core Values</h2>
+        <div class="row g-4">
+            <!-- Value 1: Quality First -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-star fa-2x text-warning"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Quality First</h5>
+                        <p class="card-text text-muted small">Excellence in every print, every time</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Value 2: Customer Focus -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Customer Focus</h5>
+                        <p class="card-text text-muted small">Your satisfaction is our priority</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Value 3: Innovation -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-lightbulb fa-2x text-success"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Innovation</h5>
+                        <p class="card-text text-muted small">Embracing new technologies and ideas</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Value 4: Sustainability -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-leaf fa-2x text-info"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Sustainability</h5>
+                        <p class="card-text text-muted small">Eco-friendly practices and materials</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Google Maps Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="h3 fw-bold text-center mb-5">Visit Us</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3781.4623521450437!2d73.85674!3d18.5204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c072b8c0e1a1%3A0x8c0e1a1bc2c072b8!2sPune%2C%20Maharashtra%20411001!5e0!3m2!1sen!2sin!4v1234567890" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <p class="text-center text-muted mt-3 small">
+                    <i class="fas fa-map-marker-alt text-primary"></i>
+                    {{ config.BUSINESS_ADDRESS }}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="h3 fw-bold mb-3">Have a Custom Idea?</h2>
+                <p class="lead mb-4">Let's bring your vision to life. Get in touch with our team today!</p>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-envelope me-2"></i>Contact Us
+                    </a>
+                    <a href="https://wa.me/919876543210" target="_blank" class="btn btn-success btn-lg">
+                        <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

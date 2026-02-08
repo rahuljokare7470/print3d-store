@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ config.BUSINESS_NAME }} - {{ config.BUSINESS_TAGLINE }}. Custom 3D printing services with high-quality materials.">
+    <meta name="keywords" content="3D printing, 3D printed products, custom 3D printing, {{ config.BUSINESS_ADDRESS }}">
+    <meta name="author" content="{{ config.BUSINESS_NAME }}">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="{% block og_title %}{{ config.BUSINESS_NAME }} - {{ config.BUSINESS_TAGLINE }}{% endblock %}">
+    <meta property="og:description" content="{{ config.BUSINESS_TAGLINE }}. Custom 3D printing services.">
+    <meta property="og:type" content="website">
+
+    <title>{% block title %}{{ config.BUSINESS_NAME }} - {{ config.BUSINESS_TAGLINE }}{% endblock %}</title>
+
+    <!-- Bootstrap 5.3.2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid">
+            <!-- Brand/Logo -->
+            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">
+                <i class="fas fa-cube text-success me-2"></i>
+                <span class="brand-name">{{ config.BUSINESS_NAME }}</span>
+            </a>
+
+            <!-- Toggler Button for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar Content -->
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <!-- Home Link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
+
+                    <!-- Products Link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('products') }}">
+                            <i class="fas fa-box me-1"></i> Products
+                        </a>
+                    </li>
+
+                    <!-- Categories Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-list me-1"></i> Categories
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                            {% if categories %}
+                                {% for category in categories %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('products', category=category.slug) }}">
+                                            {{ category.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('products') }}">
+                                    View All Categories
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- About Link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}">
+                            <i class="fas fa-info-circle me-1"></i> About
+                        </a>
+                    </li>
+
+                    <!-- Contact Link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('contact') }}">
+                            <i class="fas fa-envelope me-1"></i> Contact
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Search Bar -->
+                <form class="d-flex me-3 navbar-search" role="search" action="{{ url_for('products') }}" method="GET">
+                    <div class="input-group input-group-sm">
+                        <input class="form-control" type="text" name="q" placeholder="Search products..." aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Right Side Icons -->
+                <ul class="navbar-nav ms-auto">
+                    <!-- Cart Icon -->
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{{ url_for('cart') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            {% if cart_count and cart_count > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ cart_count }}
+                                </span>
+                            {% endif %}
+                        </a>
+                    </li>
+
+                    <!-- Admin Link (if authenticated) -->
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-shield"></i> Admin
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                        Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin_products') }}">
+                                        Manage Products
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin_orders') }}">
+                                        Orders
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin_logout') }}">
+                                        Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages Section -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container-fluid mt-3">
+                {% for category, message in messages %}
+                    {% if category == 'error' %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <strong>Error:</strong> {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% elif category == 'success' %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% elif category == 'warning' %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% elif category == 'info' %}
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content Block -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5 pt-5 pb-3" style="background-color: #1a1f2e;">
+        <div class="container">
+            <div class="row mb-4">
+                <!-- Company Info & Contact -->
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="fw-bold mb-3 text-white">
+                        <i class="fas fa-cube text-success me-2"></i>{{ config.BUSINESS_NAME }}
+                    </h5>
+                    <p class="mb-3" style="color: #adb5bd;">
+                        {{ config.BUSINESS_TAGLINE }}
+                    </p>
+                    <ul class="list-unstyled" style="color: #adb5bd;">
+                        <li class="mb-2">
+                            <i class="fas fa-map-marker-alt text-success me-2"></i>
+                            {{ config.BUSINESS_ADDRESS }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-phone text-success me-2"></i>
+                            <a href="tel:{{ config.BUSINESS_PHONE }}" class="text-decoration-none" style="color: #adb5bd;">
+                                {{ config.BUSINESS_PHONE }}
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-envelope text-success me-2"></i>
+                            <a href="mailto:{{ config.BUSINESS_EMAIL }}" class="text-decoration-none" style="color: #adb5bd;">
+                                {{ config.BUSINESS_EMAIL }}
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fab fa-whatsapp text-success me-2"></i>
+                            <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" class="text-decoration-none" style="color: #adb5bd;" target="_blank">
+                                WhatsApp Us
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h6 class="fw-bold mb-3 text-white">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="{{ url_for('home') }}" class="text-decoration-none" style="color: #adb5bd;">
+                                <i class="fas fa-chevron-right text-success me-1 small"></i> Home
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ url_for('products') }}" class="text-decoration-none" style="color: #adb5bd;">
+                                <i class="fas fa-chevron-right text-success me-1 small"></i> Products
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ url_for('about') }}" class="text-decoration-none" style="color: #adb5bd;">
+                                <i class="fas fa-chevron-right text-success me-1 small"></i> About Us
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ url_for('contact') }}" class="text-decoration-none" style="color: #adb5bd;">
+                                <i class="fas fa-chevron-right text-success me-1 small"></i> Contact
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Categories -->
+                <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
+                    <h6 class="fw-bold mb-3 text-white">Categories</h6>
+                    <ul class="list-unstyled">
+                        {% if categories %}
+                            {% for category in categories[:4] %}
+                                <li class="mb-2">
+                                    <a href="{{ url_for('products', category=category.slug) }}" class="text-decoration-none" style="color: #adb5bd;">
+                                        <i class="fas fa-chevron-right text-success me-1 small"></i> {{ category.name }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Follow Us & Business Hours -->
+                <div class="col-lg-3 col-md-4">
+                    <h6 class="fw-bold mb-3 text-white">Follow Us</h6>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="#" class="text-decoration-none" style="color: #adb5bd; font-size: 1.3rem;">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-decoration-none" style="color: #adb5bd; font-size: 1.3rem;">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-decoration-none" style="color: #adb5bd; font-size: 1.3rem;">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-decoration-none" style="color: #adb5bd; font-size: 1.3rem;">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+
+                    <h6 class="fw-bold mb-3 text-white">Business Hours</h6>
+                    <ul class="list-unstyled" style="color: #adb5bd;">
+                        <li class="mb-1"><i class="fas fa-clock text-success me-2"></i>Mon - Sat: 10AM - 7PM</li>
+                        <li><i class="fas fa-clock text-success me-2"></i>Sun: By Appointment</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <hr style="border-color: #2d3548;">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="small mb-0" style="color: #6c757d;">
+                        &copy; <span id="currentYear"></span> {{ config.BUSINESS_NAME }}. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="small mb-0" style="color: #6c757d;">
+                        <a href="#" class="text-decoration-none" style="color: #6c757d;">Privacy Policy</a> |
+                        <a href="#" class="text-decoration-none" style="color: #6c757d;">Terms of Service</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Floating Button -->
+    {% if config.get('WHATSAPP_NUMBER') %}
+        <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" class="whatsapp-btn" target="_blank" rel="noopener noreferrer" title="Chat with us on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    {% endif %}
+
+    <!-- Bootstrap 5.3.2 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- Set Current Year -->
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

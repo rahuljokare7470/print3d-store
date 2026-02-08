@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - {{ config.BUSINESS_NAME }}{% endblock %}
+
+{% block content %}
+<!-- Page Heading -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-2">Get in Touch</h1>
+        <p class="lead text-muted">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+    </div>
+</section>
+
+<!-- Contact Form and Info Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Contact Form -->
+            <div class="col-lg-7">
+                <form method="POST" action="{{ url_for('contact') }}" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-bold">Full Name *</label>
+                        <input type="text" class="form-control form-control-lg" id="name" name="name" placeholder="Your Name" required>
+                        <div class="invalid-feedback">Please provide your name.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-bold">Email Address *</label>
+                        <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="your.email@example.com" required>
+                        <div class="invalid-feedback">Please provide a valid email address.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label fw-bold">Phone Number</label>
+                        <input type="tel" class="form-control form-control-lg" id="phone" name="phone" placeholder="+91 98765 43210">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="subject" class="form-label fw-bold">Subject *</label>
+                        <select class="form-select form-select-lg" id="subject" name="subject" required>
+                            <option value="">-- Select Subject --</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="product">Product Question</option>
+                            <option value="custom">Custom Order</option>
+                            <option value="bulk">Bulk Order</option>
+                            <option value="feedback">Feedback</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a subject.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="message" class="form-label fw-bold">Message *</label>
+                        <textarea class="form-control form-control-lg" id="message" name="message" rows="6" placeholder="Tell us more about your inquiry..." required></textarea>
+                        <div class="invalid-feedback">Please provide a message.</div>
+                    </div>
+
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                            <i class="fas fa-paper-plane me-2"></i>Send Message
+                        </button>
+                    </div>
+
+                    <p class="text-muted small">
+                        <i class="fas fa-info-circle me-2"></i>
+                        We typically respond within 24 hours.
+                    </p>
+                </form>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-5">
+                <!-- Address -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold text-primary mb-3">
+                            <i class="fas fa-map-marker-alt me-2"></i>Address
+                        </h6>
+                        <p class="card-text text-muted">
+                            {{ config.get('BUSINESS_ADDRESS', '{{ config.BUSINESS_ADDRESS }}') }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold text-success mb-3">
+                            <i class="fas fa-envelope me-2"></i>Email
+                        </h6>
+                        <p class="card-text">
+                            <a href="mailto:{{ config.get('BUSINESS_EMAIL', 'info@printcraft3d.com') }}" class="text-decoration-none">
+                                {{ config.get('BUSINESS_EMAIL', 'info@printcraft3d.com') }}
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold text-info mb-3">
+                            <i class="fas fa-phone me-2"></i>Phone
+                        </h6>
+                        <p class="card-text">
+                            <a href="tel:{{ config.get('BUSINESS_PHONE', '+919876543210').replace(' ', '') }}" class="text-decoration-none">
+                                {{ config.get('BUSINESS_PHONE', '+91 98765 43210') }}
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- WhatsApp -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold text-success mb-3">
+                            <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                        </h6>
+                        <p class="card-text">
+                            <a href="https://wa.me/919876543210" target="_blank" class="text-decoration-none">
+                                Chat with us on WhatsApp
+                                <i class="fas fa-external-link-alt ms-2" style="font-size: 0.8rem;"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Business Hours -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold text-warning mb-3">
+                            <i class="fas fa-clock me-2"></i>Business Hours
+                        </h6>
+                        <p class="card-text text-muted small mb-2">
+                            <strong>Monday - Saturday:</strong><br>
+                            10:00 AM - 7:00 PM IST
+                        </p>
+                        <p class="card-text text-muted small">
+                            <strong>Sunday:</strong><br>
+                            By Appointment
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Google Maps Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="h5 fw-bold text-center mb-4">Our Location</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3781.4623521450437!2d73.85674!3d18.5204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c072b8c0e1a1%3A0x8c0e1a1bc2c072b8!2sPune%2C%20Maharashtra%20411001!5e0!3m2!1sen!2sin!4v1234567890" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="h3 fw-bold text-center mb-5">Frequently Asked Questions</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion accordion-flush" id="faqAccordion">
+                    <!-- FAQ 1 -->
+                    <div class="accordion-item border-0 border-bottom">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                What materials can you 3D print?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
+                                We work with a variety of materials including PLA, ABS, PETG, TPU, and specialty resins. Each material offers different properties for different applications. Contact us to discuss which material best suits your project.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 2 -->
+                    <div class="accordion-item border-0 border-bottom">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                What is the minimum order quantity?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
+                                We accept orders for single pieces and larger batches. Whether you need one prototype or 1000 units, we can accommodate your needs. Our team will work with you to determine the best approach for your order.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 3 -->
+                    <div class="accordion-item border-0 border-bottom">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                How long does it take to deliver a custom order?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
+                                Delivery times depend on the complexity and size of your order. Typically, simple designs take 3-7 days, while complex projects may take 1-2 weeks. We'll provide you with an exact timeline after reviewing your design.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 4 -->
+                    <div class="accordion-item border-0 border-bottom">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                                Do you offer post-processing services?
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
+                                Yes, we offer various post-processing services including sanding, painting, dyeing, and assembly. These services can enhance the appearance and functionality of your prints. Ask our team about available options.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 5 -->
+                    <div class="accordion-item border-0 border-bottom">
+                        <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
+                                Can I provide my own 3D model?
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
+                                Absolutely! We accept 3D models in common formats like STL, OBJ, and STEP. If you don't have a 3D model yet, our design team can create one from your sketches or specifications.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 6 -->
+                    <div class="accordion-item border-0">
+                        <h2 class="accordion-header" id="headingSix">
+                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix">
+                                What's your quality guarantee?
+                            </button>
+                        </h2>
+                        <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
+                                We guarantee quality prints that meet our high standards. If there's any issue with your order, we'll work with you to resolve it—whether that's a reprint or a refund. Customer satisfaction is our priority.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Validation Script -->
+<script>
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    }());
+</script>
+
+{% endblock %}

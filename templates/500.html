@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - {{ config.BUSINESS_NAME }}{% endblock %}
+
+{% block content %}
+<section class="py-5 min-vh-75 d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <!-- Oops Heading -->
+                <h1 class="display-2 fw-bold mb-3 text-danger">Oops!</h1>
+
+                <!-- Error Message -->
+                <h2 class="h2 fw-bold mb-3">Something Went Wrong</h2>
+                <p class="lead text-muted mb-4">
+                    Our servers encountered an unexpected error. Our team has been notified and is working to fix the issue. Please try again in a few moments.
+                </p>
+
+                <!-- 3D Printing Theme Message -->
+                <div class="alert alert-warning mb-5" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error Code:</strong> 500 - Internal Server Error. We're recalibrating our printers!
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="{{ url_for('home') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-home me-2"></i>Go to Home
+                    </a>
+                    <button class="btn btn-outline-secondary btn-lg" onclick="location.reload();">
+                        <i class="fas fa-redo me-2"></i>Retry
+                    </button>
+                    <a href="{{ url_for('contact') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-envelope me-2"></i>Report Issue
+                    </a>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="mt-5 pt-5">
+                    <p class="text-muted small">
+                        <strong>Troubleshooting Tips:</strong><br>
+                        <i class="fas fa-check text-success me-2"></i>Try refreshing the page<br>
+                        <i class="fas fa-check text-success me-2"></i>Clear your browser cache<br>
+                        <i class="fas fa-check text-success me-2"></i>Check your internet connection
+                    </p>
+                </div>
+
+                <!-- Decorative Icon -->
+                <div class="mt-5">
+                    <i class="fas fa-exclamation-circle fa-5x text-danger opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

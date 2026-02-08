@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Products - {{ config.BUSINESS_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            {% if current_category %}
+                <li class="breadcrumb-item active">{{ current_category.name }}</li>
+            {% else %}
+                <li class="breadcrumb-item active">All Products</li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- Page Title -->
+    <div class="mb-4">
+        <h1 class="display-5 mb-2">
+            {% if search_query %}
+                Search Results for "{{ search_query }}"
+            {% elif current_category %}
+                {{ current_category.name }}
+            {% else %}
+                All Products
+            {% endif %}
+        </h1>
+        <p class="text-muted">Explore our collection of high-quality 3D printed products</p>
+    </div>
+
+    <!-- Active Filters Badges -->
+    {% if current_category or search_query or applied_filters %}
+        <div class="mb-3">
+            {% if current_category %}
+                <span class="badge bg-primary me-2">
+                    Category: {{ current_category.name }}
+                    <a href="{{ url_for('products') }}" class="text-white ms-1" style="cursor: pointer;">×</a>
+                </span>
+            {% endif %}
+            {% if search_query %}
+                <span class="badge bg-primary me-2">
+                    Search: {{ search_query }}
+                    <a href="{{ url_for('products') }}" class="text-white ms-1" style="cursor: pointer;">×</a>
+                </span>
+            {% endif %}
+            {% if applied_filters %}
+                {% if applied_filters.get('min_price') %}
+                    <span class="badge bg-primary me-2">
+                        Min Price: ₹{{ applied_filters.min_price }}
+                        <a href="{{ url_for('products', category=current_category.slug if current_category else '', search=search_query or '') }}" class="text-white ms-1" style="cursor: pointer;">×</a>
+                    </span>
+                {% endif %}
+                {% if applied_filters.get('max_price') %}
+                    <span class="badge bg-primary me-2">
+                        Max Price: ₹{{ applied_filters.max_price }}
+                        <a href="{{ url_for('products', category=current_category.slug if current_category else '', search=search_query or '') }}" class="text-white ms-1" style="cursor: pointer;">×</a>
+                    </span>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="card-title mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Category Filter -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Categories</h6>
+                        {% if categories %}
+                            <div class="list-group list-group-flush">
+                                <a href="{{ url_for('products') }}" class="list-group-item list-group-item-action px-0 {% if not current_category %}active{% endif %}">
+                                    All Categories
+                                </a>
+                                {% for cat in categories %}
+                                    <a href="{{ url_for('products', category=cat.slug) }}" class="list-group-item list-group-item-action px-0 {% if current_category and current_category.id == cat.id %}active{% endif %}">
+                                        {{ cat.name }}
+                                        <span class="badge bg-secondary float-end">{{ cat.product_count }}</span>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <hr>
+
+                    <!-- Price Range Filter -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Price Range</h6>
+                        <form method="GET" action="{{ url_for('products') }}" id="priceFilterForm">
+                            {% if current_category %}
+                                <input type="hidden" name="category" value="{{ current_category.slug }}">
+                            {% endif %}
+                            {% if search_query %}
+                                <input type="hidden" name="search" value="{{ search_query }}">
+                            {% endif %}
+                            <div class="input-group input-group-sm mb-2">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" class="form-control" name="min_price" placeholder="Min" value="{{ applied_filters.get('min_price', '') if applied_filters else '' }}">
+                            </div>
+                            <div class="input-group input-group-sm mb-3">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" class="form-control" name="max_price" placeholder="Max" value="{{ applied_filters.get('max_price', '') if applied_filters else '' }}">
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-outline-primary w-100">Apply Filter</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <!-- Sort and Count Bar -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <p class="text-muted mb-0">Showing <strong>{{ products|length }}</strong> product{% if products|length != 1 %}s{% endif %}</p>
+                </div>
+                <div>
+                    <label for="sortSelect" class="form-label me-2 d-inline">Sort by:</label>
+                    <select class="form-select form-select-sm d-inline-block w-auto" id="sortSelect" onchange="window.location.href = this.value;">
+                        <option value="{{ url_for('products', sort='newest', category=current_category.slug if current_category else '', search=search_query or '') }}" {% if current_sort == 'newest' %}selected{% endif %}>Newest</option>
+                        <option value="{{ url_for('products', sort='price_low', category=current_category.slug if current_category else '', search=search_query or '') }}" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="{{ url_for('products', sort='price_high', category=current_category.slug if current_category else '', search=search_query or '') }}" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="{{ url_for('products', sort='popular', category=current_category.slug if current_category else '', search=search_query or '') }}" {% if current_sort == 'popular' %}selected{% endif %}>Most Popular</option>
+                        <option value="{{ url_for('products', sort='name', category=current_category.slug if current_category else '', search=search_query or '') }}" {% if current_sort == 'name' %}selected{% endif %}>Name A-Z</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            {% if products %}
+                <div class="row g-4">
+                    {% for product in products %}
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="card h-100 border-0 shadow-sm transition-all" style="transition: all 0.3s ease;">
+                                <!-- Product Image -->
+                                <div class="position-relative overflow-hidden" style="height: 200px; background-color: #f8f9fa;">
+                                    {% if product.image_main %}
+                                        <img src="{{ url_for('static', filename='uploads/' + product.image_main) }}" class="card-img-top h-100 object-fit-cover" alt="{{ product.name }}" style="object-fit: cover;">
+                                    {% else %}
+                                        <svg class="w-100 h-100 text-secondary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                                            <rect width="200" height="200" fill="#e9ecef"/>
+                                            <text x="50%" y="50%" text-anchor="middle" dy=".3em" class="text-secondary" font-size="14">No Image</text>
+                                        </svg>
+                                    {% endif %}
+                                    <!-- Category Badge -->
+                                    <span class="badge bg-info position-absolute top-0 start-0 m-2">{{ product.category.name }}</span>
+                                    <!-- Stock Badge -->
+                                    <span class="badge {% if product.stock_status == 'in_stock' %}bg-success{% elif product.stock_status == 'low_stock' %}bg-warning text-dark{% else %}bg-danger{% endif %} position-absolute bottom-0 end-0 m-2">
+                                        {% if product.stock_status == 'in_stock' %}In Stock{% elif product.stock_status == 'low_stock' %}Low Stock{% else %}Out of Stock{% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="card-body d-flex flex-column">
+                                    <!-- Product Name -->
+                                    <h5 class="card-title">
+                                        <a href="{{ url_for('product_detail', slug=product.slug) }}" class="text-decoration-none text-dark" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                            {{ product.name }}
+                                        </a>
+                                    </h5>
+
+                                    <!-- Short Description -->
+                                    <p class="card-text text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                        {{ product.short_description }}
+                                    </p>
+
+                                    <!-- Price Section -->
+                                    <div class="mb-3">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <h6 class="mb-0 text-primary fw-bold">₹{{ product.price }}</h6>
+                                            {% if product.original_price and product.original_price > product.price %}
+                                                <del class="text-muted small">₹{{ product.original_price }}</del>
+                                                <span class="badge bg-danger">-{{ ((product.original_price - product.price) / product.original_price * 100)|int }}%</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-auto">
+                                        <!-- Add to Cart Form -->
+                                        <form method="POST" action="{{ url_for('cart_add') }}" class="d-grid mb-2">
+                                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                                            <button type="submit" class="btn btn-primary btn-sm" {% if product.stock_status == 'out_of_stock' %}disabled{% endif %}>
+                                                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                            </button>
+                                        </form>
+
+                                        <!-- WhatsApp Button -->
+                                        <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}?text=Hi,%20I'm%20interested%20in%20{{ product.name|urlencode }}" target="_blank" class="btn btn-outline-success btn-sm d-grid">
+                                            <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- No Products Found -->
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="fas fa-info-circle me-3 fa-2x"></i>
+                    <div>
+                        <h5 class="alert-heading">No Products Found</h5>
+                        <p class="mb-0">We couldn't find any products matching your criteria. Try adjusting your filters or search query.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition-all:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-2px);
+    }
+
+    .object-fit-cover {
+        object-fit: cover;
+    }
+</style>
+{% endblock %}

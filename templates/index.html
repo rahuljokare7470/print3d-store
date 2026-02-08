@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block title %}Home - {{ config.BUSINESS_NAME }} - {{ config.BUSINESS_TAGLINE }}{% endblock %}
+
+{% block og_title %}{{ config.BUSINESS_NAME }} - {{ config.BUSINESS_TAGLINE }}{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero-section text-white py-5 position-relative overflow-hidden">
+        <div class="hero-bg"></div>
+        <div class="container position-relative z-2">
+            <div class="row align-items-center min-vh-75">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h1 class="display-3 fw-bold mb-3">
+                        Premium 3D<br>Printed Products
+                    </h1>
+                    <p class="lead mb-4 text-light">
+                        Discover custom 3D printed designs crafted with precision in {{ config.BUSINESS_ADDRESS }}.
+                        From prototypes to finished products, we bring your ideas to life with cutting-edge 3D printing technology.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{{ url_for('products') }}" class="btn btn-success btn-lg">
+                            <i class="fas fa-shopping-bag me-2"></i> Shop Now
+                        </a>
+                        <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-pencil-alt me-2"></i> Custom Order
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="hero-illustration">
+                        <i class="fas fa-cube fa-10x text-success opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="row mt-5 pt-5 border-top border-secondary">
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <h3 class="fw-bold text-success">
+                        {{ config.get('PRODUCT_COUNT', '500+') }}
+                    </h3>
+                    <p class="text-muted">
+                        <i class="fas fa-box me-2"></i> Products Available
+                    </p>
+                </div>
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <h3 class="fw-bold text-success">
+                        {{ config.get('CUSTOMER_COUNT', '1000+') }}
+                    </h3>
+                    <p class="text-muted">
+                        <i class="fas fa-smile me-2"></i> Happy Customers
+                    </p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h3 class="fw-bold text-success">
+                        <i class="fas fa-heart text-danger me-2"></i>Made in {{ config.BUSINESS_ADDRESS.split(',')[0] }}
+                    </h3>
+                    <p class="text-muted">
+                        Proudly serving across India
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="featured-products py-5">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="display-5 fw-bold mb-2">Featured Products</h2>
+                <p class="text-muted lead">
+                    Hand-picked premium 3D printed products ready for immediate delivery
+                </p>
+            </div>
+
+            {% if featured_products %}
+                <div class="row g-4">
+                    {% for product in featured_products %}
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="card product-card h-100 shadow-sm hover-shadow transition-all" data-product-id="{{ product.id }}">
+                                <!-- Product Image -->
+                                <div class="product-image-wrapper position-relative overflow-hidden">
+                                    {% if product.image_url %}
+                                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="card-img-top product-image">
+                                    {% else %}
+                                        <div class="product-placeholder bg-light d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-cube fa-5x text-secondary opacity-50"></i>
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- Discount Badge -->
+                                    {% if product.original_price and product.original_price > product.price %}
+                                        {% set discount_percentage = ((product.original_price - product.price) / product.original_price * 100)|int %}
+                                        <div class="badge bg-danger position-absolute top-0 end-0 m-2 discount-badge">
+                                            -{{ discount_percentage }}%
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- Quick Order Button (WhatsApp) -->
+                                    <div class="position-absolute bottom-0 start-0 w-100 p-2 d-none d-md-block quick-order-overlay">
+                                        {% if config.get('WHATSAPP_NUMBER') %}
+                                            <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}?text=I'm%20interested%20in%20{{ product.name|urlencode }}"
+                                               class="btn btn-success btn-sm w-100" target="_blank" rel="noopener noreferrer">
+                                                <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Product Details -->
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title fw-bold mb-2">{{ product.name }}</h5>
+
+                                    <p class="card-text text-muted small mb-3 flex-grow-1">
+                                        {{ product.short_desc or product.description|truncate(80) }}
+                                    </p>
+
+                                    <!-- Price Section -->
+                                    <div class="price-section mb-3">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="h5 fw-bold text-success mb-0">₹{{ "%.2f"|format(product.price) }}</span>
+                                            {% if product.original_price and product.original_price > product.price %}
+                                                <span class="text-muted text-decoration-line-through small">
+                                                    ₹{{ "%.2f"|format(product.original_price) }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Add to Cart Form -->
+                                    <form method="POST" action="{{ url_for('cart_add') }}" class="add-to-cart-form">
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-outline-success w-100 add-to-cart-btn">
+                                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                                        </button>
+                                    </form>
+
+                                    <!-- Product Detail Link -->
+                                    <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn btn-link btn-sm text-decoration-none mt-2 text-center">
+                                        View Details <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- View All Products Link -->
+                <div class="text-center mt-5">
+                    <a href="{{ url_for('products') }}" class="btn btn-lg btn-outline-success">
+                        View All Products <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            {% else %}
+                <div class="alert alert-info text-center" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No featured products available at the moment.
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Category Showcase Section -->
+    <section class="category-showcase py-5 bg-light">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="display-5 fw-bold mb-2">Shop by Category</h2>
+                <p class="text-muted lead">
+                    Explore our wide range of 3D printed products
+                </p>
+            </div>
+
+            {% if categories %}
+                <div class="row g-4">
+                    {% for category in categories %}
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <a href="{{ url_for('products', category=category.slug) }}" class="text-decoration-none">
+                                <div class="category-card h-100 bg-white rounded-3 p-4 shadow-sm hover-shadow transition-all text-center">
+                                    <div class="category-icon mb-3">
+                                        <i class="fas fa-layer-group fa-3x text-success"></i>
+                                    </div>
+                                    <h5 class="fw-bold mb-2 text-dark">{{ category.name }}</h5>
+                                    {% if category.description %}
+                                        <p class="text-muted small mb-0">{{ category.description|truncate(60) }}</p>
+                                    {% endif %}
+                                    <div class="mt-3">
+                                        <span class="text-success small fw-bold">
+                                            Explore <i class="fas fa-arrow-right ms-1"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="why-choose-us py-5">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="display-5 fw-bold mb-2">Why Choose {{ config.BUSINESS_NAME }}?</h2>
+                <p class="text-muted lead">
+                    We deliver quality, reliability, and innovation
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Feature 1: Custom Designs -->
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="feature-card text-center h-100 p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-pencil-ruler fa-3x text-success"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Custom Designs</h5>
+                        <p class="text-muted">
+                            Bring your unique ideas to life with our professional custom 3D design and printing services.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Quality Materials -->
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="feature-card text-center h-100 p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-gem fa-3x text-success"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Quality Materials</h5>
+                        <p class="text-muted">
+                            We use premium materials and latest 3D printing technology to ensure superior product quality.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 3: Fast Delivery -->
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="feature-card text-center h-100 p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-rocket fa-3x text-success"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Fast Delivery</h5>
+                        <p class="text-muted">
+                            Quick turnaround times with reliable shipping across India. Track your order in real-time.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 4: Affordable Prices -->
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="feature-card text-center h-100 p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-tag fa-3x text-success"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Affordable Prices</h5>
+                        <p class="text-muted">
+                            Competitive pricing without compromising quality. Get the best value for your money.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Products Section -->
+    {% if latest_products %}
+        <section class="latest-products py-5 bg-light">
+            <div class="container">
+                <div class="section-header text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-2">Latest Products</h2>
+                    <p class="text-muted lead">
+                        Check out our newest additions
+                    </p>
+                </div>
+
+                <div class="row g-4">
+                    {% for product in latest_products[:4] %}
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="card product-card h-100 shadow-sm hover-shadow transition-all" data-product-id="{{ product.id }}">
+                                <!-- Product Image -->
+                                <div class="product-image-wrapper position-relative overflow-hidden">
+                                    {% if product.image_url %}
+                                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="card-img-top product-image">
+                                    {% else %}
+                                        <div class="product-placeholder bg-light d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-cube fa-5x text-secondary opacity-50"></i>
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- New Badge -->
+                                    <div class="badge bg-info position-absolute top-0 end-0 m-2">
+                                        <i class="fas fa-star me-1"></i> New
+                                    </div>
+                                </div>
+
+                                <!-- Product Details -->
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title fw-bold mb-2">{{ product.name }}</h5>
+
+                                    <p class="card-text text-muted small mb-3 flex-grow-1">
+                                        {{ product.short_desc or product.description|truncate(80) }}
+                                    </p>
+
+                                    <!-- Price Section -->
+                                    <div class="price-section mb-3">
+                                        <span class="h5 fw-bold text-success mb-0">₹{{ "%.2f"|format(product.price) }}</span>
+                                    </div>
+
+                                    <!-- Add to Cart Form -->
+                                    <form method="POST" action="{{ url_for('cart_add') }}" class="add-to-cart-form">
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-outline-success w-100 add-to-cart-btn">
+                                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    <!-- Newsletter/CTA Section -->
+    <section class="newsletter-cta py-5 position-relative overflow-hidden">
+        <div class="cta-bg"></div>
+        <div class="container position-relative z-2">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center text-white">
+                    <h2 class="display-4 fw-bold mb-3">
+                        Ready to Bring Your Ideas to Life?
+                    </h2>
+                    <p class="lead mb-4">
+                        Get exclusive offers, updates on new products, and special discounts by subscribing to our newsletter.
+                    </p>
+
+                    <form method="POST" action="{{ url_for('contact') }}" class="row g-2 justify-content-center">
+                        <input type="hidden" name="subject" value="Newsletter Subscription">
+                        <input type="hidden" name="name" value="Newsletter Subscriber">
+                        <input type="hidden" name="message" value="Please add me to your newsletter mailing list.">
+                        <div class="col-md-6">
+                            <input type="email" name="email" class="form-control form-control-lg" placeholder="Enter your email" required>
+                        </div>
+                        <div class="col-md-auto">
+                            <button type="submit" class="btn btn-success btn-lg w-100 w-md-auto">
+                                <i class="fas fa-paper-plane me-2"></i> Subscribe
+                            </button>
+                        </div>
+                    </form>
+
+                    <p class="text-light small mt-3 opacity-75">
+                        <i class="fas fa-lock me-1"></i> We never spam. Unsubscribe anytime.
+                    </p>
+
+                    <!-- Direct Contact CTA -->
+                    <div class="mt-5 pt-4 border-top border-light">
+                        <p class="mb-3">
+                            <strong>Have a custom project in mind?</strong>
+                        </p>
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <a href="tel:{{ config.get('PHONE_NUMBER', '') }}" class="btn btn-outline-light btn-lg"
+                               {% if not config.get('PHONE_NUMBER') %}disabled{% endif %}>
+                                <i class="fas fa-phone me-2"></i> Call Us
+                            </a>
+                            <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-envelope me-2"></i> Get in Touch
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // Add to cart button handler with loading state
+        document.querySelectorAll('.add-to-cart-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const button = form.querySelector('.add-to-cart-btn');
+                const originalText = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Adding...';
+
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }, 2000);
+            });
+        });
+    </script>
+{% endblock %}

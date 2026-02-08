@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation - {{ config.BUSINESS_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Success Banner -->
+    <div class="text-center mb-5 py-4">
+        <div style="font-size: 4rem; color: #28a745; margin-bottom: 1rem;">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1 class="display-5 mb-2">Order Placed Successfully!</h1>
+        <p class="lead text-muted">Thank you for your purchase. Your order has been confirmed.</p>
+    </div>
+
+    <!-- Order Number -->
+    <div class="text-center mb-4">
+        <div class="card border-0 shadow-sm" style="max-width: 600px; margin-left: auto; margin-right: auto;">
+            <div class="card-body py-4">
+                <h6 class="text-muted mb-2">Order Number</h6>
+                <h2 class="text-primary mb-0" style="font-family: 'Courier New', monospace; letter-spacing: 2px;">
+                    {{ order.order_number }}
+                </h2>
+                <small class="text-muted d-block mt-2">
+                    Placed on: {{ order.created_at.strftime('%d %b %Y, %H:%M') }}
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Order Details Column -->
+        <div class="col-lg-8">
+            <!-- Order Items Section -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-box me-2"></i>Order Items
+                    </h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex gap-3 align-items-center">
+                                            {% if item.product.image_main %}
+                                                <img src="{{ url_for('static', filename='uploads/' + item.product.image_main) }}" class="rounded" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-image text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ item.product.name }}</h6>
+                                                {% if item.color %}
+                                                    <small class="text-muted">Color: {{ item.color }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>₹{{ item.product.price }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td><strong>₹{{ (item.product.price * item.quantity)|int }}</strong></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-body border-top pt-3">
+                    <div class="row g-3 text-end">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <strong>₹{{ order.subtotal }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Delivery:</span>
+                                {% if order.delivery_charge == 0 %}
+                                    <span class="badge bg-success">FREE</span>
+                                {% else %}
+                                    <strong>₹{{ order.delivery_charge }}</strong>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if order.tax %}
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                                    <span>Tax:</span>
+                                    <strong>₹{{ order.tax }}</strong>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="mb-0">Total Amount:</h5>
+                                <h4 class="text-primary mb-0">₹{{ order.total_amount }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer & Delivery Info Section -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light border-bottom">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-user me-2"></i>Customer Details
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2">
+                                <strong>{{ order.customer_name }}</strong><br>
+                                <small class="text-muted">{{ order.email }}</small><br>
+                                <small class="text-muted">{{ order.phone }}</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light border-bottom">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-map-marker-alt me-2"></i>Delivery Address
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0">
+                                <small class="text-muted">{{ order.address }}<br>
+                                {{ order.city }} - {{ order.pincode }}</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment & Status Section -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light border-bottom">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-credit-card me-2"></i>Payment Method
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0">
+                                <strong>{{ order.payment_method }}</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light border-bottom">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Order Status
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0">
+                                <span class="badge {% if order.status == 'Confirmed' %}bg-success{% elif order.status == 'Processing' %}bg-info{% elif order.status == 'Shipped' %}bg-primary{% elif order.status == 'Delivered' %}bg-success{% else %}bg-warning{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- What's Next Section -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tasks me-2"></i>What's Next?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ol class="list-unstyled">
+                        <li class="mb-3 pb-3 border-bottom">
+                            <div class="d-flex gap-3">
+                                <div class="text-primary fw-bold" style="min-width: 30px;">1</div>
+                                <div>
+                                    <strong>Confirmation</strong>
+                                    <p class="small text-muted mb-0">Check your email for order confirmation</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-3 pb-3 border-bottom">
+                            <div class="d-flex gap-3">
+                                <div class="text-primary fw-bold" style="min-width: 30px;">2</div>
+                                <div>
+                                    <strong>Processing</strong>
+                                    <p class="small text-muted mb-0">We'll prepare your order for shipment</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-3 pb-3 border-bottom">
+                            <div class="d-flex gap-3">
+                                <div class="text-primary fw-bold" style="min-width: 30px;">3</div>
+                                <div>
+                                    <strong>Shipping</strong>
+                                    <p class="small text-muted mb-0">Your package is on its way</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-0">
+                            <div class="d-flex gap-3">
+                                <div class="text-primary fw-bold" style="min-width: 30px;">4</div>
+                                <div>
+                                    <strong>Delivery</strong>
+                                    <p class="small text-muted mb-0">Enjoy your 3D printed products!</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Need Help?</h6>
+
+                    <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}?text=Hi,%20I%20have%20a%20question%20about%20order%20{{ order.order_number }}" target="_blank" class="btn btn-success w-100 mb-2">
+                        <i class="fab fa-whatsapp me-2"></i>Contact via WhatsApp
+                    </a>
+
+                    <a href="mailto:support@printcraft3d.com?subject=Order%20{{ order.order_number }}" class="btn btn-outline-secondary w-100 mb-2">
+                        <i class="fas fa-envelope me-2"></i>Email Support
+                    </a>
+
+                    <button onclick="window.print()" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-print me-2"></i>Print Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Continue Shopping Section -->
+    <div class="text-center mt-5 pt-4 border-top">
+        <h5 class="mb-3">Continue Shopping</h5>
+        <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-shopping-bag me-2"></i>Explore More Products
+        </a>
+        <a href="{{ url_for('home') }}" class="btn btn-outline-secondary btn-lg ms-2">
+            <i class="fas fa-home me-2"></i>Back to Home
+        </a>
+    </div>
+</div>
+
+<!-- Print Styles -->
+<style>
+    @media print {
+        .btn, .container > div > div:last-child, .text-center.mt-5 {
+            display: none !important;
+        }
+
+        body {
+            padding: 0;
+        }
+
+        .container {
+            max-width: 100% !important;
+        }
+    }
+</style>
+{% endblock %}

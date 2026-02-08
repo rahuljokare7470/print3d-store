@@ -1,0 +1,39 @@
+# ═══════════════════════════════════════════════════════════════
+# Git Ignore - Files that should NOT be uploaded to GitHub
+# ═══════════════════════════════════════════════════════════════
+
+# Environment variables (contains passwords!)
+.env
+
+# Database file
+*.db
+store.db
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Uploaded product images (too large for Git)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Distribution
+dist/
+build/
+*.egg-info/

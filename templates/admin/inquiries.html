@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Inquiries - {{ config.BUSINESS_NAME }} Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar Navigation -->
+    <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar py-3" style="min-height: calc(100vh - 76px);">
+      <div class="sidebar-sticky px-3">
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+          <span>Admin Menu</span>
+        </h6>
+
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">
+              <i class="fas fa-home me-2"></i>Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin_products') }}">
+              <i class="fas fa-cube me-2"></i>Products
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin_categories') }}">
+              <i class="fas fa-tags me-2"></i>Categories
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin_orders') }}">
+              <i class="fas fa-shopping-bag me-2"></i>Orders
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white active" href="{{ url_for('admin_inquiries') }}">
+              <i class="fas fa-envelope me-2"></i>Inquiries
+            </a>
+          </li>
+          <li class="nav-item">
+            <hr class="bg-secondary">
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('home') }}" target="_blank">
+              <i class="fas fa-globe me-2"></i>View Site
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin_logout') }}">
+              <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+      <!-- Page Header -->
+      <div class="mb-4">
+        <h1 class="h2">
+          <i class="fas fa-envelope me-2"></i>Inquiries
+          {% set unread_count = inquiries|selectattr('is_read', 'equalto', false)|list|length %}
+          {% if unread_count > 0 %}
+          <span class="badge bg-danger ms-2">{{ unread_count }} Unread</span>
+          {% endif %}
+        </h1>
+      </div>
+
+      <!-- Inquiries Table -->
+      <div class="card">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 40px;"></th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th style="width: 150px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if inquiries %}
+                {% for inquiry in inquiries %}
+                <tr {% if not inquiry.is_read %}class="table-light" style="font-weight: 500;"{% endif %}>
+                  <td>
+                    {% if not inquiry.is_read %}
+                    <i class="fas fa-envelope fa-lg text-danger" title="Unread"></i>
+                    {% else %}
+                    <i class="fas fa-envelope-open fa-lg text-muted" title="Read"></i>
+                    {% endif %}
+                  </td>
+                  <td>{{ inquiry.name }}</td>
+                  <td>
+                    <a href="mailto:{{ inquiry.email }}">{{ inquiry.email }}</a>
+                  </td>
+                  <td>{{ inquiry.subject }}</td>
+                  <td>{{ inquiry.created_at.strftime('%d %b %Y') }}</td>
+                  <td>
+                    {% if inquiry.is_read %}
+                      <span class="badge bg-secondary">Read</span>
+                    {% else %}
+                      <span class="badge bg-danger">Unread</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <a href="{{ url_for('admin_inquiry_detail', inquiry_id=inquiry.id) }}" class="btn btn-sm btn-outline-primary" title="View">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <form action="{{ url_for('admin_inquiry_delete', inquiry_id=inquiry.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This cannot be undone.');">
+                      <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+              <tr>
+                <td colspan="7" class="text-center text-muted py-5">
+                  <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
+                  No inquiries yet
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}
