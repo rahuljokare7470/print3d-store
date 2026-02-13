@@ -275,9 +275,13 @@ Thank you for choosing {app.config['BUSINESS_NAME']}!
         latest_products = Product.query.filter_by(is_active=True)\
             .order_by(Product.created_at.desc()).limit(4).all()
 
+        all_products = Product.query.filter_by(is_active=True)\
+            .order_by(Product.created_at.desc()).all()
+
         return render_template('index.html',
                                featured_products=featured_products,
-                               latest_products=latest_products)
+                               latest_products=latest_products,
+                               all_products=all_products)
 
     @app.route('/products')
     def products():
