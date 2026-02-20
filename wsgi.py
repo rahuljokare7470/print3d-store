@@ -1,13 +1,7 @@
 """
-WSGI Entry Point
-=================
-
-This file is used by production servers (like Gunicorn) to run the app.
-It's referenced in the Procfile for deployment.
-
-You don't need to modify this file.
+WSGI entry point for production deployment.
+This file is used by Gunicorn to start the application.
 """
-
 from app import create_app
 
 app = create_app()

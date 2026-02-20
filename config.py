@@ -1,74 +1,135 @@
-"""
-Configuration file for the 3D Print Store application.
-
-HOW TO MODIFY:
-- Change SECRET_KEY to any random string (keep it secret in production!)
-- Update MAIL_* settings with your actual email credentials
-- Change ADMIN_USERNAME and ADMIN_PASSWORD before deploying
-- Set WHATSAPP_NUMBER to your business WhatsApp number (with country code, no +)
-"""
-
 import os
 
-# Base directory of the application
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    # ─── Security ───────────────────────────────────────────────
-    # IMPORTANT: Change this to a random string in production!
-    # You can generate one in Python: import secrets; secrets.token_hex(32)
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'change-this-to-a-random-secret-key-in-production')
+    """Base configuration with environment-specific overrides"""
 
-    # ─── Database ───────────────────────────────────────────────
-    # SQLite database file stored in the project folder
-    # No external database server needed!
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL',
-        'sqlite:///' + os.path.join(BASE_DIR, 'store.db')
-    )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False  # Saves memory
+    # Core Flask settings
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-change-in-production')
+    DEBUG = False
+    TESTING = False
 
-    # ─── File Uploads ───────────────────────────────────────────
-    UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB max upload size
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
+    # Database configuration - PostgreSQL on Render, SQLite locally
+    _db_url = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(BASE_DIR, 'store.db'))
+    # Fix Render's postgres:// to postgresql://
+    if _db_url.startswith('postgres://'):
+        _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+    SQLALCHEMY_DATABASE_URI = _db_url
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+        'pool_size': 10,
+        'max_overflow': 20
+    }
 
-    # ─── Image Optimization ────────────────────────────────────
-    MAX_IMAGE_WIDTH = 1200   # Resize large images to this width
-    THUMBNAIL_SIZE = (400, 400)  # Product card thumbnails
+    # Cache configuration - Redis with fallback to simple cache
+    CACHE_REDIS_URL = os.environ.get('CACHE_REDIS_URL', None)
+    if CACHE_REDIS_URL:
+        CACHE_TYPE = 'redis'
+        CACHE_REDIS_URL = CACHE_REDIS_URL
+    else:
+        CACHE_TYPE = 'SimpleCache'
+    CACHE_DEFAULT_TIMEOUT = 300
 
-    # ─── Admin Credentials ──────────────────────────────────────
-    # CHANGE THESE before deploying your site!
+    # Business details
+    BUSINESS_NAME = 'PrintCraft 3D'
+    BUSINESS_EMAIL = os.environ.get('BUSINESS_EMAIL', 'info@printcraft3d.com')
+    WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '+919876543210')
+    BUSINESS_ADDRESS = 'Pune, Maharashtra, India'
+
+    # Admin credentials
     ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
-    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'print3d@2026')
+    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 
-    # ─── Email Settings ─────────────────────────────────────────
-    # For Gmail: Enable "App Passwords" in your Google Account security
-    # Then generate an app password and use it here
+    # Payment gateway - Razorpay
+    RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
+    RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '')
+
+    # Email configuration
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
     MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', '')  # your-email@gmail.com
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '')  # app password from Google
-    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', '')
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', True)
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', '')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'noreply@printcraft3d.com')
 
-    # ─── Business Details ───────────────────────────────────────
-    BUSINESS_NAME = 'PrintCraft 3D'
-    BUSINESS_TAGLINE = 'Premium 3D Printed Products'
-    BUSINESS_EMAIL = os.environ.get('BUSINESS_EMAIL', 'rahuljokare7470@gmail.com')
-    BUSINESS_PHONE = os.environ.get('BUSINESS_PHONE', '+91 9890304065')
-    BUSINESS_ADDRESS = 'Solapur, Maharashtra, India'
-
-    # WhatsApp number WITHOUT the + sign (e.g., 919876543210)
-    WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '919890304065')
-
-    # Google Maps embed coordinates for Pune
-    GOOGLE_MAPS_LAT = '17.659920'
-    GOOGLE_MAPS_LNG = '75.906387'
-
-    # ─── Pricing ────────────────────────────────────────────────
+    # Order and delivery settings
+    FREE_DELIVERY_ABOVE = 999
+    DELIVERY_CHARGE = 49
+    MIN_ORDER_AMOUNT = 199
     CURRENCY_SYMBOL = '₹'
-    MIN_ORDER_AMOUNT = 199  # Minimum order in INR
-    FREE_DELIVERY_ABOVE = 999  # Free delivery above this amount
-    DELIVERY_CHARGE = 49  # Delivery charge in INR
+
+    # File upload settings
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+
+    # Image compression settings
+    MAX_IMAGE_SIZE_KB = 150
+    MAX_IMAGE_WIDTH = 1200
+    IMAGE_QUALITY = 85
+
+    # Compression settings
+    COMPRESS_GZIP = True
+    COMPRESS_LEVEL = 6
+    COMPRESS_MIN_SIZE = 500
+
+    # Session configuration with security settings
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    PERMANENT_SESSION_LIFETIME = 24 * 60 * 60  # 24 hours
+
+    # Rate limiting configuration
+    RATELIMIT_STORAGE_URL = os.environ.get('CACHE_REDIS_URL', 'memory://')
+    RATELIMIT_DEFAULT = '200 per day, 50 per hour'
+
+    # Pagination
+    ITEMS_PER_PAGE = 12
+
+    # Security headers
+    SECURITY_HEADERS = {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'SAMEORIGIN',
+        'X-XSS-Protection': '1; mode=block',
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+    }
+
+
+class DevelopmentConfig(Config):
+    """Development configuration"""
+    DEBUG = True
+    TESTING = False
+    SESSION_COOKIE_SECURE = False
+
+
+class ProductionConfig(Config):
+    """Production configuration"""
+    DEBUG = False
+    TESTING = False
+    SESSION_COOKIE_SECURE = True
+
+
+class TestingConfig(Config):
+    """Testing configuration"""
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    WTF_CSRF_ENABLED = False
+
+
+# Configuration selector based on environment
+config = {
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+    'testing': TestingConfig,
+    'default': DevelopmentConfig
+}
+
+def get_config(env=None):
+    """Get config based on environment"""
+    if env is None:
+        env = os.environ.get('FLASK_ENV', 'development')
+    return config.get(env, config['default'])

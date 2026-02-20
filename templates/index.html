@@ -1,473 +1,375 @@
 {% extends "base.html" %}
 
-{% block title %}Home - {{ config.BUSINESS_NAME }} - {{ config.BUSINESS_TAGLINE }}{% endblock %}
-
-{% block og_title %}{{ config.BUSINESS_NAME }} - {{ config.BUSINESS_TAGLINE }}{% endblock %}
+{% block title %}Home - {{ config.BUSINESS_NAME }}{% endblock %}
 
 {% block content %}
-    <!-- Hero Section -->
-    <section class="hero-section text-white py-5 position-relative overflow-hidden">
-        <div class="hero-bg"></div>
-        <div class="container position-relative z-2">
-            <div class="row align-items-center min-vh-75">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <h1 class="display-3 fw-bold mb-3">
-                        Premium 3D<br>Printed Products
-                    </h1>
-                    <p class="lead mb-4 text-light">
-                        Discover custom 3D printed designs crafted with precision in {{ config.BUSINESS_ADDRESS }}.
-                        From prototypes to finished products, we bring your ideas to life with cutting-edge 3D printing technology.
-                    </p>
-                    <div class="d-flex gap-3 flex-wrap">
-                        <a href="{{ url_for('products') }}" class="btn btn-success btn-lg">
-                            <i class="fas fa-shopping-bag me-2"></i> Shop Now
-                        </a>
-                        <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg">
-                            <i class="fas fa-pencil-alt me-2"></i> Custom Order
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-6 text-center">
-                    <div class="hero-illustration">
-                        <i class="fas fa-cube fa-10x text-success opacity-75"></i>
-                    </div>
+<!-- Hero Section -->
+<section class="hero-section bg-gradient py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-white mb-3">Premium 3D Printed Products</h1>
+                <p class="lead text-white-50 mb-4">Discover custom-designed, high-quality 3D printed items crafted with precision and care.</p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('products') }}" class="btn btn-success btn-lg">Shop Now</a>
+                    <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg">Custom Order</a>
                 </div>
             </div>
-
-            <!-- Stats Bar -->
-            <div class="row mt-5 pt-5 border-top border-secondary">
-                <div class="col-md-4 text-center mb-3 mb-md-0">
-                    <h3 class="fw-bold text-success">
-                        {{ config.get('PRODUCT_COUNT', '500+') }}
-                    </h3>
-                    <p class="text-muted">
-                        <i class="fas fa-box me-2"></i> Products Available
-                    </p>
-                </div>
-                <div class="col-md-4 text-center mb-3 mb-md-0">
-                    <h3 class="fw-bold text-success">
-                        {{ config.get('CUSTOMER_COUNT', '1000+') }}
-                    </h3>
-                    <p class="text-muted">
-                        <i class="fas fa-smile me-2"></i> Happy Customers
-                    </p>
-                </div>
-                <div class="col-md-4 text-center">
-                    <h3 class="fw-bold text-success">
-                        <i class="fas fa-heart text-danger me-2"></i>Made in {{ config.BUSINESS_ADDRESS.split(',')[0] }}
-                    </h3>
-                    <p class="text-muted">
-                        Proudly serving across India
-                    </p>
-                </div>
+            <div class="col-lg-6 text-center">
+                <img src="{{ url_for('static', filename='images/hero-3d-icon.svg') }}" alt="3D Printing" class="img-fluid" style="max-width: 400px;">
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Featured Products Section -->
-    <section class="featured-products py-5">
-        <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-5 fw-bold mb-2">Featured Products</h2>
-                <p class="text-muted lead">
-                    Hand-picked premium 3D printed products ready for immediate delivery
-                </p>
+<!-- Stats Bar -->
+<section class="stats-bar bg-dark text-white py-4">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h3 class="display-6 fw-bold">{{ products_count|default(0, true) }}+</h3>
+                <p class="text-muted mb-0">Products in Stock</p>
             </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h3 class="display-6 fw-bold">{{ happy_customers|default(0, true) }}+</h3>
+                <p class="text-muted mb-0">Happy Customers</p>
+            </div>
+            <div class="col-md-4">
+                <h3 class="display-6 fw-bold">📍</h3>
+                <p class="text-muted mb-0">Made in Pune, India</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-            {% if featured_products %}
-                <div class="row g-4">
-                    {% for product in featured_products %}
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="card product-card h-100 shadow-sm hover-shadow transition-all" data-product-id="{{ product.id }}">
-                                <!-- Product Image -->
-                                <div class="product-image-wrapper position-relative overflow-hidden">
-                                    {% if product.image_url %}
-                                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="card-img-top product-image">
-                                    {% else %}
-                                        <div class="product-placeholder bg-light d-flex align-items-center justify-content-center">
-                                            <i class="fas fa-cube fa-5x text-secondary opacity-50"></i>
-                                        </div>
-                                    {% endif %}
-
-                                    <!-- Discount Badge -->
-                                    {% if product.original_price and product.original_price > product.price %}
-                                        {% set discount_percentage = ((product.original_price - product.price) / product.original_price * 100)|int %}
-                                        <div class="badge bg-danger position-absolute top-0 end-0 m-2 discount-badge">
-                                            -{{ discount_percentage }}%
-                                        </div>
-                                    {% endif %}
-
-                                    <!-- Quick Order Button (WhatsApp) -->
-                                    <div class="position-absolute bottom-0 start-0 w-100 p-2 d-none d-md-block quick-order-overlay">
-                                        {% if config.get('WHATSAPP_NUMBER') %}
-                                            <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}?text=I'm%20interested%20in%20{{ product.name|urlencode }}"
-                                               class="btn btn-success btn-sm w-100" target="_blank" rel="noopener noreferrer">
-                                                <i class="fab fa-whatsapp me-1"></i> WhatsApp
-                                            </a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-
-                                <!-- Product Details -->
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title fw-bold mb-2">{{ product.name }}</h5>
-
-                                    <p class="card-text text-muted small mb-3 flex-grow-1">
-                                        {{ product.short_desc or product.description|truncate(80) }}
-                                    </p>
-
-                                    <!-- Price Section -->
-                                    <div class="price-section mb-3">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="h5 fw-bold text-success mb-0">₹{{ "%.2f"|format(product.price) }}</span>
-                                            {% if product.original_price and product.original_price > product.price %}
-                                                <span class="text-muted text-decoration-line-through small">
-                                                    ₹{{ "%.2f"|format(product.original_price) }}
-                                                </span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-
-                                    <!-- Add to Cart Form -->
-                                    <form method="POST" action="{{ url_for('cart_add') }}" class="add-to-cart-form">
-                                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn btn-outline-success w-100 add-to-cart-btn">
-                                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                                        </button>
-                                    </form>
-
-                                    <!-- Product Detail Link -->
-                                    <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn btn-link btn-sm text-decoration-none mt-2 text-center">
-                                        View Details <i class="fas fa-arrow-right ms-1"></i>
-                                    </a>
-                                </div>
+<!-- Featured Products Section -->
+<section class="featured-products py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-2">Featured Products</h2>
+            <p class="text-muted">Hand-picked selection of our best-selling items</p>
+        </div>
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card h-100 product-card shadow-sm hover-shadow transition">
+                    <!-- Product Image -->
+                    <div class="product-image-wrapper position-relative overflow-hidden bg-white" style="height: 250px;">
+                        {% if product.image_main %}
+                            <img src="{{ url_for('static', filename='uploads/' + product.image_main) }}"
+                                 alt="{{ product.name }}"
+                                 class="card-img-top h-100 object-fit-cover"
+                                 loading="lazy">
+                        {% else %}
+                            <div class="bg-secondary d-flex align-items-center justify-content-center h-100">
+                                <span class="text-white">No Image</span>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                        {% endif %}
 
-                <!-- View All Products Link -->
-                <div class="text-center mt-5">
-                    <a href="{{ url_for('products') }}" class="btn btn-lg btn-outline-success">
-                        View All Products <i class="fas fa-arrow-right ms-2"></i>
-                    </a>
+                        <!-- Category Badge -->
+                        <span class="position-absolute top-0 start-0 badge bg-primary m-2">{{ product.category }}</span>
+
+                        <!-- Discount Badge -->
+                        {% if product.original_price and product.original_price > product.price %}
+                            {% set discount_percent = ((product.original_price - product.price) / product.original_price * 100)|int %}
+                            <span class="position-absolute top-0 end-0 badge bg-danger m-2">-{{ discount_percent }}%</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate">{{ product.name }}</h5>
+
+                        <!-- Price Display -->
+                        <div class="mb-3">
+                            {% if product.original_price and product.original_price > product.price %}
+                                <span class="text-decoration-line-through text-muted small">₹{{ product.original_price }}</span>
+                                <br>
+                                <span class="fw-bold text-danger display-6">₹{{ product.price }}</span>
+                            {% else %}
+                                <span class="fw-bold text-success display-6">₹{{ product.price }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Stock Status & Buttons -->
+                        <div class="mt-auto">
+                            {% if product.stock_status == 'in_stock' %}
+                                <form action="{{ url_for('cart_add') }}" method="POST" class="mb-2">
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <button type="submit" class="btn btn-success btn-sm w-100">Add to Cart</button>
+                                </form>
+                            {% else %}
+                                <button class="btn btn-secondary btn-sm w-100" disabled>Out of Stock</button>
+                            {% endif %}
+                            <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn btn-outline-primary btn-sm w-100">View Details</a>
+                        </div>
+                    </div>
                 </div>
-            {% else %}
-                <div class="alert alert-info text-center" role="alert">
-                    <i class="fas fa-info-circle me-2"></i>
-                    No featured products available at the moment.
-                </div>
-            {% endif %}
+            </div>
+            {% endfor %}
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Category Showcase Section -->
-    <section class="category-showcase py-5 bg-light">
-        <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-5 fw-bold mb-2">Shop by Category</h2>
-                <p class="text-muted lead">
-                    Explore our wide range of 3D printed products
-                </p>
-            </div>
-
-            {% if categories %}
-                <div class="row g-4">
-                    {% for category in categories %}
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <a href="{{ url_for('products', category=category.slug) }}" class="text-decoration-none">
-                                <div class="category-card h-100 bg-white rounded-3 p-4 shadow-sm hover-shadow transition-all text-center">
-                                    <div class="category-icon mb-3">
-                                        <i class="fas fa-layer-group fa-3x text-success"></i>
-                                    </div>
-                                    <h5 class="fw-bold mb-2 text-dark">{{ category.name }}</h5>
-                                    {% if category.description %}
-                                        <p class="text-muted small mb-0">{{ category.description|truncate(60) }}</p>
-                                    {% endif %}
-                                    <div class="mt-3">
-                                        <span class="text-success small fw-bold">
-                                            Explore <i class="fas fa-arrow-right ms-1"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+<!-- All Products Section -->
+<section class="all-products py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-2">All Products</h2>
+            <p class="text-muted">Browse our complete collection</p>
         </div>
-    </section>
 
-    <!-- Why Choose Us Section -->
-    <section class="why-choose-us py-5">
-        <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-5 fw-bold mb-2">Why Choose {{ config.BUSINESS_NAME }}?</h2>
-                <p class="text-muted lead">
-                    We deliver quality, reliability, and innovation
-                </p>
-            </div>
-
-            <div class="row g-4">
-                <!-- Feature 1: Custom Designs -->
-                <div class="col-lg-3 col-md-6 col-sm-12">
-                    <div class="feature-card text-center h-100 p-4">
-                        <div class="feature-icon mb-3">
-                            <i class="fas fa-pencil-ruler fa-3x text-success"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">Custom Designs</h5>
-                        <p class="text-muted">
-                            Bring your unique ideas to life with our professional custom 3D design and printing services.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Feature 2: Quality Materials -->
-                <div class="col-lg-3 col-md-6 col-sm-12">
-                    <div class="feature-card text-center h-100 p-4">
-                        <div class="feature-icon mb-3">
-                            <i class="fas fa-gem fa-3x text-success"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">Quality Materials</h5>
-                        <p class="text-muted">
-                            We use premium materials and latest 3D printing technology to ensure superior product quality.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Feature 3: Fast Delivery -->
-                <div class="col-lg-3 col-md-6 col-sm-12">
-                    <div class="feature-card text-center h-100 p-4">
-                        <div class="feature-icon mb-3">
-                            <i class="fas fa-rocket fa-3x text-success"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">Fast Delivery</h5>
-                        <p class="text-muted">
-                            Quick turnaround times with reliable shipping across India. Track your order in real-time.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Feature 4: Affordable Prices -->
-                <div class="col-lg-3 col-md-6 col-sm-12">
-                    <div class="feature-card text-center h-100 p-4">
-                        <div class="feature-icon mb-3">
-                            <i class="fas fa-tag fa-3x text-success"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">Affordable Prices</h5>
-                        <p class="text-muted">
-                            Competitive pricing without compromising quality. Get the best value for your money.
-                        </p>
-                    </div>
-                </div>
-            </div>
+        <!-- Category Filter Buttons -->
+        <div class="filter-buttons mb-4 text-center">
+            <button class="btn btn-outline-primary me-2 mb-2 category-filter active" onclick="filterProducts('all')" data-filter="all">All</button>
+            {% for category in categories %}
+                <button class="btn btn-outline-primary me-2 mb-2 category-filter" onclick="filterProducts('{{ category }}')" data-filter="{{ category }}">{{ category|capitalize }}</button>
+            {% endfor %}
         </div>
-    </section>
 
-    <!-- All Products Section -->
-    <section class="all-products py-5 bg-light">
-        <div class="container">
-            <div class="section-header text-center mb-5">
-                <h2 class="display-5 fw-bold mb-2">All Products</h2>
-                <p class="text-muted lead">
-                    Browse our complete collection — filter by category if you'd like
-                </p>
-            </div>
-
-            <!-- Category Filter Buttons -->
-            <div class="text-center mb-4">
-                <button class="btn btn-success btn-sm m-1 active" onclick="filterProducts('all', this)">
-                    <i class="fas fa-th me-1"></i> All
-                </button>
-                {% for category in categories %}
-                <button class="btn btn-outline-success btn-sm m-1" onclick="filterProducts('{{ category.slug }}', this)">
-                    {{ category.name }}
-                </button>
-                {% endfor %}
-            </div>
-
-            {% if all_products %}
-                <div class="row g-4" id="all-products-grid">
-                    {% for product in all_products %}
-                        <div class="col-6 col-md-4 col-lg-3 product-filter-item" data-category="{{ product.category.slug if product.category else '' }}">
-                            <div class="card product-card h-100 shadow-sm hover-shadow transition-all" data-product-id="{{ product.id }}">
-                                <!-- Product Image -->
-                                <div class="product-image-wrapper position-relative overflow-hidden">
-                                    {% if product.image_main %}
-                                        <img src="{{ url_for('static', filename='uploads/' + product.image_main) }}" alt="{{ product.name }}" class="card-img-top product-image" style="height: 220px; object-fit: cover;">
-                                    {% elif product.image_url %}
-                                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="card-img-top product-image" style="height: 220px; object-fit: cover;">
-                                    {% else %}
-                                        <div class="product-placeholder bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
-                                            <i class="fas fa-cube fa-3x text-secondary opacity-50"></i>
-                                        </div>
-                                    {% endif %}
-
-                                    <!-- Discount Badge -->
-                                    {% if product.original_price and product.original_price > product.price %}
-                                        {% set discount_percentage = ((product.original_price - product.price) / product.original_price * 100)|int %}
-                                        <div class="badge bg-danger position-absolute top-0 end-0 m-2">
-                                            -{{ discount_percentage }}%
-                                        </div>
-                                    {% endif %}
-
-                                    <!-- Category Badge -->
-                                    <div class="badge bg-info position-absolute top-0 start-0 m-2">
-                                        {{ product.category.name if product.category else 'Uncategorized' }}
-                                    </div>
-                                </div>
-
-                                <!-- Product Details -->
-                                <div class="card-body d-flex flex-column">
-                                    <h6 class="card-title fw-bold mb-2">{{ product.name }}</h6>
-
-                                    <p class="card-text text-muted small mb-3 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                        {{ product.short_desc or product.description|truncate(80) }}
-                                    </p>
-
-                                    <!-- Price Section -->
-                                    <div class="price-section mb-3">
-                                        <div class="d-flex align-items-center gap-2">
-                                            {% if product.original_price and product.original_price > product.price %}
-                                                <span class="text-decoration-line-through text-muted small">₹{{ product.original_price }}</span>
-                                                <span class="h6 fw-bold text-danger mb-0">₹{{ product.price }}</span>
-                                            {% else %}
-                                                <span class="h6 fw-bold text-success mb-0">₹{{ product.price }}</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-
-                                    <!-- Buttons -->
-                                    <div class="d-grid gap-1 mt-auto">
-                                        <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn btn-outline-success btn-sm">
-                                            View Details
-                                        </a>
-                                        {% if product.stock_status == 'in_stock' %}
-                                        <form method="POST" action="{{ url_for('cart_add') }}" class="add-to-cart-form">
-                                            <input type="hidden" name="product_id" value="{{ product.id }}">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="btn btn-success btn-sm w-100 add-to-cart-btn">
-                                                <i class="fas fa-cart-plus me-1"></i> Add to Cart
-                                            </button>
-                                        </form>
-                                        {% else %}
-                                        <button class="btn btn-secondary btn-sm" disabled>Out of Stock</button>
-                                        {% endif %}
-                                    </div>
-                                </div>
+        <!-- Products Grid -->
+        <div class="row g-4" id="productsGrid">
+            {% for product in all_products %}
+            <div class="col-6 col-md-4 col-lg-3 product-item" data-category="{{ product.category }}">
+                <div class="card h-100 product-card shadow-sm hover-shadow transition">
+                    <!-- Product Image -->
+                    <div class="product-image-wrapper position-relative overflow-hidden bg-white" style="height: 250px;">
+                        {% if product.image_main %}
+                            <img src="{{ url_for('static', filename='uploads/' + product.image_main) }}"
+                                 alt="{{ product.name }}"
+                                 class="card-img-top h-100 object-fit-cover"
+                                 loading="lazy">
+                        {% else %}
+                            <div class="bg-secondary d-flex align-items-center justify-content-center h-100">
+                                <span class="text-white">No Image</span>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="text-center py-5">
-                    <i class="fas fa-box-open fa-3x text-muted mb-3 d-block"></i>
-                    <h5>No products available yet</h5>
-                    <p class="text-muted">Check back soon for amazing 3D printed products!</p>
-                </div>
-            {% endif %}
+                        {% endif %}
 
-            <div class="text-center mt-5">
-                <a href="{{ url_for('products') }}" class="btn btn-lg btn-success">
-                    Browse All with Filters <i class="fas fa-arrow-right ms-2"></i>
+                        <!-- Category Badge -->
+                        <span class="position-absolute top-0 start-0 badge bg-primary m-2">{{ product.category }}</span>
+
+                        <!-- Discount Badge -->
+                        {% if product.original_price and product.original_price > product.price %}
+                            {% set discount_percent = ((product.original_price - product.price) / product.original_price * 100)|int %}
+                            <span class="position-absolute top-0 end-0 badge bg-danger m-2">-{{ discount_percent }}%</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate">{{ product.name }}</h5>
+
+                        <!-- Price Display -->
+                        <div class="mb-3">
+                            {% if product.original_price and product.original_price > product.price %}
+                                <span class="text-decoration-line-through text-muted small">₹{{ product.original_price }}</span>
+                                <br>
+                                <span class="fw-bold text-danger display-6">₹{{ product.price }}</span>
+                            {% else %}
+                                <span class="fw-bold text-success display-6">₹{{ product.price }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Stock Status & Buttons -->
+                        <div class="mt-auto">
+                            {% if product.stock_status == 'in_stock' %}
+                                <form action="{{ url_for('cart_add') }}" method="POST" class="mb-2">
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <button type="submit" class="btn btn-success btn-sm w-100">Add to Cart</button>
+                                </form>
+                            {% else %}
+                                <button class="btn btn-secondary btn-sm w-100" disabled>Out of Stock</button>
+                            {% endif %}
+                            <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn btn-outline-primary btn-sm w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Category Showcase Section -->
+<section class="category-showcase py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-2">Shop by Category</h2>
+            <p class="text-muted">Explore our diverse product categories</p>
+        </div>
+        <div class="row g-4">
+            {% set category_icons = {
+                'figurines': '🎨',
+                'miniatures': '🏰',
+                'home-decor': '🏠',
+                'accessories': '✨',
+                'toys': '🎮',
+                'jewelry': '💍',
+                'mechanical': '⚙️',
+                'other': '📦'
+            } %}
+
+            {% for category in categories %}
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ url_for('products') }}?category={{ category }}" class="text-decoration-none">
+                    <div class="category-card p-4 bg-white rounded-3 shadow-sm text-center hover-shadow transition">
+                        <div class="display-4 mb-3">{{ category_icons.get(category, '📦') }}</div>
+                        <h4 class="mb-2">{{ category|capitalize }}</h4>
+                        <p class="text-muted small mb-0">Explore products</p>
+                    </div>
                 </a>
             </div>
+            {% endfor %}
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Newsletter/CTA Section -->
-    <section class="newsletter-cta py-5 position-relative overflow-hidden">
-        <div class="cta-bg"></div>
-        <div class="container position-relative z-2">
-            <div class="row justify-content-center">
-                <div class="col-lg-8 text-center text-white">
-                    <h2 class="display-4 fw-bold mb-3">
-                        Ready to Bring Your Ideas to Life?
-                    </h2>
-                    <p class="lead mb-4">
-                        Get exclusive offers, updates on new products, and special discounts by subscribing to our newsletter.
-                    </p>
-
-                    <form method="POST" action="{{ url_for('contact') }}" class="row g-2 justify-content-center">
-                        <input type="hidden" name="subject" value="Newsletter Subscription">
-                        <input type="hidden" name="name" value="Newsletter Subscriber">
-                        <input type="hidden" name="message" value="Please add me to your newsletter mailing list.">
-                        <div class="col-md-6">
-                            <input type="email" name="email" class="form-control form-control-lg" placeholder="Enter your email" required>
-                        </div>
-                        <div class="col-md-auto">
-                            <button type="submit" class="btn btn-success btn-lg w-100 w-md-auto">
-                                <i class="fas fa-paper-plane me-2"></i> Subscribe
-                            </button>
-                        </div>
-                    </form>
-
-                    <p class="text-light small mt-3 opacity-75">
-                        <i class="fas fa-lock me-1"></i> We never spam. Unsubscribe anytime.
-                    </p>
-
-                    <!-- Direct Contact CTA -->
-                    <div class="mt-5 pt-4 border-top border-light">
-                        <p class="mb-3">
-                            <strong>Have a custom project in mind?</strong>
-                        </p>
-                        <div class="d-flex gap-2 justify-content-center flex-wrap">
-                            <a href="tel:{{ config.get('PHONE_NUMBER', '') }}" class="btn btn-outline-light btn-lg"
-                               {% if not config.get('PHONE_NUMBER') %}disabled{% endif %}>
-                                <i class="fas fa-phone me-2"></i> Call Us
-                            </a>
-                            <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg">
-                                <i class="fas fa-envelope me-2"></i> Get in Touch
-                            </a>
-                        </div>
-                    </div>
+<!-- Why Choose Us Section -->
+<section class="why-choose-us py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-2">Why Choose Us</h2>
+            <p class="text-muted">What makes us different</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center p-4">
+                    <div class="display-4 mb-3" style="color: #667eea;">🎨</div>
+                    <h5 class="mb-2">Custom Designs</h5>
+                    <p class="text-muted small">Bring your ideas to life with our custom design services. We work with you to create unique products.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center p-4">
+                    <div class="display-4 mb-3" style="color: #764ba2;">⭐</div>
+                    <h5 class="mb-2">Quality Materials</h5>
+                    <p class="text-muted small">We use premium-grade materials to ensure durability and excellent finish on every product.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center p-4">
+                    <div class="display-4 mb-3" style="color: #198754;">⚡</div>
+                    <h5 class="mb-2">Fast Delivery</h5>
+                    <p class="text-muted small">Quick turnaround time without compromising on quality. Get your orders delivered on time.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center p-4">
+                    <div class="display-4 mb-3" style="color: #ffc107;">💰</div>
+                    <h5 class="mb-2">Affordable Prices</h5>
+                    <p class="text-muted small">Premium quality at competitive prices. We believe great products should be accessible to everyone.</p>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<!-- Newsletter CTA Section -->
+<section class="newsletter-cta py-5 bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center text-white">
+                <h2 class="display-5 fw-bold mb-3">Stay Updated</h2>
+                <p class="lead mb-4">Subscribe to our newsletter for exclusive offers, new product launches, and design inspiration.</p>
+                <form class="d-flex gap-2" method="POST" action="{{ url_for('contact') }}">
+                    <input type="email" class="form-control form-control-lg" placeholder="Enter your email" required>
+                    <button type="submit" class="btn btn-light btn-lg fw-bold">Subscribe</button>
+                </form>
+                <small class="text-white-50 d-block mt-3">We respect your privacy. Unsubscribe anytime.</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Business Info Section -->
+<section class="business-info py-4 bg-light border-top">
+    <div class="container text-center text-muted small">
+        <p class="mb-2"><strong>{{ config.BUSINESS_NAME }}</strong></p>
+        <p class="mb-2">📍 {{ config.BUSINESS_ADDRESS }}</p>
+        <p class="mb-0">📱 <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" class="text-decoration-none text-muted">WhatsApp: {{ config.WHATSAPP_NUMBER }}</a></p>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hover-shadow {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .hover-shadow:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .product-card {
+        border: none;
+    }
+
+    .product-image-wrapper {
+        overflow: hidden;
+    }
+
+    .object-fit-cover {
+        object-fit: cover;
+    }
+
+    .transition {
+        transition: all 0.3s ease;
+    }
+
+    .category-filter.active {
+        background-color: #667eea;
+        color: white;
+        border-color: #667eea !important;
+    }
+
+    .feature-card {
+        border-radius: 15px;
+        border: 1px solid #e9ecef;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-section {
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+    }
+
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .stats-bar {
+        position: relative;
+        top: -50px;
+        z-index: 1;
+        margin-bottom: -50px;
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}
-    <script>
-        // Category filter for All Products section
-        function filterProducts(category, clickedBtn) {
-            const cards = document.querySelectorAll('.product-filter-item');
-            const buttons = document.querySelectorAll('[onclick^="filterProducts"]');
-
-            // Update active button
-            buttons.forEach(btn => {
-                btn.classList.remove('active', 'btn-success');
-                btn.classList.add('btn-outline-success');
-            });
-            clickedBtn.classList.remove('btn-outline-success');
-            clickedBtn.classList.add('active', 'btn-success');
-
-            // Filter products with animation
-            cards.forEach(card => {
-                if (category === 'all' || card.dataset.category === category) {
-                    card.style.display = 'block';
-                    card.style.opacity = '0';
-                    setTimeout(() => { card.style.opacity = '1'; }, 50);
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
-        // Add to cart button handler with loading state
-        document.querySelectorAll('.add-to-cart-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                const button = form.querySelector('.add-to-cart-btn');
-                const originalText = button.innerHTML;
-                button.disabled = true;
-                button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Adding...';
-
-                setTimeout(() => {
-                    button.disabled = false;
-                    button.innerHTML = originalText;
-                }, 2000);
-            });
+<script>
+    function filterProducts(category) {
+        // Update active button
+        document.querySelectorAll('.category-filter').forEach(btn => {
+            btn.classList.remove('active');
         });
-    </script>
+        event.target.classList.add('active');
+
+        // Filter products
+        const products = document.querySelectorAll('.product-item');
+        products.forEach(product => {
+            if (category === 'all' || product.getAttribute('data-category') === category) {
+                product.style.display = '';
+            } else {
+                product.style.display = 'none';
+            }
+        });
+    }
+</script>
 {% endblock %}

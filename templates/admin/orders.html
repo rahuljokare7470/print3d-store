@@ -1,185 +1,242 @@
 {% extends "base.html" %}
 
-{% block title %}Orders - {{ config.BUSINESS_NAME }} Admin{% endblock %}
+{% block title %}Orders - Admin Panel - {{ config.BUSINESS_NAME }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-  <div class="row">
-    <!-- Sidebar Navigation -->
-    <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar py-3" style="min-height: calc(100vh - 76px);">
-      <div class="sidebar-sticky px-3">
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-          <span>Admin Menu</span>
-        </h6>
-
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">
-              <i class="fas fa-home me-2"></i>Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin_products') }}">
-              <i class="fas fa-cube me-2"></i>Products
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin_categories') }}">
-              <i class="fas fa-tags me-2"></i>Categories
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white active" href="{{ url_for('admin_orders') }}">
-              <i class="fas fa-shopping-bag me-2"></i>Orders
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin_inquiries') }}">
-              <i class="fas fa-envelope me-2"></i>Inquiries
-            </a>
-          </li>
-          <li class="nav-item">
-            <hr class="bg-secondary">
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('home') }}" target="_blank">
-              <i class="fas fa-globe me-2"></i>View Site
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin_logout') }}">
-              <i class="fas fa-sign-out-alt me-2"></i>Logout
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-      <!-- Page Header -->
-      <div class="mb-4">
-        <h1 class="h2">
-          <i class="fas fa-shopping-bag me-2"></i>Orders
-        </h1>
-      </div>
-
-      <!-- Status Filter Tabs -->
-      <div class="mb-4">
-        <ul class="nav nav-tabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <a class="nav-link {% if current_status == 'all' or current_status is none %}active{% endif %}" href="{{ url_for('admin_orders', status='all') }}" role="tab">
-              <i class="fas fa-list me-2"></i>All Orders
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link {% if current_status == 'pending' %}active{% endif %}" href="{{ url_for('admin_orders', status='pending') }}" role="tab">
-              <i class="fas fa-clock me-2"></i>Pending
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link {% if current_status == 'confirmed' %}active{% endif %}" href="{{ url_for('admin_orders', status='confirmed') }}" role="tab">
-              <i class="fas fa-check-circle me-2"></i>Confirmed
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link {% if current_status == 'processing' %}active{% endif %}" href="{{ url_for('admin_orders', status='processing') }}" role="tab">
-              <i class="fas fa-cog me-2"></i>Processing
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link {% if current_status == 'shipped' %}active{% endif %}" href="{{ url_for('admin_orders', status='shipped') }}" role="tab">
-              <i class="fas fa-truck me-2"></i>Shipped
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link {% if current_status == 'delivered' %}active{% endif %}" href="{{ url_for('admin_orders', status='delivered') }}" role="tab">
-              <i class="fas fa-box-open me-2"></i>Delivered
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link {% if current_status == 'cancelled' %}active{% endif %}" href="{{ url_for('admin_orders', status='cancelled') }}" role="tab">
-              <i class="fas fa-ban me-2"></i>Cancelled
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Orders Table -->
-      <div class="card">
-        <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>Order #</th>
-                <th>Customer Name</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Payment</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th style="width: 100px;">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% if orders %}
-                {% for order in orders %}
-                <tr>
-                  <td>
-                    <strong>#{{ order.order_number }}</strong>
-                  </td>
-                  <td>{{ order.customer_name }}</td>
-                  <td>
-                    <span class="badge bg-secondary">{{ order.items|length }}</span>
-                  </td>
-                  <td>₹{{ "{:,.2f}".format(order.total) }}</td>
-                  <td>
-                    {% if order.payment_method == 'card' %}
-                      <span class="badge bg-info">Credit Card</span>
-                    {% elif order.payment_method == 'upi' %}
-                      <span class="badge bg-info">UPI</span>
-                    {% elif order.payment_method == 'cod' %}
-                      <span class="badge bg-warning text-dark">Cash on Delivery</span>
-                    {% else %}
-                      <span class="badge bg-secondary">{{ order.payment_method }}</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if order.status == 'pending' %}
-                      <span class="badge bg-warning text-dark">Pending</span>
-                    {% elif order.status == 'confirmed' %}
-                      <span class="badge bg-info">Confirmed</span>
-                    {% elif order.status == 'processing' %}
-                      <span class="badge bg-primary">Processing</span>
-                    {% elif order.status == 'shipped' %}
-                      <span class="badge" style="background-color: #9b59b6;">Shipped</span>
-                    {% elif order.status == 'delivered' %}
-                      <span class="badge bg-success">Delivered</span>
-                    {% elif order.status == 'cancelled' %}
-                      <span class="badge bg-danger">Cancelled</span>
-                    {% endif %}
-                  </td>
-                  <td>{{ order.created_at.strftime('%d %b %Y') }}</td>
-                  <td>
-                    <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-primary">
-                      <i class="fas fa-eye"></i>
-                    </a>
-                  </td>
-                </tr>
-                {% endfor %}
-              {% else %}
-              <tr>
-                <td colspan="8" class="text-center text-muted py-5">
-                  <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
-                  No orders found
-                </td>
-              </tr>
-              {% endif %}
-            </tbody>
-          </table>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1"><i class="fas fa-shopping-bag me-2"></i>Orders</h1>
+            <p class="text-muted mb-0">Manage customer orders and track shipments</p>
         </div>
-      </div>
-    </main>
-  </div>
+        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exportModal">
+            <i class="fas fa-download me-2"></i>Export
+        </button>
+    </div>
+
+    <!-- Filter Tabs -->
+    <ul class="nav nav-tabs mb-4 border-bottom-0" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if status_filter == 'all' %}active{% endif %}" href="?filter=all">
+                <i class="fas fa-list me-2"></i>All Orders
+                <span class="badge bg-secondary ms-2">{{ orders.total }}</span>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if status_filter == 'pending' %}active{% endif %}" href="?filter=pending">
+                <i class="fas fa-hourglass-start me-2"></i>Pending
+                <span class="badge bg-warning ms-2">0</span>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if status_filter == 'processing' %}active{% endif %}" href="?filter=processing">
+                <i class="fas fa-cogs me-2"></i>Processing
+                <span class="badge bg-info ms-2">0</span>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if status_filter == 'shipped' %}active{% endif %}" href="?filter=shipped">
+                <i class="fas fa-truck me-2"></i>Shipped
+                <span class="badge bg-primary ms-2">0</span>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if status_filter == 'delivered' %}active{% endif %}" href="?filter=delivered">
+                <i class="fas fa-check-circle me-2"></i>Delivered
+                <span class="badge bg-success ms-2">0</span>
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {% if status_filter == 'cancelled' %}active{% endif %}" href="?filter=cancelled">
+                <i class="fas fa-times-circle me-2"></i>Cancelled
+                <span class="badge bg-danger ms-2">0</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Date Range Filter -->
+    <div class="card card-light mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-500">From Date</label>
+                    <input type="date" class="form-control" name="from_date" value="{{ request.args.get('from_date', '') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-500">To Date</label>
+                    <input type="date" class="form-control" name="to_date" value="{{ request.args.get('to_date', '') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-500">Status</label>
+                    <select class="form-select" name="filter">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Statuses</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="processing" {% if status_filter == 'processing' %}selected{% endif %}>Processing</option>
+                        <option value="shipped" {% if status_filter == 'shipped' %}selected{% endif %}>Shipped</option>
+                        <option value="delivered" {% if status_filter == 'delivered' %}selected{% endif %}>Delivered</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">
+                        <i class="fas fa-search me-2"></i>Filter
+                    </button>
+                    <a href="?" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light border-top">
+                    <tr>
+                        <th class="ps-4">Order #</th>
+                        <th>Customer Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Date</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th class="pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if orders.items %}
+                        {% for order in orders.items %}
+                        <tr class="align-middle">
+                            <td class="ps-4 fw-bold"><a href="/admin/orders/{{ order.id }}" class="text-decoration-none">#{{ order.id }}</a></td>
+                            <td>{{ order.customer_name }}</td>
+                            <td>
+                                <a href="mailto:{{ order.customer_email }}" class="text-decoration-none">{{ order.customer_email }}</a>
+                            </td>
+                            <td>{{ order.customer_phone }}</td>
+                            <td>{{ order.created_at.strftime('%d %b %Y') if order.created_at else 'N/A' }}</td>
+                            <td>
+                                <span class="badge bg-light text-dark">{{ order.items|length if order.items else 0 }} items</span>
+                            </td>
+                            <td class="fw-bold">₹{{ "%.2f"|format(order.total_amount) }}</td>
+                            <td>
+                                <span class="badge {% if order.payment_method == 'razorpay' %}bg-primary{% elif order.payment_method == 'upi' %}bg-info{% else %}bg-secondary{% endif %}">
+                                    {{ order.payment_method|title if order.payment_method else 'Unknown' }}
+                                </span>
+                            </td>
+                            <td>
+                                {% set status_color = {
+                                    'pending': 'warning',
+                                    'processing': 'info',
+                                    'shipped': 'primary',
+                                    'delivered': 'success',
+                                    'cancelled': 'danger'
+                                } %}
+                                <span class="badge bg-{{ status_color.get(order.status, 'secondary') }}">
+                                    {{ order.status|title if order.status else 'Unknown' }}
+                                </span>
+                            </td>
+                            <td class="pe-4">
+                                <a href="/admin/orders/{{ order.id }}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="10" class="text-center py-5">
+                            <i class="fas fa-inbox text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-3">No orders found</p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if orders.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not orders.has_prev %}disabled{% endif %}">
+                <a class="page-link" href="?page=1&filter={{ status_filter }}">
+                    <i class="fas fa-chevron-double-left"></i>
+                </a>
+            </li>
+            <li class="page-item {% if not orders.has_prev %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ orders.prev_num }}&filter={{ status_filter }}">Previous</a>
+            </li>
+
+            {% for page_num in orders.iter_pages() %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == orders.page %}active{% endif %}">
+                        <a class="page-link" href="?page={{ page_num }}&filter={{ status_filter }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            <li class="page-item {% if not orders.has_next %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ orders.next_num }}&filter={{ status_filter }}">Next</a>
+            </li>
+            <li class="page-item {% if not orders.has_next %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ orders.pages }}&filter={{ status_filter }}">
+                    <i class="fas fa-chevron-double-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
 </div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Export Orders</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Choose the format to export orders:</p>
+                <div class="btn-group-vertical w-100" role="group">
+                    <a href="/admin/orders/export?format=csv&filter={{ status_filter }}" class="btn btn-outline-primary text-start py-3">
+                        <i class="fas fa-file-csv me-2"></i>
+                        <strong>CSV Format</strong>
+                        <small class="d-block text-muted">Compatible with Excel and spreadsheets</small>
+                    </a>
+                    <a href="/admin/orders/export?format=pdf&filter={{ status_filter }}" class="btn btn-outline-primary text-start py-3 mt-2">
+                        <i class="fas fa-file-pdf me-2"></i>
+                        <strong>PDF Report</strong>
+                        <small class="d-block text-muted">Formatted for printing</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .card-light {
+        background-color: #f8f9fa;
+    }
+
+    .fw-500 {
+        font-weight: 500;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
+</style>
 {% endblock %}

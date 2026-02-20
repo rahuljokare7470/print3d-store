@@ -1,162 +1,420 @@
 {% extends "base.html" %}
 
-{% block title %}Categories - {{ config.BUSINESS_NAME }} Admin{% endblock %}
-
 {% block content %}
-<div class="container-fluid">
-  <div class="row">
-    <!-- Sidebar Navigation -->
-    <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar py-3" style="min-height: calc(100vh - 76px);">
-      <div class="sidebar-sticky px-3">
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-          <span>Admin Menu</span>
-        </h6>
-
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">
-              <i class="fas fa-home me-2"></i>Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin_products') }}">
-              <i class="fas fa-cube me-2"></i>Products
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white active" href="{{ url_for('admin_categories') }}">
-              <i class="fas fa-tags me-2"></i>Categories
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin_orders') }}">
-              <i class="fas fa-shopping-bag me-2"></i>Orders
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin_inquiries') }}">
-              <i class="fas fa-envelope me-2"></i>Inquiries
-            </a>
-          </li>
-          <li class="nav-item">
-            <hr class="bg-secondary">
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('home') }}" target="_blank">
-              <i class="fas fa-globe me-2"></i>View Site
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="{{ url_for('admin_logout') }}">
-              <i class="fas fa-sign-out-alt me-2"></i>Logout
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-      <!-- Page Header -->
-      <div class="mb-4">
-        <h1 class="h2">
-          <i class="fas fa-tags me-2"></i>Categories
-        </h1>
-      </div>
-
-      <!-- Add New Category Card -->
-      <div class="card mb-4">
-        <div class="card-header bg-light">
-          <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Category</h5>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1 class="h3 fw-bold text-dark">Categories</h1>
+            <p class="text-muted">Organize your product categories</p>
         </div>
-        <div class="card-body">
-          <form method="POST" action="{{ url_for('admin_category_add') }}">
-            <div class="row align-items-end">
-              <div class="col-md-4">
-                <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="name" name="name" required placeholder="Category name">
-              </div>
-              <div class="col-md-4">
-                <label for="description" class="form-label">Description</label>
-                <input type="text" class="form-control" id="description" name="description" placeholder="Brief description">
-              </div>
-              <div class="col-md-2">
-                <label for="sort_order" class="form-label">Sort Order</label>
-                <input type="number" class="form-control" id="sort_order" name="sort_order" placeholder="0" value="0" min="0">
-              </div>
-              <div class="col-md-2">
-                <button type="submit" class="btn btn-success w-100">
-                  <i class="fas fa-plus me-1"></i>Add
-                </button>
-              </div>
-            </div>
-          </form>
+        <div class="col-md-6 text-end">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                <i class="fas fa-plus me-2"></i>Add Category
+            </button>
         </div>
-      </div>
+    </div>
 
-      <!-- Categories Table -->
-      <div class="card">
-        <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>Name</th>
-                <th>Slug</th>
-                <th>Description</th>
-                <th>Sort Order</th>
-                <th>Products</th>
-                <th style="width: 100px;">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% if categories %}
-                {% for category in categories %}
-                <tr>
-                  <td>
-                    <strong>{{ category.name }}</strong>
-                  </td>
-                  <td>
-                    <code class="bg-light px-2 py-1 rounded">{{ category.slug }}</code>
-                  </td>
-                  <td>{{ category.description if category.description else '-' }}</td>
-                  <td>{{ category.sort_order }}</td>
-                  <td>
-                    <span class="badge bg-primary">{{ category.products|length }}</span>
-                  </td>
-                  <td>
-                    {% if category.products|length == 0 %}
-                    <form action="{{ url_for('admin_category_delete', cat_id=category.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this category?');">
-                      <button type="submit" class="btn btn-sm btn-danger" title="Delete">
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </form>
-                    {% else %}
-                    <button type="button" class="btn btn-sm btn-secondary" disabled title="Cannot delete: has products">
-                      <i class="fas fa-lock"></i>
+    <!-- Categories Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            {% if categories %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 80px; font-weight: 600; font-size: 13px;">Image</th>
+                                <th style="font-weight: 600; font-size: 13px;">Name</th>
+                                <th style="font-weight: 600; font-size: 13px;">Slug</th>
+                                <th style="font-weight: 600; font-size: 13px;">Products</th>
+                                <th style="font-weight: 600; font-size: 13px;">Display Order</th>
+                                <th style="font-weight: 600; font-size: 13px;">Status</th>
+                                <th style="font-weight: 600; font-size: 13px; text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category in categories %}
+                            <tr>
+                                <td>
+                                    {% if category.image %}
+                                        <img src="{{ category.image }}" alt="{{ category.name }}" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; color: #999;">
+                                            <i class="fas fa-folder"></i>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <p class="mb-0 fw-500">{{ category.name }}</p>
+                                    {% if category.description %}
+                                        <small class="text-muted">{{ category.description[:50] }}{% if category.description|length > 50 %}...{% endif %}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <code style="background-color: #f5f5f5; padding: 4px 8px; border-radius: 4px; font-size: 12px;">{{ category.slug }}</code>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark">{{ category.products_count | default(0) }}</span>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm" value="{{ category.display_order | default(0) }}" style="width: 70px; border: 1px solid #e9ecef;" min="0">
+                                </td>
+                                <td>
+                                    {% if category.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: right;">
+                                    <div class="btn-group" role="group" style="font-size: 12px;">
+                                        <button type="button" class="btn btn-sm btn-outline-primary edit-btn" data-category-id="{{ category.id }}" data-bs-toggle="modal" data-bs-target="#editCategoryModal" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-category-id="{{ category.id }}" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No categories found</p>
+                    <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                        <i class="fas fa-plus me-2"></i>Create First Category
                     </button>
-                    {% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-              {% else %}
-              <tr>
-                <td colspan="6" class="text-center text-muted py-5">
-                  <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
-                  No categories yet. Create one above!
-                </td>
-              </tr>
-              {% endif %}
-            </tbody>
-          </table>
+                </div>
+            {% endif %}
         </div>
-      </div>
-
-      <!-- Info Alert -->
-      <div class="alert alert-info mt-4" role="alert">
-        <i class="fas fa-lightbulb me-2"></i>
-        <strong>Note:</strong> Categories with products cannot be deleted. Move or delete products first.
-      </div>
-    </main>
-  </div>
+    </div>
 </div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header border-bottom bg-light py-3">
+                <h5 class="modal-title fw-bold">Add New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addCategoryForm" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="addCategoryName" class="form-label fw-600">Category Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="addCategoryName" name="name" placeholder="E.g., Resin Printers" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="addCategorySlug" class="form-label fw-600">Slug <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="addCategorySlug" name="slug" placeholder="auto-generated" required>
+                        <small class="form-text text-muted">URL-friendly name (auto-generated)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="addCategoryDesc" class="form-label fw-600">Description</label>
+                        <textarea class="form-control" id="addCategoryDesc" name="description" rows="3" placeholder="Category description"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="addCategoryImage" class="form-label fw-600">Category Image</label>
+                        <input type="file" class="form-control" id="addCategoryImage" name="image" accept="image/*">
+                        <small class="form-text text-muted">JPG, PNG (Max 2MB)</small>
+                        <div id="addImagePreview" style="display: none; margin-top: 10px;">
+                            <img id="addImagePreviewImg" src="" alt="Preview" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="addDisplayOrder" class="form-label fw-600">Display Order</label>
+                        <input type="number" class="form-control" id="addDisplayOrder" name="display_order" placeholder="0" min="0" value="0">
+                        <small class="form-text text-muted">Lower numbers appear first</small>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="addIsActive" name="is_active" value="on" checked>
+                        <label class="form-check-label" for="addIsActive">Active</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light py-3">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header border-bottom bg-light py-3">
+                <h5 class="modal-title fw-bold">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editCategoryForm" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editCategoryName" class="form-label fw-600">Category Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="editCategoryName" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editCategorySlug" class="form-label fw-600">Slug <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="editCategorySlug" name="slug" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editCategoryDesc" class="form-label fw-600">Description</label>
+                        <textarea class="form-control" id="editCategoryDesc" name="description" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editCategoryImage" class="form-label fw-600">Category Image</label>
+                        <div id="editImagePreview" style="margin-bottom: 10px;"></div>
+                        <input type="file" class="form-control" id="editCategoryImage" name="image" accept="image/*">
+                        <small class="form-text text-muted">JPG, PNG (Max 2MB)</small>
+                        <div id="editNewImagePreview" style="display: none; margin-top: 10px;">
+                            <img id="editNewImagePreviewImg" src="" alt="Preview" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                            <p class="mt-2 text-muted small">New image selected</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editDisplayOrder" class="form-label fw-600">Display Order</label>
+                        <input type="number" class="form-control" id="editDisplayOrder" name="display_order" min="0">
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="editIsActive" name="is_active" value="on">
+                        <label class="form-check-label" for="editIsActive">Active</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light py-3">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fw-500 {
+        font-weight: 500 !important;
+    }
+
+    .fw-600 {
+        font-weight: 600 !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
+    }
+
+    .form-control-sm {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+
+    .badge {
+        font-weight: 500;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .btn-group .btn {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    .btn-group .btn:hover {
+        background-color: #f0f7ff;
+    }
+
+    .form-label {
+        font-size: 14px;
+        color: #2c3e50;
+        margin-bottom: 8px;
+    }
+
+    .form-text {
+        font-size: 12px;
+    }
+
+    .text-danger {
+        color: #e74c3c !important;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+    }
+
+    .modal-header {
+        border-radius: 8px 8px 0 0;
+    }
+
+    .form-check-input {
+        width: 1.25em;
+        height: 1.25em;
+        margin-top: 0.25em;
+        border: 2px solid #dee2e6;
+        cursor: pointer;
+    }
+
+    .form-check-input:checked {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+
+    .form-check-label {
+        margin-left: 8px;
+        cursor: pointer;
+    }
+
+    .img-thumbnail {
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        padding: 8px;
+    }
+</style>
+
+<script>
+    // Auto-generate slug from name
+    function generateSlug(name) {
+        return name
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    // Add Category Form
+    const addNameInput = document.getElementById('addCategoryName');
+    const addSlugInput = document.getElementById('addCategorySlug');
+
+    addNameInput.addEventListener('input', function() {
+        if (!addSlugInput.value || addSlugInput.dataset.autoGenerated !== 'false') {
+            addSlugInput.value = generateSlug(this.value);
+            addSlugInput.dataset.autoGenerated = 'true';
+        }
+    });
+
+    addSlugInput.addEventListener('focus', function() {
+        this.dataset.autoGenerated = 'false';
+    });
+
+    // Image preview for add form
+    document.getElementById('addCategoryImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('addImagePreviewImg').src = event.target.result;
+                document.getElementById('addImagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Image preview for edit form
+    document.getElementById('editCategoryImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('editNewImagePreviewImg').src = event.target.result;
+                document.getElementById('editNewImagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Handle edit button clicks
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const categoryId = this.dataset.categoryId;
+            const row = this.closest('tr');
+
+            // Extract data from the table row
+            const name = row.querySelector('td:nth-child(2) .fw-500').textContent;
+            const slug = row.querySelector('td:nth-child(3) code').textContent;
+            const description = row.querySelector('td:nth-child(2) small.text-muted')?.textContent || '';
+            const displayOrder = row.querySelector('input[type="number"]').value;
+            const isActive = row.querySelector('.badge').classList.contains('bg-success');
+
+            // Populate form
+            document.getElementById('editCategoryName').value = name;
+            document.getElementById('editCategorySlug').value = slug;
+            document.getElementById('editCategoryDesc').value = description;
+            document.getElementById('editDisplayOrder').value = displayOrder;
+            document.getElementById('editIsActive').checked = isActive;
+
+            // Update form action (you'll need to adjust this based on your Flask routes)
+            document.getElementById('editCategoryForm').action = `{{ url_for('admin.edit_category', category_id='ID') }}`.replace('ID', categoryId);
+
+            // Show current image if exists
+            const img = row.querySelector('img');
+            if (img) {
+                document.getElementById('editImagePreview').innerHTML = `
+                    <img src="${img.src}" alt="Current" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                    <p class="mt-2 text-muted small">Current image</p>
+                `;
+            } else {
+                document.getElementById('editImagePreview').innerHTML = '';
+            }
+
+            document.getElementById('editNewImagePreview').style.display = 'none';
+        });
+    });
+
+    // Handle delete button clicks
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete this category?')) {
+                const categoryId = this.dataset.categoryId;
+                fetch(`{{ url_for('admin.delete_category', category_id='ID') }}`.replace('ID', categoryId), {
+                    method: 'POST'
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            }
+        });
+    });
+
+    // Handle form submissions
+    document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Form will be submitted to the Flask route
+        this.action = '{{ url_for("admin.add_category") }}';
+        this.submit();
+    });
+</script>
 {% endblock %}

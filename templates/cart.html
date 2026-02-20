@@ -1,201 +1,389 @@
 {% extends "base.html" %}
 
-{% block title %}Shopping Cart - {{ config.BUSINESS_NAME }}{% endblock %}
-
 {% block content %}
 <div class="container py-4">
-    <!-- Page Title -->
-    <div class="mb-4">
-        <h1 class="display-5 mb-2">Shopping Cart</h1>
-        {% if cart_items %}
-            <p class="text-muted">{{ cart_items|length }} item{% if cart_items|length != 1 %}s{% endif %} in your cart</p>
-        {% endif %}
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+      <li class="breadcrumb-item active">Shopping Cart</li>
+    </ol>
+  </nav>
+
+  <h1 class="h3 mb-4">Shopping Cart</h1>
+
+  {% if cart_items %}
+    <div class="row g-4">
+      <!-- Cart Items -->
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Product</th>
+                  <th class="text-center">Unit Price</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="text-center">Total</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in cart_items %}
+                  <tr class="align-middle" data-product-id="{{ item.product.id }}">
+                    <!-- Product -->
+                    <td>
+                      <div class="d-flex align-items-center gap-3">
+                        <img src="{{ item.product.image1 }}" alt="{{ item.product.name }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
+                        <div>
+                          <h6 class="mb-1">
+                            <a href="{{ url_for('product_detail', slug=item.product.slug) }}" class="text-decoration-none">
+                              {{ item.product.name }}
+                            </a>
+                          </h6>
+                          <small class="text-muted">SKU: {{ item.product.id }}</small>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Unit Price -->
+                    <td class="text-center">
+                      <span class="h6 mb-0">₹{{ item.product.price }}</span>
+                    </td>
+
+                    <!-- Quantity -->
+                    <td class="text-center">
+                      <div class="input-group input-group-sm" style="width: 110px; margin: 0 auto;">
+                        <button class="btn btn-outline-secondary decrease-qty" type="button">-</button>
+                        <input type="number" class="form-control text-center qty-input" value="{{ item.quantity }}" min="1" max="100">
+                        <button class="btn btn-outline-secondary increase-qty" type="button">+</button>
+                      </div>
+                    </td>
+
+                    <!-- Line Total -->
+                    <td class="text-center">
+                      <span class="h6 mb-0 line-total">₹{{ item.subtotal }}</span>
+                    </td>
+
+                    <!-- Remove -->
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-outline-danger remove-item" title="Remove from cart">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Continue Shopping Button (Mobile Visible) -->
+        <div class="mt-3">
+          <a href="{{ url_for('products') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+          </a>
+        </div>
+      </div>
+
+      <!-- Cart Summary Sidebar -->
+      <div class="col-lg-4">
+        <div class="card sticky-top" style="top: 20px;">
+          <div class="card-body">
+            <h5 class="card-title mb-4">Order Summary</h5>
+
+            <!-- Subtotal -->
+            <div class="d-flex justify-content-between mb-3">
+              <span>Subtotal:</span>
+              <span id="subtotal">₹{{ cart_total }}</span>
+            </div>
+
+            <!-- Delivery Charge -->
+            <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+              <span>Delivery Charge:</span>
+              <span id="deliveryCharge">
+                {% if cart_total >= config.FREE_DELIVERY_ABOVE %}
+                  <span class="text-success">FREE</span>
+                {% else %}
+                  ₹{{ config.DELIVERY_CHARGE }}
+                {% endif %}
+              </span>
+            </div>
+
+            <!-- Free Delivery Info -->
+            {% if cart_total < config.FREE_DELIVERY_ABOVE %}
+              <div class="alert alert-info mb-3" role="alert">
+                <small>
+                  Add ₹{{ (config.FREE_DELIVERY_ABOVE - cart_total) | int }} more for <strong>FREE delivery</strong>
+                </small>
+              </div>
+            {% else %}
+              <div class="alert alert-success mb-3" role="alert">
+                <small>
+                  <i class="fas fa-check-circle me-2"></i>You get <strong>FREE delivery</strong>
+                </small>
+              </div>
+            {% endif %}
+
+            <!-- Total -->
+            <div class="d-flex justify-content-between mb-4">
+              <h6 class="mb-0">Total:</h6>
+              <h6 class="mb-0" id="totalAmount">
+                ₹<span id="totalValue">
+                  {% if cart_total >= config.FREE_DELIVERY_ABOVE %}
+                    {{ cart_total }}
+                  {% else %}
+                    {{ cart_total + config.DELIVERY_CHARGE }}
+                  {% endif %}
+                </span>
+              </h6>
+            </div>
+
+            <!-- Proceed to Checkout -->
+            <a href="{{ url_for('checkout') }}" class="btn btn-primary w-100 btn-lg mb-2">
+              <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+            </a>
+
+            <!-- Apply Coupon (Optional) -->
+            <div class="mt-3">
+              <small class="text-muted d-block mb-2">Have a coupon code?</small>
+              <div class="input-group input-group-sm">
+                <input type="text" class="form-control" id="couponCode" placeholder="Enter code">
+                <button class="btn btn-outline-secondary" type="button" id="applyCoupon">Apply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    {% if cart_items %}
-        <div class="row g-4">
-            <!-- Cart Items Section -->
-            <div class="col-lg-8">
-                <!-- Desktop View: Table -->
-                <div class="d-none d-lg-block">
-                    <div class="card border-0 shadow-sm">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in cart_items %}
-                                        <tr>
-                                            <!-- Product Column -->
-                                            <td>
-                                                <div class="d-flex gap-3">
-                                                    {% if item.product.image_main %}
-                                                        <img src="{{ url_for('static', filename='uploads/' + item.product.image_main) }}" class="rounded" alt="{{ item.product.name }}" style="width: 60px; height: 60px; object-fit: cover;">
-                                                    {% else %}
-                                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                                            <i class="fas fa-image text-muted"></i>
-                                                        </div>
-                                                    {% endif %}
-                                                    <div>
-                                                        <h6 class="mb-1">
-                                                            <a href="{{ url_for('product_detail', slug=item.product.slug) }}" class="text-decoration-none text-dark">
-                                                                {{ item.product.name }}
-                                                            </a>
-                                                        </h6>
-                                                        {% if item.color %}
-                                                            <small class="text-muted">Color: {{ item.color }}</small>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <!-- Price Column -->
-                                            <td>₹{{ item.product.price }}</td>
-                                            <!-- Quantity Column -->
-                                            <td>
-                                                <form method="POST" action="{{ url_for('cart_update') }}" class="d-flex gap-2">
-                                                    <input type="hidden" name="product_id" value="{{ item.product.id }}">
-                                                    <input type="number" class="form-control form-control-sm" name="quantity" value="{{ item.quantity }}" min="1" max="10" style="width: 60px;">
-                                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
-                                                </form>
-                                            </td>
-                                            <!-- Total Column -->
-                                            <td>₹{{ (item.product.price * item.quantity)|int }}</td>
-                                            <!-- Action Column -->
-                                            <td>
-                                                <a href="{{ url_for('cart_remove', product_id=item.product.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this item?');">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mobile View: Cards -->
-                <div class="d-lg-none">
-                    {% for item in cart_items %}
-                        <div class="card border-0 shadow-sm mb-3">
-                            <div class="card-body">
-                                <div class="d-flex gap-3 mb-3">
-                                    {% if item.product.image_main %}
-                                        <img src="{{ url_for('static', filename='uploads/' + item.product.image_main) }}" class="rounded" alt="{{ item.product.name }}" style="width: 80px; height: 80px; object-fit: cover;">
-                                    {% else %}
-                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                            <i class="fas fa-image text-muted"></i>
-                                        </div>
-                                    {% endif %}
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">
-                                            <a href="{{ url_for('product_detail', slug=item.product.slug) }}" class="text-decoration-none text-dark">
-                                                {{ item.product.name }}
-                                            </a>
-                                        </h6>
-                                        {% if item.color %}
-                                            <small class="text-muted d-block">Color: {{ item.color }}</small>
-                                        {% endif %}
-                                        <strong class="text-primary">₹{{ item.product.price }}</strong>
-                                    </div>
-                                    <a href="{{ url_for('cart_remove', product_id=item.product.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this item?');">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                </div>
-                                <div class="row g-2 align-items-end">
-                                    <div class="col-8">
-                                        <label class="form-label small mb-2">Quantity</label>
-                                        <form method="POST" action="{{ url_for('cart_update') }}" class="d-flex gap-2">
-                                            <input type="hidden" name="product_id" value="{{ item.product.id }}">
-                                            <input type="number" class="form-control form-control-sm" name="quantity" value="{{ item.quantity }}" min="1" max="10">
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
-                                        </form>
-                                    </div>
-                                    <div class="col-4 text-end">
-                                        <small class="text-muted d-block">Total</small>
-                                        <strong class="text-primary">₹{{ (item.product.price * item.quantity)|int }}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                <!-- Clear Cart Button -->
-                <div class="mt-3">
-                    <a href="{{ url_for('cart_clear') }}" class="btn btn-outline-danger" onclick="return confirm('Clear entire cart?');">
-                        <i class="fas fa-broom me-2"></i>Clear Cart
-                    </a>
-                </div>
-            </div>
-
-            <!-- Cart Summary Sidebar -->
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
-                    <div class="card-body">
-                        <h5 class="card-title mb-4">Order Summary</h5>
-
-                        <div class="mb-3 pb-3 border-bottom">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Subtotal</span>
-                                <strong>₹{{ subtotal }}</strong>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Delivery</span>
-                                {% if delivery == 0 %}
-                                    <span class="badge bg-success">FREE</span>
-                                {% else %}
-                                    <strong>₹{{ delivery }}</strong>
-                                {% endif %}
-                            </div>
-                            {% if config.get('FREE_DELIVERY_ABOVE') and subtotal < config.FREE_DELIVERY_ABOVE %}
-                                <small class="text-success d-block mt-2">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Free delivery on orders above ₹{{ config.FREE_DELIVERY_ABOVE }}
-                                </small>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Grand Total</h5>
-                                <h4 class="text-primary mb-0">₹{{ grand_total }}</h4>
-                            </div>
-                        </div>
-
-                        <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-lg w-100 mb-3">
-                            <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
-                        </a>
-
-                        <a href="{{ url_for('products') }}" class="btn btn-outline-secondary w-100 mb-3">
-                            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
-                        </a>
-
-                        <!-- WhatsApp Bulk Order -->
-                        <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}?text=Hi,%20I%20have%20a%20bulk%20order.%0A%0A{{ whatsapp_order_text|urlencode }}" target="_blank" class="btn btn-success w-100">
-                            <i class="fab fa-whatsapp me-2"></i>WhatsApp Order
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% else %}
-        <!-- Empty Cart State -->
-        <div class="text-center py-5">
-            <i class="fas fa-shopping-cart text-muted" style="font-size: 3rem;"></i>
-            <h3 class="mt-3 text-muted">Your Cart is Empty</h3>
-            <p class="text-muted mb-4">Start shopping and add some amazing 3D printed products to your cart.</p>
+  {% else %}
+    <!-- Empty Cart State -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body py-5 text-center">
+            <i class="fas fa-shopping-cart" style="font-size: 4rem; color: #ccc; margin-bottom: 20px; display: block;"></i>
+            <h4 class="text-muted mb-2">Your cart is empty</h4>
+            <p class="text-muted mb-4">Start shopping to add items to your cart</p>
             <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">
-                <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+              <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
             </a>
+          </div>
         </div>
-    {% endif %}
+      </div>
+    </div>
+  {% endif %}
 </div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  @media (max-width: 768px) {
+    .table-responsive {
+      font-size: 0.9rem;
+    }
+
+    table img {
+      width: 60px !important;
+      height: 60px !important;
+    }
+
+    th, td {
+      padding: 0.75rem 0.5rem !important;
+    }
+
+    .input-group-sm {
+      width: 90px !important;
+    }
+
+    .sticky-top {
+      position: static !important;
+      margin-top: 2rem;
+    }
+  }
+
+  .table img {
+    transition: transform 0.3s ease;
+  }
+
+  .table img:hover {
+    transform: scale(1.1);
+  }
+
+  .btn-outline-secondary:disabled {
+    cursor: not-allowed;
+  }
+
+  .input-group-sm input {
+    padding: 0.375rem 0.25rem;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const cart_items = {{ cart_items | tojson }};
+    const FREE_DELIVERY_ABOVE = {{ config.FREE_DELIVERY_ABOVE }};
+    const DELIVERY_CHARGE = {{ config.DELIVERY_CHARGE }};
+
+    // Update totals
+    function updateTotals() {
+      let subtotal = 0;
+      document.querySelectorAll('table tbody tr').forEach(row => {
+        const qtyInput = row.querySelector('.qty-input');
+        const priceText = row.querySelector('span.h6').textContent.replace('₹', '');
+        const price = parseFloat(priceText);
+        const qty = parseInt(qtyInput.value);
+        const lineTotal = price * qty;
+
+        row.querySelector('.line-total').textContent = '₹' + lineTotal;
+        subtotal += lineTotal;
+      });
+
+      const deliveryCharge = subtotal >= FREE_DELIVERY_ABOVE ? 0 : DELIVERY_CHARGE;
+      const total = subtotal + deliveryCharge;
+
+      document.getElementById('subtotal').textContent = '₹' + subtotal;
+      document.getElementById('deliveryCharge').innerHTML = deliveryCharge === 0
+        ? '<span class="text-success">FREE</span>'
+        : '₹' + deliveryCharge;
+      document.getElementById('totalValue').textContent = total;
+
+      // Update delivery info
+      const deliveryInfo = document.querySelector('.alert');
+      if (subtotal >= FREE_DELIVERY_ABOVE) {
+        if (deliveryInfo) {
+          deliveryInfo.className = 'alert alert-success mb-3';
+          deliveryInfo.innerHTML = '<small><i class="fas fa-check-circle me-2"></i>You get <strong>FREE delivery</strong></small>';
+        }
+      } else {
+        if (deliveryInfo) {
+          deliveryInfo.className = 'alert alert-info mb-3';
+          deliveryInfo.innerHTML = '<small>Add ₹' + (FREE_DELIVERY_ABOVE - subtotal) + ' more for <strong>FREE delivery</strong></small>';
+        }
+      }
+    }
+
+    // Quantity increase/decrease
+    document.querySelectorAll('.increase-qty').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const row = this.closest('tr');
+        const input = row.querySelector('.qty-input');
+        const val = parseInt(input.value);
+        if (val < 100) input.value = val + 1;
+        updateTotals();
+        updateCart(row);
+      });
+    });
+
+    document.querySelectorAll('.decrease-qty').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const row = this.closest('tr');
+        const input = row.querySelector('.qty-input');
+        const val = parseInt(input.value);
+        if (val > 1) input.value = val - 1;
+        updateTotals();
+        updateCart(row);
+      });
+    });
+
+    // Direct quantity input
+    document.querySelectorAll('.qty-input').forEach(input => {
+      input.addEventListener('change', function() {
+        const row = this.closest('tr');
+        updateTotals();
+        updateCart(row);
+      });
+    });
+
+    // Update cart via AJAX
+    function updateCart(row) {
+      const productId = row.dataset.productId;
+      const quantity = parseInt(row.querySelector('.qty-input').value);
+
+      fetch('{{ url_for("update_cart") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || ''
+        },
+        body: JSON.stringify({ product_id: productId, quantity: quantity })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (!data.success) {
+          alert('Failed to update cart');
+          location.reload();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Remove item
+    document.querySelectorAll('.remove-item').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const row = this.closest('tr');
+        const productId = row.dataset.productId;
+
+        if (confirm('Remove this item from cart?')) {
+          fetch('{{ url_for("remove_from_cart") }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            },
+            body: JSON.stringify({ product_id: productId })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              row.remove();
+              updateTotals();
+
+              // Check if cart is empty
+              if (document.querySelectorAll('table tbody tr').length === 0) {
+                location.reload();
+              }
+            }
+          })
+          .catch(error => console.error('Error:', error));
+        }
+      });
+    });
+
+    // Apply Coupon
+    document.getElementById('applyCoupon').addEventListener('click', function() {
+      const couponCode = document.getElementById('couponCode').value.trim();
+      if (!couponCode) {
+        alert('Please enter a coupon code');
+        return;
+      }
+
+      fetch('{{ url_for("apply_coupon") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || ''
+        },
+        body: JSON.stringify({ coupon_code: couponCode })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Coupon applied successfully!');
+          updateTotals();
+        } else {
+          alert(data.message || 'Invalid coupon code');
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+
+    // Initial totals
+    updateTotals();
+  });
+</script>
 {% endblock %}

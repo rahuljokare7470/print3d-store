@@ -1,345 +1,227 @@
-"""
-Database Models for the 3D Print Store
-=======================================
-
-Think of models as blueprints for your database tables.
-Each class below becomes a table in your SQLite database.
-
-HOW DATABASES WORK (Simple Explanation):
-- A database is like an Excel file with multiple sheets
-- Each "model" (class) below is one sheet
-- Each "field" (db.Column) is one column in that sheet
-- Each row is one record (e.g., one product, one order)
-
-RELATIONSHIPS:
-- A Product belongs to a Category (many products → one category)
-- An Order has many OrderItems (one order → many items)
-- An OrderItem links to one Product
-"""
-
-from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# Initialize the database object
-# This gets connected to our Flask app in app.py
 db = SQLAlchemy()
 
 
-# ═══════════════════════════════════════════════════════════════
-# ADMIN USER MODEL
-# ═══════════════════════════════════════════════════════════════
-class AdminUser(UserMixin, db.Model):
-    """
-    Admin user who can log into the dashboard.
-    UserMixin adds required methods for Flask-Login.
-
-    Fields:
-        id          - Unique identifier (auto-generated)
-        username    - Login username
-        password_hash - Encrypted password (never store plain text!)
-        created_at  - When this admin was created
-    """
+class AdminUser(db.Model):
+    """Administrator user model"""
     __tablename__ = 'admin_users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime)
 
     def set_password(self, password):
-        """Encrypt and store the password. Never store plain text passwords!"""
+        """Hash and set password"""
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        """Check if the provided password matches the stored hash."""
+        """Verify password against hash"""
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
         return f'<AdminUser {self.username}>'
 
 
-# ═══════════════════════════════════════════════════════════════
-# CATEGORY MODEL
-# ═══════════════════════════════════════════════════════════════
 class Category(db.Model):
-    """
-    Product categories (e.g., Desk Accessories, Phone Stands).
-
-    Fields:
-        id          - Unique identifier
-        name        - Category name (e.g., "Desk Accessories")
-        slug        - URL-friendly name (e.g., "desk-accessories")
-        description - Short description of the category
-        image       - Optional category image filename
-        sort_order  - Controls display order (lower = first)
-        is_active   - Show/hide category on the website
-    """
+    """Product category model"""
     __tablename__ = 'categories'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
-    slug = db.Column(db.String(120), nullable=False, unique=True)
+    name = db.Column(db.String(200), nullable=False, unique=True)
+    slug = db.Column(db.String(200), unique=True, nullable=False)
     description = db.Column(db.Text, default='')
-    image = db.Column(db.String(255), default='')
-    sort_order = db.Column(db.Integer, default=0)
+    image_url = db.Column(db.String(500), default='')
     is_active = db.Column(db.Boolean, default=True)
+    display_order = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relationship: One category has many products
-    products = db.relationship('Product', backref='category', lazy=True)
+    # Relationships
+    products = db.relationship('Product', backref='category', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Category {self.name}>'
 
 
-# ═══════════════════════════════════════════════════════════════
-# PRODUCT MODEL
-# ═══════════════════════════════════════════════════════════════
 class Product(db.Model):
-    """
-    Individual products in your store.
-
-    Fields:
-        id              - Unique product ID
-        name            - Product name shown to customers
-        slug            - URL-friendly name (for SEO-friendly URLs)
-        description     - Full product description (supports multiple lines)
-        short_desc      - Brief description for product cards
-        price           - Price in INR (stored as integer paise for accuracy)
-        original_price  - Strike-through price (for showing discounts)
-        category_id     - Which category this product belongs to
-        image_main      - Main product image filename
-        image_2/3/4     - Additional product images
-        is_featured     - Show on homepage featured section?
-        is_active       - Show on website? (soft delete)
-        stock_status    - "in_stock", "low_stock", "out_of_stock"
-        material        - 3D printing material (PLA, ABS, etc.)
-        colors          - Available colors (comma-separated)
-        dimensions      - Product dimensions
-        weight          - Weight in grams
-        meta_title      - SEO title tag
-        meta_description- SEO description tag
-        views           - Number of times this product page was viewed
-        created_at      - When product was added
-        updated_at      - Last time product was modified
-    """
+    """Product model"""
     __tablename__ = 'products'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)
-    slug = db.Column(db.String(220), nullable=False, unique=True)
+    name = db.Column(db.String(255), nullable=False)
+    slug = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.Text, default='')
-    short_desc = db.Column(db.String(300), default='')
-    price = db.Column(db.Integer, nullable=False)  # Price in INR (whole rupees)
-    original_price = db.Column(db.Integer, default=0)  # For discount display
+    price = db.Column(db.Float, nullable=False)
+    cost_price = db.Column(db.Float, default=0)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
-
-    # Product images (up to 4)
-    image_main = db.Column(db.String(255), default='')
-    image_2 = db.Column(db.String(255), default='')
-    image_3 = db.Column(db.String(255), default='')
-    image_4 = db.Column(db.String(255), default='')
-
-    # Display options
+    sku = db.Column(db.String(100), unique=True, nullable=False)
+    stock_quantity = db.Column(db.Integer, default=0)
+    image_url = db.Column(db.String(500), default='')
+    images_json = db.Column(db.Text, default='[]')  # JSON array of image URLs
     is_featured = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
-    stock_status = db.Column(db.String(20), default='in_stock')
-
-    # Product specifications
-    material = db.Column(db.String(100), default='PLA')
-    colors = db.Column(db.String(300), default='')  # Comma-separated: "Red,Blue,Green"
-    dimensions = db.Column(db.String(100), default='')
-    weight = db.Column(db.Integer, default=0)  # Weight in grams
-
-    # SEO fields
-    meta_title = db.Column(db.String(200), default='')
-    meta_description = db.Column(db.String(300), default='')
-
-    # Analytics
-    views = db.Column(db.Integer, default=0)
-
-    # Timestamps
+    discount_percentage = db.Column(db.Float, default=0)
+    specifications = db.Column(db.Text, default='')  # JSON or HTML
+    warranty_months = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relationship: Product can appear in many order items
-    order_items = db.relationship('OrderItem', backref='product', lazy=True)
+    # Relationships
+    order_items = db.relationship('OrderItem', backref='product', lazy=True, cascade='all, delete-orphan')
+    reviews = db.relationship('Review', backref='product', lazy=True, cascade='all, delete-orphan')
+    wishlist_items = db.relationship('WishlistItem', backref='product', lazy=True, cascade='all, delete-orphan')
 
     @property
-    def discount_percent(self):
-        """Calculate discount percentage if original_price is set."""
-        if self.original_price and self.original_price > self.price:
-            return round((1 - self.price / self.original_price) * 100)
-        return 0
+    def discounted_price(self):
+        """Calculate discounted price"""
+        if self.discount_percentage > 0:
+            return self.price * (1 - self.discount_percentage / 100)
+        return self.price
 
     @property
-    def images(self):
-        """Return list of all non-empty product images."""
-        imgs = []
-        for attr in ['image_main', 'image_2', 'image_3', 'image_4']:
-            val = getattr(self, attr)
-            if val:
-                imgs.append(val)
-        return imgs
+    def avg_rating(self):
+        """Calculate average rating from approved reviews"""
+        approved_reviews = Review.query.filter_by(product_id=self.id, is_approved=True).all()
+        if not approved_reviews:
+            return 0
+        total_rating = sum(review.rating for review in approved_reviews)
+        return round(total_rating / len(approved_reviews), 2)
+
+    @property
+    def review_count(self):
+        """Get count of approved reviews"""
+        return Review.query.filter_by(product_id=self.id, is_approved=True).count()
 
     def __repr__(self):
-        return f'<Product {self.name} - ₹{self.price}>'
+        return f'<Product {self.name}>'
 
 
-# ═══════════════════════════════════════════════════════════════
-# ORDER MODEL
-# ═══════════════════════════════════════════════════════════════
+class Review(db.Model):
+    """Product review model"""
+    __tablename__ = 'reviews'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    customer_name = db.Column(db.String(200), nullable=False)
+    customer_email = db.Column(db.String(200), default='')
+    rating = db.Column(db.Integer, nullable=False)  # 1-5 stars
+    title = db.Column(db.String(200), default='')
+    comment = db.Column(db.Text, default='')
+    is_approved = db.Column(db.Boolean, default=False)
+    helpful_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Review {self.id} - {self.product_id}>'
+
+
+class WishlistItem(db.Model):
+    """Wishlist item model for tracking customer preferences"""
+    __tablename__ = 'wishlist_items'
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(100), nullable=False, index=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<WishlistItem {self.session_id} - {self.product_id}>'
+
+
 class Order(db.Model):
-    """
-    Customer orders.
-
-    Fields:
-        id              - Unique order ID
-        order_number    - Human-readable order number (e.g., "PC3D-00001")
-        customer_name   - Customer's full name
-        customer_email  - Customer's email address
-        customer_phone  - Customer's phone number
-        address         - Delivery address
-        city            - City
-        pincode         - PIN code
-        subtotal        - Total before delivery charges
-        delivery_charge - Delivery fee
-        total           - Final amount to pay
-        status          - Order status: pending, confirmed, processing,
-                          shipped, delivered, cancelled
-        payment_method  - COD, UPI, bank_transfer
-        notes           - Customer notes or special instructions
-        created_at      - When order was placed
-        updated_at      - Last status update time
-    """
+    """Order model"""
     __tablename__ = 'orders'
 
     id = db.Column(db.Integer, primary_key=True)
-    order_number = db.Column(db.String(20), unique=True, nullable=False)
-    customer_name = db.Column(db.String(200), nullable=False)
-    customer_email = db.Column(db.String(200), nullable=False)
+    order_number = db.Column(db.String(50), unique=True, nullable=False)
+    customer_name = db.Column(db.String(255), nullable=False)
+    customer_email = db.Column(db.String(120), nullable=False)
     customer_phone = db.Column(db.String(20), nullable=False)
-    address = db.Column(db.Text, default='')
-    city = db.Column(db.String(100), default='Pune')
-    pincode = db.Column(db.String(10), default='')
-    subtotal = db.Column(db.Integer, default=0)
-    delivery_charge = db.Column(db.Integer, default=0)
-    total = db.Column(db.Integer, default=0)
-    status = db.Column(db.String(20), default='pending')
-    payment_method = db.Column(db.String(30), default='cod')
-    notes = db.Column(db.Text, default='')
+    delivery_address = db.Column(db.Text, nullable=False)
+    delivery_city = db.Column(db.String(100), default='')
+    delivery_state = db.Column(db.String(100), default='')
+    delivery_pincode = db.Column(db.String(20), default='')
+    subtotal = db.Column(db.Float, nullable=False)
+    delivery_charge = db.Column(db.Float, default=0)
+    discount_amount = db.Column(db.Float, default=0)
+    total_amount = db.Column(db.Float, nullable=False)
+    payment_method = db.Column(db.String(50), default='cod')  # cod, razorpay, etc.
+
+    # Razorpay payment fields
+    razorpay_order_id = db.Column(db.String(100), default='')
+    razorpay_payment_id = db.Column(db.String(100), default='')
+    payment_status = db.Column(db.String(20), default='pending')  # pending, paid, failed
+
+    order_status = db.Column(db.String(50), default='pending')  # pending, confirmed, shipped, delivered, cancelled
+    special_instructions = db.Column(db.Text, default='')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relationship: One order has many items
-    items = db.relationship('OrderItem', backref='order', lazy=True,
-                            cascade='all, delete-orphan')
-
-    @staticmethod
-    def generate_order_number():
-        """Generate a unique order number like PC3D-00042."""
-        last_order = Order.query.order_by(Order.id.desc()).first()
-        next_num = (last_order.id + 1) if last_order else 1
-        return f'PC3D-{next_num:05d}'
+    # Relationships
+    items = db.relationship('OrderItem', backref='order', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f'<Order {self.order_number} - ₹{self.total}>'
+        return f'<Order {self.order_number}>'
 
 
-# ═══════════════════════════════════════════════════════════════
-# ORDER ITEM MODEL
-# ═══════════════════════════════════════════════════════════════
 class OrderItem(db.Model):
-    """
-    Individual items within an order.
-    Links an Order to a Product with quantity and price.
-
-    Why store price here? Because product prices can change later,
-    but the order should remember the price at the time of purchase.
-    """
+    """Order item model (products in an order)"""
     __tablename__ = 'order_items'
 
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
-    product_name = db.Column(db.String(200), nullable=False)  # Snapshot of name
-    quantity = db.Column(db.Integer, default=1)
-    price = db.Column(db.Integer, nullable=False)  # Price at time of order
-    color = db.Column(db.String(50), default='')
-
-    @property
-    def line_total(self):
-        """Total for this line item (price × quantity)."""
-        return self.price * self.quantity
-
-    def __repr__(self):
-        return f'<OrderItem {self.product_name} x{self.quantity}>'
-
-
-# ═══════════════════════════════════════════════════════════════
-# INQUIRY MODEL
-# ═══════════════════════════════════════════════════════════════
-class Inquiry(db.Model):
-    """
-    Contact form submissions and customer inquiries.
-
-    Fields:
-        id          - Unique inquiry ID
-        name        - Customer's name
-        email       - Customer's email
-        phone       - Customer's phone (optional)
-        subject     - Subject of inquiry
-        message     - Full message
-        is_read     - Has admin read this? (for "new" badge)
-        created_at  - When inquiry was submitted
-    """
-    __tablename__ = 'inquiries'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)
-    email = db.Column(db.String(200), nullable=False)
-    phone = db.Column(db.String(20), default='')
-    subject = db.Column(db.String(300), default='General Inquiry')
-    message = db.Column(db.Text, nullable=False)
-    is_read = db.Column(db.Boolean, default=False)
+    product_name = db.Column(db.String(255), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    unit_price = db.Column(db.Float, nullable=False)
+    discount_percentage = db.Column(db.Float, default=0)
+    line_total = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Inquiry from {self.name}: {self.subject}>'
+        return f'<OrderItem {self.product_name}>'
 
 
-# ═══════════════════════════════════════════════════════════════
-# SITE SETTINGS MODEL (Optional)
-# ═══════════════════════════════════════════════════════════════
+class Inquiry(db.Model):
+    """Customer inquiry/contact form model"""
+    __tablename__ = 'inquiries'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(20), default='')
+    subject = db.Column(db.String(255), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    inquiry_type = db.Column(db.String(50), default='general')  # general, support, sales, etc.
+    is_read = db.Column(db.Boolean, default=False)
+    is_resolved = db.Column(db.Boolean, default=False)
+    reply = db.Column(db.Text, default='')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Inquiry {self.id} - {self.name}>'
+
+
 class SiteSetting(db.Model):
-    """
-    Key-value store for site-wide settings.
-    This lets you change things like the site title, delivery charge, etc.
-    from the admin panel without editing code.
-    """
+    """Site settings/configuration model"""
     __tablename__ = 'site_settings'
 
     id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(100), unique=True, nullable=False)
-    value = db.Column(db.Text, default='')
-
-    @staticmethod
-    def get(key, default=''):
-        """Get a setting value by key."""
-        setting = SiteSetting.query.filter_by(key=key).first()
-        return setting.value if setting else default
-
-    @staticmethod
-    def set(key, value):
-        """Set a setting value (create or update)."""
-        setting = SiteSetting.query.filter_by(key=key).first()
-        if setting:
-            setting.value = str(value)
-        else:
-            setting = SiteSetting(key=key, value=str(value))
-            db.session.add(setting)
-        db.session.commit()
+    setting_key = db.Column(db.String(100), unique=True, nullable=False)
+    setting_value = db.Column(db.Text, default='')
+    setting_type = db.Column(db.String(50), default='string')  # string, int, boolean, json
+    description = db.Column(db.String(255), default='')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Setting {self.key}={self.value}>'
+        return f'<SiteSetting {self.setting_key}>'

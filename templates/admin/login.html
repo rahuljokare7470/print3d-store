@@ -1,63 +1,235 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - PrintCraft 3D</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
 
-{% block title %}Admin Login - {{ config.BUSINESS_NAME }}{% endblock %}
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-{% block content %}
-<div class="container d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 76px);">
-  <div class="card shadow-lg" style="width: 100%; max-width: 400px;">
-    <div class="card-body p-5">
-      <!-- Logo/Icon -->
-      <div class="text-center mb-4">
-        <div class="mb-3">
-          <i class="fas fa-cube fa-3x text-primary"></i>
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .brand-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .brand-subtitle {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: #95a5a6;
+        }
+
+        .form-check {
+            margin-bottom: 20px;
+        }
+
+        .form-check-input {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            border: 2px solid #ecf0f1;
+            cursor: pointer;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .form-check-label {
+            margin-left: 8px;
+            color: #555;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-login {
+            background-color: var(--primary);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            font-weight: 600;
+            border-radius: 6px;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .btn-login:hover {
+            background-color: #2980b9;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .alert {
+            border-radius: 6px;
+            border: 1px solid #e74c3c;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background-color: #fadbd8;
+            color: #c0392b;
+        }
+
+        .alert-success {
+            background-color: #d5f4e6;
+            color: #27ae60;
+            border-color: #27ae60;
+        }
+
+        .alert i {
+            margin-right: 8px;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div class="brand-name">PrintCraft 3D</div>
+                <div class="brand-subtitle">Admin Panel</div>
+            </div>
+
+            {% with messages = get_flashed_messages(category_filter=['error']) %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% with messages = get_flashed_messages(category_filter=['success']) %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('admin.login') }}">
+                {{ form.hidden_tag() if form else '' }}
+
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="remember" name="remember" value="on">
+                    <label class="form-check-label" for="remember">Remember me</label>
+                </div>
+
+                <button type="submit" class="btn btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>&copy; 2024 PrintCraft 3D. All rights reserved.</p>
+            </div>
         </div>
-        <h3 class="card-title">{{ config.BUSINESS_NAME }}</h3>
-        <p class="text-muted">Admin Panel</p>
-      </div>
-
-      <!-- Login Form -->
-      <form method="POST" action="{{ url_for('admin_login') }}">
-        <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input
-            type="text"
-            class="form-control"
-            id="username"
-            name="username"
-            required
-            placeholder="Enter your username"
-            autofocus>
-        </div>
-
-        <div class="mb-4">
-          <label for="password" class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            id="password"
-            name="password"
-            required
-            placeholder="Enter your password">
-        </div>
-
-        <!-- Error Message -->
-        {% if error %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          {{ error }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        {% endif %}
-
-        <button type="submit" class="btn btn-primary btn-lg w-100">
-          <i class="fas fa-sign-in-alt me-2"></i>Log In
-        </button>
-      </form>
-
-      <hr class="my-4">
-      <p class="text-center text-muted small">
-        <i class="fas fa-lock me-1"></i>Secure Admin Access
-      </p>
     </div>
-  </div>
-</div>
-{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

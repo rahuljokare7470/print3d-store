@@ -1,287 +1,435 @@
 {% extends "base.html" %}
 
-{% block title %}Order Confirmation - {{ config.BUSINESS_NAME }}{% endblock %}
-
 {% block content %}
-<div class="container py-4">
-    <!-- Success Banner -->
-    <div class="text-center mb-5 py-4">
-        <div style="font-size: 4rem; color: #28a745; margin-bottom: 1rem;">
-            <i class="fas fa-check-circle"></i>
+<div class="container py-5">
+  <!-- Success Animation -->
+  <div class="text-center mb-5">
+    <div class="mb-4">
+      <div class="success-checkmark">
+        <div class="check-icon">
+          <span class="icon-line line-tip"></span>
+          <span class="icon-line line-long"></span>
+          <div class="icon-circle"></div>
+          <div class="icon-fix"></div>
         </div>
-        <h1 class="display-5 mb-2">Order Placed Successfully!</h1>
-        <p class="lead text-muted">Thank you for your purchase. Your order has been confirmed.</p>
+      </div>
     </div>
 
-    <!-- Order Number -->
-    <div class="text-center mb-4">
-        <div class="card border-0 shadow-sm" style="max-width: 600px; margin-left: auto; margin-right: auto;">
-            <div class="card-body py-4">
-                <h6 class="text-muted mb-2">Order Number</h6>
-                <h2 class="text-primary mb-0" style="font-family: 'Courier New', monospace; letter-spacing: 2px;">
-                    {{ order.order_number }}
-                </h2>
-                <small class="text-muted d-block mt-2">
-                    Placed on: {{ order.created_at.strftime('%d %b %Y, %H:%M') }}
-                </small>
-            </div>
+    <h1 class="h2 mb-2 text-success">Thank You for Your Order!</h1>
+    <p class="text-muted lead">Your order has been successfully placed.</p>
+  </div>
+
+  <!-- Order Details Card -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-lg-8">
+      <!-- Order Number and Status -->
+      <div class="card border-success mb-4">
+        <div class="card-body text-center py-4">
+          <h5 class="card-title">Order Number</h5>
+          <h3 class="text-success mb-2">#{{ order.order_number }}</h3>
+          <small class="text-muted">Placed on {{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
         </div>
-    </div>
+      </div>
 
-    <div class="row g-4">
-        <!-- Order Details Column -->
-        <div class="col-lg-8">
-            <!-- Order Items Section -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-box me-2"></i>Order Items
-                    </h5>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in order.items %}
-                                <tr>
-                                    <td>
-                                        <div class="d-flex gap-3 align-items-center">
-                                            {% if item.product.image_main %}
-                                                <img src="{{ url_for('static', filename='uploads/' + item.product.image_main) }}" class="rounded" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover;">
-                                            {% else %}
-                                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                                    <i class="fas fa-image text-muted"></i>
-                                                </div>
-                                            {% endif %}
-                                            <div>
-                                                <h6 class="mb-0">{{ item.product.name }}</h6>
-                                                {% if item.color %}
-                                                    <small class="text-muted">Color: {{ item.color }}</small>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>₹{{ item.product.price }}</td>
-                                    <td>{{ item.quantity }}</td>
-                                    <td><strong>₹{{ (item.product.price * item.quantity)|int }}</strong></td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-body border-top pt-3">
-                    <div class="row g-3 text-end">
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Subtotal:</span>
-                                <strong>₹{{ order.subtotal }}</strong>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Delivery:</span>
-                                {% if order.delivery_charge == 0 %}
-                                    <span class="badge bg-success">FREE</span>
-                                {% else %}
-                                    <strong>₹{{ order.delivery_charge }}</strong>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% if order.tax %}
-                            <div class="col-12">
-                                <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
-                                    <span>Tax:</span>
-                                    <strong>₹{{ order.tax }}</strong>
-                                </div>
-                            </div>
-                        {% endif %}
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between">
-                                <h5 class="mb-0">Total Amount:</h5>
-                                <h4 class="text-primary mb-0">₹{{ order.total_amount }}</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <!-- Confirmation Email -->
+      <div class="alert alert-info mb-4">
+        <i class="fas fa-envelope me-2"></i>
+        A confirmation email has been sent to <strong>{{ order.customer_email }}</strong>
+      </div>
 
-            <!-- Customer & Delivery Info Section -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-header bg-light border-bottom">
-                            <h6 class="card-title mb-0">
-                                <i class="fas fa-user me-2"></i>Customer Details
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <p class="mb-2">
-                                <strong>{{ order.customer_name }}</strong><br>
-                                <small class="text-muted">{{ order.email }}</small><br>
-                                <small class="text-muted">{{ order.phone }}</small>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-header bg-light border-bottom">
-                            <h6 class="card-title mb-0">
-                                <i class="fas fa-map-marker-alt me-2"></i>Delivery Address
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <p class="mb-0">
-                                <small class="text-muted">{{ order.address }}<br>
-                                {{ order.city }} - {{ order.pincode }}</small>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Payment & Status Section -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-header bg-light border-bottom">
-                            <h6 class="card-title mb-0">
-                                <i class="fas fa-credit-card me-2"></i>Payment Method
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <p class="mb-0">
-                                <strong>{{ order.payment_method }}</strong>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-header bg-light border-bottom">
-                            <h6 class="card-title mb-0">
-                                <i class="fas fa-info-circle me-2"></i>Order Status
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <p class="mb-0">
-                                <span class="badge {% if order.status == 'Confirmed' %}bg-success{% elif order.status == 'Processing' %}bg-info{% elif order.status == 'Shipped' %}bg-primary{% elif order.status == 'Delivered' %}bg-success{% else %}bg-warning{% endif %}">
-                                    {{ order.status }}
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <!-- Order Summary -->
+      <div class="card mb-4">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Order Items</h5>
         </div>
-
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- What's Next Section -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-tasks me-2"></i>What's Next?
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <ol class="list-unstyled">
-                        <li class="mb-3 pb-3 border-bottom">
-                            <div class="d-flex gap-3">
-                                <div class="text-primary fw-bold" style="min-width: 30px;">1</div>
-                                <div>
-                                    <strong>Confirmation</strong>
-                                    <p class="small text-muted mb-0">Check your email for order confirmation</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mb-3 pb-3 border-bottom">
-                            <div class="d-flex gap-3">
-                                <div class="text-primary fw-bold" style="min-width: 30px;">2</div>
-                                <div>
-                                    <strong>Processing</strong>
-                                    <p class="small text-muted mb-0">We'll prepare your order for shipment</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mb-3 pb-3 border-bottom">
-                            <div class="d-flex gap-3">
-                                <div class="text-primary fw-bold" style="min-width: 30px;">3</div>
-                                <div>
-                                    <strong>Shipping</strong>
-                                    <p class="small text-muted mb-0">Your package is on its way</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mb-0">
-                            <div class="d-flex gap-3">
-                                <div class="text-primary fw-bold" style="min-width: 30px;">4</div>
-                                <div>
-                                    <strong>Delivery</strong>
-                                    <p class="small text-muted mb-0">Enjoy your 3D printed products!</p>
-                                </div>
-                            </div>
-                        </li>
-                    </ol>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <h6 class="card-title mb-3">Need Help?</h6>
-
-                    <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}?text=Hi,%20I%20have%20a%20question%20about%20order%20{{ order.order_number }}" target="_blank" class="btn btn-success w-100 mb-2">
-                        <i class="fab fa-whatsapp me-2"></i>Contact via WhatsApp
-                    </a>
-
-                    <a href="mailto:support@printcraft3d.com?subject=Order%20{{ order.order_number }}" class="btn btn-outline-secondary w-100 mb-2">
-                        <i class="fas fa-envelope me-2"></i>Email Support
-                    </a>
-
-                    <button onclick="window.print()" class="btn btn-outline-primary w-100">
-                        <i class="fas fa-print me-2"></i>Print Order
-                    </button>
-                </div>
-            </div>
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Product</th>
+                <th class="text-center">Quantity</th>
+                <th class="text-end">Price</th>
+                <th class="text-end">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in order.items %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="{{ item.product.image1 }}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                      <div>
+                        <strong>{{ item.product.name }}</strong><br>
+                        <small class="text-muted">₹{{ item.price }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-center">{{ item.quantity }}</td>
+                  <td class="text-end">₹{{ item.price }}</td>
+                  <td class="text-end"><strong>₹{{ item.subtotal }}</strong></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-    </div>
+      </div>
 
-    <!-- Continue Shopping Section -->
-    <div class="text-center mt-5 pt-4 border-top">
-        <h5 class="mb-3">Continue Shopping</h5>
-        <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">
-            <i class="fas fa-shopping-bag me-2"></i>Explore More Products
-        </a>
-        <a href="{{ url_for('home') }}" class="btn btn-outline-secondary btn-lg ms-2">
-            <i class="fas fa-home me-2"></i>Back to Home
-        </a>
+      <!-- Order Totals -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-6">
+              <span class="text-muted">Subtotal:</span>
+            </div>
+            <div class="col-6 text-end">
+              <span>₹{{ order.subtotal }}</span>
+            </div>
+          </div>
+          <div class="row mb-3 pb-3 border-bottom">
+            <div class="col-6">
+              <span class="text-muted">Delivery Charge:</span>
+            </div>
+            <div class="col-6 text-end">
+              {% if order.delivery_charge == 0 %}
+                <span class="text-success">FREE</span>
+              {% else %}
+                <span>₹{{ order.delivery_charge }}</span>
+              {% endif %}
+            </div>
+          </div>
+          {% if order.discount %}
+            <div class="row mb-3 pb-3 border-bottom">
+              <div class="col-6">
+                <span class="text-muted">Discount:</span>
+              </div>
+              <div class="col-6 text-end">
+                <span class="text-success">-₹{{ order.discount }}</span>
+              </div>
+            </div>
+          {% endif %}
+          <div class="row">
+            <div class="col-6">
+              <h5>Total Amount:</h5>
+            </div>
+            <div class="col-6 text-end">
+              <h5 class="text-success">₹{{ order.total_amount }}</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Information -->
+      <div class="card mb-4">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Payment Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-6 col-md-3">
+              <span class="text-muted d-block mb-1">Method:</span>
+              <strong>{{ order.payment_method | default('Online Payment') }}</strong>
+            </div>
+            <div class="col-6 col-md-3">
+              <span class="text-muted d-block mb-1">Status:</span>
+              {% if order.payment_status == 'paid' %}
+                <span class="badge bg-success">Paid</span>
+              {% elif order.payment_status == 'pending' %}
+                <span class="badge bg-warning text-dark">Pending</span>
+              {% else %}
+                <span class="badge bg-danger">Failed</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shipping Information -->
+      <div class="card mb-4">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Shipping Address</h5>
+        </div>
+        <div class="card-body">
+          <address>
+            <strong>{{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}</strong><br>
+            {{ order.shipping_address.address_line1 }}<br>
+            {% if order.shipping_address.address_line2 %}
+              {{ order.shipping_address.address_line2 }}<br>
+            {% endif %}
+            {{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.pincode }}<br>
+            Phone: {{ order.shipping_address.phone }}<br>
+            Email: {{ order.shipping_address.email }}
+          </address>
+        </div>
+      </div>
+
+      <!-- Order Status Timeline (Optional) -->
+      <div class="card mb-4">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Order Status</h5>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-marker bg-success"></div>
+              <div class="timeline-content">
+                <h6 class="mb-1">Order Confirmed</h6>
+                <small class="text-muted">{{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker {% if order.status in ['processing', 'shipped', 'delivered'] %}bg-success{% else %}bg-secondary{% endif %}"></div>
+              <div class="timeline-content">
+                <h6 class="mb-1">Processing</h6>
+                <small class="text-muted">We're preparing your order</small>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker {% if order.status in ['shipped', 'delivered'] %}bg-success{% else %}bg-secondary{% endif %}"></div>
+              <div class="timeline-content">
+                <h6 class="mb-1">Shipped</h6>
+                <small class="text-muted">Your package is on the way</small>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker {% if order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %}"></div>
+              <div class="timeline-content">
+                <h6 class="mb-1">Delivered</h6>
+                <small class="text-muted">Package delivered to you</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="row g-2 mb-4">
+        <div class="col-12 col-sm-6">
+          <a href="https://wa.me/{{ config.BUSINESS_WHATSAPP }}?text=Hi%20I%20have%20order%20%23{{ order.order_number }}%20and%20want%20to%20track%20it" target="_blank" class="btn btn-success w-100">
+            <i class="fab fa-whatsapp me-2"></i>Track via WhatsApp
+          </a>
+        </div>
+        <div class="col-12 col-sm-6">
+          <a href="{{ url_for('products') }}" class="btn btn-primary w-100">
+            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+          </a>
+        </div>
+      </div>
+
+      <!-- Support Information -->
+      <div class="card border-info bg-light">
+        <div class="card-body">
+          <h6 class="card-title mb-2">
+            <i class="fas fa-question-circle me-2 text-info"></i>Need Help?
+          </h6>
+          <p class="card-text mb-2">
+            For any queries regarding your order, please contact us:
+          </p>
+          <ul class="list-unstyled mb-0">
+            <li class="mb-1">
+              <i class="fas fa-phone me-2 text-info"></i>
+              <a href="tel:{{ config.BUSINESS_PHONE }}" class="text-decoration-none">Call us</a>
+            </li>
+            <li class="mb-1">
+              <i class="fas fa-envelope me-2 text-info"></i>
+              <a href="mailto:{{ config.BUSINESS_EMAIL }}" class="text-decoration-none">Email us</a>
+            </li>
+            <li>
+              <i class="fab fa-whatsapp me-2 text-info"></i>
+              <a href="https://wa.me/{{ config.BUSINESS_WHATSAPP }}" target="_blank" class="text-decoration-none">WhatsApp us</a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Print Styles -->
+{% endblock %}
+
+{% block extra_css %}
 <style>
-    @media print {
-        .btn, .container > div > div:last-child, .text-center.mt-5 {
-            display: none !important;
-        }
+  .success-checkmark {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    position: relative;
+  }
 
-        body {
-            padding: 0;
-        }
+  .success-checkmark .check-icon {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    border-radius: 50%;
+    box-sizing: content-box;
+    border: 4px solid #4caf50;
+    background-color: #f1f1f1;
+  }
 
-        .container {
-            max-width: 100% !important;
-        }
+  .success-checkmark .check-icon .icon-line {
+    height: 5px;
+    background-color: #4caf50;
+    display: block;
+    border-radius: 2px;
+    position: absolute;
+    z-index: 6;
+  }
+
+  .success-checkmark .check-icon .icon-line.line-tip {
+    width: 25px;
+    top: 46px;
+    left: 14px;
+    transform: rotate(45deg);
+  }
+
+  .success-checkmark .check-icon .icon-line.line-long {
+    width: 47px;
+    top: 34px;
+    right: 17px;
+    transform: rotate(-45deg);
+  }
+
+  .success-checkmark .check-icon .icon-circle {
+    height: 100%;
+    border: 4px solid #4caf50;
+    border-radius: 50%;
+    box-sizing: content-box;
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    z-index: 2;
+    animation: rotate-circle 6s ease-in-out;
+  }
+
+  .success-checkmark .check-icon .icon-fix {
+    height: 5px;
+    background-color: #f1f1f1;
+    display: block;
+    border-radius: 2px;
+    position: absolute;
+    left: -4px;
+    top: 37px;
+    z-index: 1;
+    width: 5px;
+  }
+
+  @keyframes rotate-circle {
+    0% {
+      transform: rotate(-45deg);
     }
+    5% {
+      transform: rotate(-45deg);
+    }
+    12% {
+      transform: rotate(-405deg);
+    }
+    100% {
+      transform: rotate(-405deg);
+    }
+  }
+
+  /* Timeline Styles */
+  .timeline {
+    position: relative;
+    padding: 20px 0;
+  }
+
+  .timeline-item {
+    display: flex;
+    margin-bottom: 25px;
+    position: relative;
+  }
+
+  .timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 50px;
+    bottom: -25px;
+    width: 2px;
+    background: #dee2e6;
+  }
+
+  .timeline-marker {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .timeline-content {
+    margin-left: 20px;
+    padding-top: 5px;
+  }
+
+  @media (max-width: 576px) {
+    .success-checkmark {
+      width: 60px;
+      height: 60px;
+    }
+
+    .success-checkmark .check-icon {
+      width: 60px;
+      height: 60px;
+      border-width: 3px;
+    }
+
+    .success-checkmark .check-icon .icon-line.line-tip {
+      width: 20px;
+      top: 35px;
+      left: 10px;
+    }
+
+    .success-checkmark .check-icon .icon-line.line-long {
+      width: 35px;
+      top: 26px;
+      right: 13px;
+    }
+  }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Animate success checkmark on page load
+    const checkmark = document.querySelector('.success-checkmark .check-icon .icon-circle');
+    if (checkmark) {
+      checkmark.style.animationPlayState = 'running';
+    }
+
+    // Track page view for analytics
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'purchase', {
+        transaction_id: '{{ order.order_number }}',
+        value: {{ order.total_amount }},
+        currency: 'INR',
+        tax: 0,
+        shipping: {{ order.delivery_charge }},
+        items: [
+          {% for item in order.items %}
+            {
+              item_id: '{{ item.product.id }}',
+              item_name: '{{ item.product.name }}',
+              price: {{ item.price }},
+              quantity: {{ item.quantity }}
+            }{% if not loop.last %},{% endif %}
+          {% endfor %}
+        ]
+      });
+    }
+
+    // Store order in session storage
+    sessionStorage.setItem('lastOrder', JSON.stringify({
+      orderNumber: '{{ order.order_number }}',
+      total: '{{ order.total_amount }}',
+      items: {{ order.items | tojson }},
+      date: new Date().toISOString()
+    }));
+  });
+</script>
 {% endblock %}

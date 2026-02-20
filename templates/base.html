@@ -3,38 +3,377 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ config.BUSINESS_NAME }} - {{ config.BUSINESS_TAGLINE }}. Custom 3D printing services with high-quality materials.">
-    <meta name="keywords" content="3D printing, 3D printed products, custom 3D printing, {{ config.BUSINESS_ADDRESS }}">
-    <meta name="author" content="{{ config.BUSINESS_NAME }}">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="{% block og_title %}{{ config.BUSINESS_NAME }} - {{ config.BUSINESS_TAGLINE }}{% endblock %}">
-    <meta property="og:description" content="{{ config.BUSINESS_TAGLINE }}. Custom 3D printing services.">
-    <meta property="og:type" content="website">
+    <meta name="description" content="{{ config.BUSINESS_NAME }} - Quality 3D Printing & Products from Pune, India">
+    <meta name="keywords" content="3D printing, 3D printed products, Pune, India">
+    <title>{% block title %}{{ config.BUSINESS_NAME }}{% endblock %}</title>
 
-    <title>{% block title %}{{ config.BUSINESS_NAME }} - {{ config.BUSINESS_TAGLINE }}{% endblock %}</title>
-
-    <!-- Bootstrap 5.3.2 CSS -->
+    <!-- Bootstrap 5.3.2 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome 6 -->
+    <!-- Font Awesome 6 CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --dark-bg: #212529;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            transition: color 0.3s ease;
+            color: #333 !important;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .nav-link.active {
+            color: var(--primary-color) !important;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        /* Search Bar */
+        #liveSearch {
+            border: 1px solid #dee2e6;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #liveSearch:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        #searchResults {
+            border-top: none;
+        }
+
+        #searchResults a {
+            transition: background-color 0.2s;
+        }
+
+        #searchResults a:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Cart & Wishlist Badges */
+        .badge-counter {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            min-width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .icon-link {
+            position: relative;
+            display: inline-block;
+            margin: 0 10px;
+            text-decoration: none;
+            color: #333;
+            font-size: 1.25rem;
+            transition: color 0.3s;
+        }
+
+        .icon-link:hover {
+            color: var(--primary-color);
+        }
+
+        /* Flash Messages */
+        .alert {
+            margin-top: 20px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Main Content */
+        main {
+            min-height: calc(100vh - 400px);
+            padding: 30px 0;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-bg);
+            color: #adb5bd;
+            padding: 50px 0 20px;
+            margin-top: 50px;
+        }
+
+        footer h5 {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        footer a {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: white;
+        }
+
+        footer ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        footer li {
+            margin-bottom: 10px;
+        }
+
+        .footer-divider {
+            border-top: 1px solid #495057;
+            margin: 30px 0;
+        }
+
+        .footer-section {
+            margin-bottom: 30px;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+
+        .social-icons a:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Trust Badges */
+        .trust-badges {
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            padding: 20px 0;
+        }
+
+        .trust-badge {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .trust-badge i {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .trust-badge small {
+            display: block;
+            margin-top: 5px;
+            color: #495057;
+        }
+
+        /* Floating WhatsApp Button */
+        .whatsapp-btn {
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(25, 135, 84, 0.4);
+        }
+
+        /* Back to Top Button */
+        #backToTop {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1030;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+        }
+
+        #backToTop:hover {
+            background: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        #backToTop.show {
+            display: flex;
+        }
+
+        /* Recently Viewed Products */
+        .recently-viewed {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 40px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .recently-viewed h4 {
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #212529;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .recently-viewed-item {
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.3s;
+        }
+
+        .recently-viewed-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .recently-viewed-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #f8f9fa;
+        }
+
+        .recently-viewed-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .recently-viewed-price {
+            color: var(--success-color);
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+
+            #liveSearch {
+                min-width: 180px !important;
+            }
+
+            main {
+                padding: 15px 0;
+            }
+
+            .icon-link {
+                margin: 0 5px;
+                font-size: 1.1rem;
+            }
+
+            .whatsapp-btn {
+                width: 50px !important;
+                height: 50px !important;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #searchResults {
+            animation: slideDown 0.2s ease;
+        }
+
+        /* Lazy Loading Images */
+        img[loading="lazy"] {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
 
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
-            <!-- Brand/Logo -->
-            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}">
-                <i class="fas fa-cube text-success me-2"></i>
-                <span class="brand-name">{{ config.BUSINESS_NAME }}</span>
+            <!-- Logo -->
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="fas fa-cube me-2"></i>{{ config.BUSINESS_NAME }}
             </a>
 
             <!-- Toggler Button for Mobile -->
@@ -44,152 +383,109 @@
 
             <!-- Navbar Content -->
             <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <!-- Home Link -->
+                <!-- Center Navigation Menu -->
+                <ul class="navbar-nav mx-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">
-                            <i class="fas fa-home me-1"></i> Home
-                        </a>
+                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
                     </li>
-
-                    <!-- Products Link -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('products') }}">
-                            <i class="fas fa-box me-1"></i> Products
-                        </a>
+                        <a class="nav-link" href="{{ url_for('products') }}">Products</a>
                     </li>
-
-                    <!-- Categories Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-list me-1"></i> Categories
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                            {% if categories %}
-                                {% for category in categories %}
-                                    <li>
-                                        <a class="dropdown-item" href="{{ url_for('products', category=category.slug) }}">
-                                            {{ category.name }}
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                                <li><hr class="dropdown-divider"></li>
-                            {% endif %}
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('products') }}">
-                                    View All Categories
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <!-- About Link -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('about') }}">
-                            <i class="fas fa-info-circle me-1"></i> About
-                        </a>
+                        <a class="nav-link" href="{{ url_for('about') }}">About</a>
                     </li>
-
-                    <!-- Contact Link -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('contact') }}">
-                            <i class="fas fa-envelope me-1"></i> Contact
-                        </a>
+                        <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
                     </li>
                 </ul>
 
-                <!-- Search Bar -->
-                <form class="d-flex me-3 navbar-search" role="search" action="{{ url_for('products') }}" method="GET">
-                    <div class="input-group input-group-sm">
-                        <input class="form-control" type="text" name="q" placeholder="Search products..." aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
+                <!-- Live Search Bar -->
+                <form class="d-flex me-3 me-lg-2" id="searchForm" style="position: relative;">
+                    <input type="text" class="form-control form-control-sm" id="liveSearch"
+                           placeholder="Search products..." autocomplete="off" style="min-width: 220px;">
+                    <div id="searchResults" class="position-absolute top-100 start-0 w-100 bg-white shadow-lg rounded-bottom d-none"
+                         style="z-index: 1050; max-height: 400px; overflow-y: auto;">
                     </div>
                 </form>
 
                 <!-- Right Side Icons -->
-                <ul class="navbar-nav ms-auto">
-                    <!-- Cart Icon -->
-                    <li class="nav-item">
-                        <a class="nav-link position-relative" href="{{ url_for('cart') }}">
-                            <i class="fas fa-shopping-cart"></i>
-                            {% if cart_count and cart_count > 0 %}
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ cart_count }}
-                                </span>
-                            {% endif %}
-                        </a>
-                    </li>
+                <div class="d-flex align-items-center">
+                    <!-- Wishlist Icon -->
+                    <a href="{{ url_for('wishlist') }}" class="icon-link" title="Wishlist">
+                        <i class="far fa-heart"></i>
+                        <span class="badge-counter" id="wishlistCount" style="display: none;">0</span>
+                    </a>
 
-                    <!-- Admin Link (if authenticated) -->
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-shield"></i> Admin
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
-                                        Dashboard
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('admin_products') }}">
-                                        Manage Products
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('admin_orders') }}">
-                                        Orders
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('admin_logout') }}">
-                                        Logout
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                    <!-- Cart Icon -->
+                    <a href="{{ url_for('cart') }}" class="icon-link" title="Shopping Cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge-counter" id="cartCount" {% if cart_count == 0 %}style="display: none;"{% endif %}>{{ cart_count }}</span>
+                    </a>
+
+                    <!-- Admin Dropdown (if logged in) -->
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <div class="dropdown ms-3">
+                        <a class="icon-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-shield"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_products') }}"><i class="fas fa-boxes me-2"></i>Products</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_orders') }}"><i class="fas fa-receipt me-2"></i>Orders</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_inquiries') }}"><i class="fas fa-envelope me-2"></i>Inquiries</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_reviews') }}"><i class="fas fa-star me-2"></i>Reviews</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                    {% elif current_user.is_authenticated %}
+                    <!-- User Dropdown (if logged in but not admin) -->
+                    <div class="dropdown ms-3">
+                        <a class="icon-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('orders') }}"><i class="fas fa-receipt me-2"></i>My Orders</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('addresses') }}"><i class="fas fa-map-marker-alt me-2"></i>Addresses</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <!-- Login Link (if not logged in) -->
+                    <a href="{{ url_for('login') }}" class="icon-link ms-3" title="Login">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </a>
                     {% endif %}
-                </ul>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Flash Messages Section -->
+    <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <div class="container-fluid mt-3">
+            <div class="container mt-3">
                 {% for category, message in messages %}
                     {% if category == 'error' %}
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            <strong>Error:</strong> {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% elif category == 'success' %}
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="fas fa-check-circle me-2"></i>
-                            {{ message }}
+                            <i class="fas fa-exclamation-circle me-2"></i>{{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% elif category == 'warning' %}
                         <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            {{ message }}
+                            <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% elif category == 'info' %}
                         <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            <i class="fas fa-info-circle me-2"></i>
-                            {{ message }}
+                            <i class="fas fa-info-circle me-2"></i>{{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% else %}
-                        <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            {{ message }}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>{{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endif %}
@@ -198,152 +494,410 @@
         {% endif %}
     {% endwith %}
 
-    <!-- Main Content Block -->
-    <main>
+    <!-- Main Content -->
+    <main class="container">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="mt-5 pt-5 pb-3" style="background-color: #1a1f2e;">
+    <!-- Recently Viewed Products -->
+    {% if request.path != url_for('home') %}
+    <div class="container" id="recentlyViewedContainer" style="display: none;">
+        <div class="recently-viewed">
+            <h4><i class="fas fa-history me-2"></i>Recently Viewed</h4>
+            <div class="row g-3" id="recentlyViewedProducts">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Trust Badges Section -->
+    <section class="trust-badges">
         <div class="container">
-            <div class="row mb-4">
-                <!-- Company Info & Contact -->
-                <div class="col-lg-4 mb-4 mb-lg-0">
-                    <h5 class="fw-bold mb-3 text-white">
-                        <i class="fas fa-cube text-success me-2"></i>{{ config.BUSINESS_NAME }}
-                    </h5>
-                    <p class="mb-3" style="color: #adb5bd;">
-                        {{ config.BUSINESS_TAGLINE }}
-                    </p>
-                    <ul class="list-unstyled" style="color: #adb5bd;">
-                        <li class="mb-2">
-                            <i class="fas fa-map-marker-alt text-success me-2"></i>
-                            {{ config.BUSINESS_ADDRESS }}
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-phone text-success me-2"></i>
-                            <a href="tel:{{ config.BUSINESS_PHONE }}" class="text-decoration-none" style="color: #adb5bd;">
-                                {{ config.BUSINESS_PHONE }}
+            <div class="row text-center g-3">
+                <div class="col-6 col-md-3">
+                    <div class="trust-badge">
+                        <i class="fas fa-lock text-success"></i>
+                        <small class="fw-bold">Secure Checkout</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="trust-badge">
+                        <i class="fas fa-flag text-primary"></i>
+                        <small class="fw-bold">Made in India</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="trust-badge">
+                        <i class="fas fa-truck text-warning"></i>
+                        <small class="fw-bold">Fast Delivery</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="trust-badge">
+                        <i class="fas fa-gift text-danger"></i>
+                        <small class="fw-bold">Free Shipping ₹999+</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <!-- About Section -->
+                <div class="col-12 col-md-3">
+                    <div class="footer-section">
+                        <h5><i class="fas fa-cube me-2"></i>{{ config.BUSINESS_NAME }}</h5>
+                        <p style="color: #adb5bd; line-height: 1.6;">Premium 3D printed products crafted with precision in Pune, India. Quality meets innovation.</p>
+                        <div class="social-icons mt-3">
+                            <a href="https://facebook.com/{{ config.FACEBOOK_PAGE }}" target="_blank" title="Facebook" style="color: #adb5bd;">
+                                <i class="fab fa-facebook-f"></i>
                             </a>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-envelope text-success me-2"></i>
-                            <a href="mailto:{{ config.BUSINESS_EMAIL }}" class="text-decoration-none" style="color: #adb5bd;">
-                                {{ config.BUSINESS_EMAIL }}
+                            <a href="https://instagram.com/{{ config.INSTAGRAM_HANDLE }}" target="_blank" title="Instagram" style="color: #adb5bd;">
+                                <i class="fab fa-instagram"></i>
                             </a>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fab fa-whatsapp text-success me-2"></i>
-                            <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" class="text-decoration-none" style="color: #adb5bd;" target="_blank">
-                                WhatsApp Us
+                            <a href="https://twitter.com/{{ config.TWITTER_HANDLE }}" target="_blank" title="Twitter" style="color: #adb5bd;">
+                                <i class="fab fa-twitter"></i>
                             </a>
-                        </li>
-                    </ul>
+                            <a href="https://youtube.com/{{ config.YOUTUBE_CHANNEL }}" target="_blank" title="YouTube" style="color: #adb5bd;">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Quick Links -->
-                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
-                    <h6 class="fw-bold mb-3 text-white">Quick Links</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <a href="{{ url_for('home') }}" class="text-decoration-none" style="color: #adb5bd;">
-                                <i class="fas fa-chevron-right text-success me-1 small"></i> Home
-                            </a>
-                        </li>
-                        <li class="mb-2">
-                            <a href="{{ url_for('products') }}" class="text-decoration-none" style="color: #adb5bd;">
-                                <i class="fas fa-chevron-right text-success me-1 small"></i> Products
-                            </a>
-                        </li>
-                        <li class="mb-2">
-                            <a href="{{ url_for('about') }}" class="text-decoration-none" style="color: #adb5bd;">
-                                <i class="fas fa-chevron-right text-success me-1 small"></i> About Us
-                            </a>
-                        </li>
-                        <li class="mb-2">
-                            <a href="{{ url_for('contact') }}" class="text-decoration-none" style="color: #adb5bd;">
-                                <i class="fas fa-chevron-right text-success me-1 small"></i> Contact
-                            </a>
-                        </li>
-                    </ul>
+                <div class="col-12 col-md-2">
+                    <div class="footer-section">
+                        <h5>Quick Links</h5>
+                        <ul>
+                            <li><a href="{{ url_for('home') }}" style="color: #adb5bd;">Home</a></li>
+                            <li><a href="{{ url_for('products') }}" style="color: #adb5bd;">Products</a></li>
+                            <li><a href="{{ url_for('about') }}" style="color: #adb5bd;">About Us</a></li>
+                            <li><a href="{{ url_for('contact') }}" style="color: #adb5bd;">Contact</a></li>
+                            <li><a href="{{ url_for('faq') }}" style="color: #adb5bd;">FAQ</a></li>
+                        </ul>
+                    </div>
                 </div>
 
                 <!-- Categories -->
-                <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
-                    <h6 class="fw-bold mb-3 text-white">Categories</h6>
-                    <ul class="list-unstyled">
-                        {% if categories %}
-                            {% for category in categories[:4] %}
-                                <li class="mb-2">
-                                    <a href="{{ url_for('products', category=category.slug) }}" class="text-decoration-none" style="color: #adb5bd;">
-                                        <i class="fas fa-chevron-right text-success me-1 small"></i> {{ category.name }}
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        {% endif %}
-                    </ul>
+                <div class="col-12 col-md-2">
+                    <div class="footer-section">
+                        <h5>Categories</h5>
+                        <ul>
+                            {% if categories %}
+                                {% for category in categories[:5] %}
+                                <li><a href="{{ url_for('products', category=category.slug) }}" style="color: #adb5bd;">{{ category.name }}</a></li>
+                                {% endfor %}
+                            {% else %}
+                                <li><a href="{{ url_for('products') }}" style="color: #adb5bd;">View All</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
 
-                <!-- Follow Us & Business Hours -->
-                <div class="col-lg-3 col-md-4">
-                    <h6 class="fw-bold mb-3 text-white">Follow Us</h6>
-                    <div class="d-flex gap-3 mb-4">
-                        <a href="#" class="text-decoration-none" style="color: #adb5bd; font-size: 1.3rem;">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                        <a href="#" class="text-decoration-none" style="color: #adb5bd; font-size: 1.3rem;">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-decoration-none" style="color: #adb5bd; font-size: 1.3rem;">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-decoration-none" style="color: #adb5bd; font-size: 1.3rem;">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
+                <!-- Contact Info -->
+                <div class="col-12 col-md-2">
+                    <div class="footer-section">
+                        <h5>Contact Us</h5>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 12px;">
+                                <i class="fas fa-map-marker-alt me-2" style="color: #adb5bd;"></i>
+                                <span style="color: #adb5bd;">{{ config.BUSINESS_ADDRESS }}</span>
+                            </li>
+                            <li style="margin-bottom: 12px;">
+                                <i class="fas fa-envelope me-2" style="color: #adb5bd;"></i>
+                                <a href="mailto:{{ config.BUSINESS_EMAIL }}" style="color: #adb5bd;">{{ config.BUSINESS_EMAIL }}</a>
+                            </li>
+                            <li style="margin-bottom: 12px;">
+                                <i class="fas fa-phone me-2" style="color: #adb5bd;"></i>
+                                <a href="tel:{{ config.BUSINESS_PHONE }}" style="color: #adb5bd;">{{ config.BUSINESS_PHONE }}</a>
+                            </li>
+                            <li style="margin-bottom: 12px;">
+                                <i class="fab fa-whatsapp me-2" style="color: #adb5bd;"></i>
+                                <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" target="_blank" style="color: #adb5bd;">WhatsApp</a>
+                            </li>
+                        </ul>
                     </div>
+                </div>
 
-                    <h6 class="fw-bold mb-3 text-white">Business Hours</h6>
-                    <ul class="list-unstyled" style="color: #adb5bd;">
-                        <li class="mb-1"><i class="fas fa-clock text-success me-2"></i>Mon - Sat: 10AM - 7PM</li>
-                        <li><i class="fas fa-clock text-success me-2"></i>Sun: By Appointment</li>
-                    </ul>
+                <!-- Business Hours -->
+                <div class="col-12 col-md-3">
+                    <div class="footer-section">
+                        <h5>Business Hours</h5>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 8px; color: #adb5bd;">
+                                <strong>Monday - Friday:</strong><br>
+                                <span style="color: #adb5bd;">9:00 AM - 6:00 PM IST</span>
+                            </li>
+                            <li style="margin-bottom: 8px; color: #adb5bd;">
+                                <strong>Saturday:</strong><br>
+                                <span style="color: #adb5bd;">10:00 AM - 4:00 PM IST</span>
+                            </li>
+                            <li style="color: #adb5bd;">
+                                <strong>Sunday:</strong><br>
+                                <span style="color: #adb5bd;">Closed</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
-            <!-- Copyright -->
-            <hr style="border-color: #2d3548;">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="small mb-0" style="color: #6c757d;">
-                        &copy; <span id="currentYear"></span> {{ config.BUSINESS_NAME }}. All rights reserved.
-                    </p>
+            <div class="footer-divider"></div>
+
+            <!-- Footer Bottom -->
+            <div class="row">
+                <div class="col-12 col-md-6" style="color: #adb5bd;">
+                    <p>&copy; 2024 {{ config.BUSINESS_NAME }}. All rights reserved.</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="small mb-0" style="color: #6c757d;">
-                        <a href="#" class="text-decoration-none" style="color: #6c757d;">Privacy Policy</a> |
-                        <a href="#" class="text-decoration-none" style="color: #6c757d;">Terms of Service</a>
-                    </p>
+                <div class="col-12 col-md-6 text-md-end" style="color: #adb5bd;">
+                    <a href="{{ url_for('privacy_policy') }}" style="color: #adb5bd; text-decoration: none;">Privacy Policy</a> |
+                    <a href="{{ url_for('terms_conditions') }}" style="color: #adb5bd; text-decoration: none;">Terms & Conditions</a> |
+                    <a href="{{ url_for('shipping_policy') }}" style="color: #adb5bd; text-decoration: none;">Shipping Policy</a> |
+                    <a href="{{ url_for('return_policy') }}" style="color: #adb5bd; text-decoration: none;">Return Policy</a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- WhatsApp Floating Button -->
-    {% if config.get('WHATSAPP_NUMBER') %}
-        <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" class="whatsapp-btn" target="_blank" rel="noopener noreferrer" title="Chat with us on WhatsApp">
-            <i class="fab fa-whatsapp"></i>
-        </a>
-    {% endif %}
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}?text=Hi!%20I'm%20interested%20in%20your%203D%20printed%20products."
+       class="btn btn-success rounded-circle shadow-lg position-fixed whatsapp-btn"
+       style="bottom: 90px; right: 20px; width: 56px; height: 56px; z-index: 1040; display: flex; align-items: center; justify-content: center; padding: 0;"
+       target="_blank"
+       title="Chat with us on WhatsApp">
+        <i class="fab fa-whatsapp fa-lg"></i>
+    </a>
 
-    <!-- Bootstrap 5.3.2 JS Bundle -->
+    <!-- Back to Top Button -->
+    <button id="backToTop" type="button" class="btn btn-primary rounded-circle shadow-lg" title="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Bootstrap 5.3.2 JS Bundle CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Custom JS -->
+    <!-- Main JavaScript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-    <!-- Set Current Year -->
+    <!-- Live Search AJAX Script -->
     <script>
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        const searchInput = document.getElementById('liveSearch');
+        const searchResults = document.getElementById('searchResults');
+        let searchTimeout;
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const q = this.value.trim();
+
+                if (q.length < 2) {
+                    searchResults.classList.add('d-none');
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => {
+                    fetch('/api/search?q=' + encodeURIComponent(q))
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.length === 0) {
+                                searchResults.innerHTML = '<div class="p-3 text-muted"><i class="fas fa-search me-2"></i>No products found</div>';
+                            } else {
+                                searchResults.innerHTML = data.map(p => `
+                                    <a href="/product/${p.slug}" class="d-flex align-items-center p-2 text-decoration-none border-bottom text-reset">
+                                        <div style="flex: 1;">
+                                            <div class="fw-bold text-dark">${p.name}</div>
+                                            <small class="text-success fw-bold">₹${p.price}</small>
+                                            <small class="text-muted ms-2">${p.category || 'Uncategorized'}</small>
+                                        </div>
+                                    </a>
+                                `).join('');
+                            }
+                            searchResults.classList.remove('d-none');
+                        })
+                        .catch(err => {
+                            console.error('Search error:', err);
+                            searchResults.innerHTML = '<div class="p-3 text-danger"><i class="fas fa-exclamation-circle me-2"></i>Search failed</div>';
+                        });
+                }, 300);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.add('d-none');
+                }
+            });
+        }
+    </script>
+
+    <!-- Wishlist localStorage Script -->
+    <script>
+        // Initialize Wishlist
+        function initWishlist() {
+            const wishlistCount = localStorage.getItem('wishlistCount') || 0;
+            const wishlistCountEl = document.getElementById('wishlistCount');
+
+            if (parseInt(wishlistCount) > 0) {
+                wishlistCountEl.textContent = wishlistCount;
+                wishlistCountEl.style.display = 'flex';
+            } else {
+                wishlistCountEl.style.display = 'none';
+            }
+        }
+
+        // Add to Wishlist
+        function addToWishlist(productId, productName) {
+            let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+            if (!wishlist.includes(productId)) {
+                wishlist.push(productId);
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                localStorage.setItem('wishlistCount', wishlist.length);
+
+                // Update badge
+                document.getElementById('wishlistCount').textContent = wishlist.length;
+                document.getElementById('wishlistCount').style.display = 'flex';
+
+                // Show notification
+                showNotification(`${productName} added to wishlist!`, 'success');
+            } else {
+                showNotification(`${productName} is already in your wishlist!`, 'info');
+            }
+        }
+
+        // Remove from Wishlist
+        function removeFromWishlist(productId) {
+            let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+            wishlist = wishlist.filter(id => id !== productId);
+
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            localStorage.setItem('wishlistCount', wishlist.length);
+
+            // Update badge
+            const wishlistCountEl = document.getElementById('wishlistCount');
+            if (wishlist.length > 0) {
+                wishlistCountEl.textContent = wishlist.length;
+            } else {
+                wishlistCountEl.style.display = 'none';
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.role = 'alert';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+            const container = document.querySelector('main');
+            container.insertBefore(alertDiv, container.firstChild);
+
+            setTimeout(() => alertDiv.remove(), 4000);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initWishlist();
+        });
+    </script>
+
+    <!-- Recently Viewed Products Script -->
+    <script>
+        // Track recently viewed products
+        function trackRecentlyViewed(productId, productName, productPrice, productImage, productSlug) {
+            let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+
+            // Remove if already exists (to avoid duplicates)
+            recentlyViewed = recentlyViewed.filter(item => item.id !== productId);
+
+            // Add to beginning
+            recentlyViewed.unshift({
+                id: productId,
+                name: productName,
+                price: productPrice,
+                image: productImage,
+                slug: productSlug
+            });
+
+            // Keep only last 8 items
+            if (recentlyViewed.length > 8) {
+                recentlyViewed = recentlyViewed.slice(0, 8);
+            }
+
+            localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+        }
+
+        // Display recently viewed products
+        function displayRecentlyViewed() {
+            const recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+            const container = document.getElementById('recentlyViewedProducts');
+            const section = document.getElementById('recentlyViewedContainer');
+
+            if (recentlyViewed.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            container.innerHTML = recentlyViewed.map(product => `
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                    <a href="/product/${product.slug}" class="recently-viewed-item">
+                        <img src="${product.image}" alt="${product.name}" class="recently-viewed-img" loading="lazy">
+                        <div class="recently-viewed-name">${product.name}</div>
+                        <div class="recently-viewed-price">₹${product.price}</div>
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            displayRecentlyViewed();
+        });
+    </script>
+
+    <!-- Back to Top Button Script -->
+    <script>
+        const backToTopBtn = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+
+    <!-- Lazy Loading Images Support -->
+    <script>
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src || img.src;
+                        img.classList.add('loaded');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+
+            document.querySelectorAll('img[loading="lazy"]').forEach(img => imageObserver.observe(img));
+        }
     </script>
 
     {% block extra_js %}{% endblock %}
