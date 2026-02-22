@@ -4,7 +4,6 @@ PrintCraft 3D - E-Commerce Web Application (v2.0)
 
 This is the upgraded main application file with:
 - All existing routes preserved (home, products, cart, checkout, admin, etc.)
-- New payment integration (Razorpay)
 - Product reviews system
 - Search API for AJAX
 - Wishlist functionality
@@ -53,15 +52,6 @@ from models import (
     Inquiry, SiteSetting, Review, WishlistItem
 )
 from config import Config
-
-# Try to import Razorpay for payment integration
-try:
-    import razorpay
-    RAZORPAY_AVAILABLE = True
-except ImportError:
-    RAZORPAY_AVAILABLE = False
-    print("⚠️  Razorpay not installed. Payment integration disabled.")
-    print("   Install with: pip install razorpay")
 
 # Try to import Pillow for image optimization
 try:
@@ -697,14 +687,6 @@ Thank you for choosing {app.config['BUSINESS_NAME']}!
             )
             order.items = order_items
 
-            # If Razorpay payment, store the order IDs
-            if payment_method == 'razorpay':
-                order.razorpay_order_id = request.form.get('razorpay_order_id', '')
-                order.razorpay_payment_id = request.form.get('razorpay_payment_id', '')
-                if order.razorpay_payment_id:
-                    order.payment_status = 'paid'
-                    order.order_status = 'confirmed'
-
             db.session.add(order)
             db.session.commit()
 
@@ -727,99 +709,13 @@ Thank you for choosing {app.config['BUSINESS_NAME']}!
         return render_template('checkout.html',
                                subtotal=subtotal,
                                delivery=delivery,
-                               grand_total=subtotal + delivery,
-                               razorpay_available=RAZORPAY_AVAILABLE,
-                               razorpay_key=app.config.get('RAZORPAY_KEY_ID', ''))
+                               grand_total=subtotal + delivery)
 
     @app.route('/order/<order_number>')
     def order_confirmation(order_number):
         """Show order confirmation page after successful checkout."""
         order = Order.query.filter_by(order_number=order_number).first_or_404()
         return render_template('order_confirmation.html', order=order)
-
-    # ═══════════════════════════════════════════════════════════
-    # RAZORPAY PAYMENT ROUTES
-    # ═══════════════════════════════════════════════════════════
-
-    @app.route('/create-razorpay-order', methods=['POST'])
-    def create_razorpay_order():
-        """Create a Razorpay order for online payment."""
-        if not RAZORPAY_AVAILABLE or not app.config.get('RAZORPAY_KEY_ID'):
-            return jsonify({'error': 'Razorpay not configured'}), 400
-
-        cart_data = session.get('cart', {})
-        if not cart_data:
-            return jsonify({'error': 'Cart is empty'}), 400
-
-        # Calculate totals
-        subtotal = sum(
-            float(item['price']) * item['quantity'] for item in cart_data.values()
-        )
-        delivery = 0 if subtotal >= app.config['FREE_DELIVERY_ABOVE'] else app.config['DELIVERY_CHARGE']
-        total = subtotal + delivery
-
-        try:
-            client = razorpay.Client(
-                auth=(
-                    app.config['RAZORPAY_KEY_ID'],
-                    app.config['RAZORPAY_KEY_SECRET']
-                )
-            )
-            order_data = {
-                'amount': int(total * 100),  # Razorpay expects paise
-                'currency': 'INR',
-                'payment_capture': 1
-            }
-            razorpay_order = client.order.create(data=order_data)
-            return jsonify({
-                'order_id': razorpay_order['id'],
-                'amount': int(total * 100),
-                'currency': 'INR',
-                'key_id': app.config['RAZORPAY_KEY_ID']
-            })
-        except Exception as e:
-            logger.error(f"Razorpay order creation failed: {e}")
-            return jsonify({'error': str(e)}), 500
-
-    @app.route('/verify-payment', methods=['POST'])
-    def verify_payment():
-        """Verify Razorpay payment signature and complete order."""
-        if not RAZORPAY_AVAILABLE or not app.config.get('RAZORPAY_KEY_SECRET'):
-            return jsonify({'error': 'Razorpay not configured'}), 400
-
-        try:
-            payment_id = request.json.get('razorpay_payment_id')
-            order_id = request.json.get('razorpay_order_id')
-            signature = request.json.get('razorpay_signature')
-
-            client = razorpay.Client(
-                auth=(
-                    app.config['RAZORPAY_KEY_ID'],
-                    app.config['RAZORPAY_KEY_SECRET']
-                )
-            )
-
-            # Verify payment signature
-            params_dict = {
-                'razorpay_order_id': order_id,
-                'razorpay_payment_id': payment_id,
-                'razorpay_signature': signature
-            }
-
-            client.utility.verify_payment_signature(params_dict)
-
-            return jsonify({
-                'success': True,
-                'message': 'Payment verified successfully',
-                'payment_id': payment_id
-            })
-
-        except razorpay.BadRequestError as e:
-            logger.error(f"Payment verification failed: {e}")
-            return jsonify({'error': 'Payment verification failed'}), 400
-        except Exception as e:
-            logger.error(f"Verification error: {e}")
-            return jsonify({'error': str(e)}), 500
 
     # ═══════════════════════════════════════════════════════════
     # PRODUCT REVIEW ROUTES
