@@ -435,7 +435,7 @@
                             <li><a class="dropdown-item" href="{{ url_for('admin_inquiries') }}"><i class="fas fa-envelope me-2"></i>Inquiries</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('admin_reviews') }}"><i class="fas fa-star me-2"></i>Reviews</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('admin_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                         </ul>
                     </div>
                     {% elif current_user.is_authenticated %}
@@ -445,16 +445,16 @@
                             <i class="fas fa-user-circle"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>My Profile</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('orders') }}"><i class="fas fa-receipt me-2"></i>My Orders</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('addresses') }}"><i class="fas fa-map-marker-alt me-2"></i>Addresses</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-receipt me-2"></i>My Orders</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-map-marker-alt me-2"></i>Addresses</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('admin_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                         </ul>
                     </div>
                     {% else %}
                     <!-- Login Link (if not logged in) -->
-                    <a href="{{ url_for('login') }}" class="icon-link ms-3" title="Login">
+                    <a href="{{ url_for('admin_login') }}" class="icon-link ms-3" title="Login">
                         <i class="fas fa-sign-in-alt"></i>
                     </a>
                     {% endif %}
@@ -578,7 +578,7 @@
                             <li><a href="{{ url_for('products') }}" style="color: #adb5bd;">Products</a></li>
                             <li><a href="{{ url_for('about') }}" style="color: #adb5bd;">About Us</a></li>
                             <li><a href="{{ url_for('contact') }}" style="color: #adb5bd;">Contact</a></li>
-                            <li><a href="{{ url_for('faq') }}" style="color: #adb5bd;">FAQ</a></li>
+                            <li><a href="#" style="color: #adb5bd;">FAQ</a></li>
                         </ul>
                     </div>
                 </div>
@@ -654,10 +654,10 @@
                     <p>&copy; 2024 {{ config.BUSINESS_NAME }}. All rights reserved.</p>
                 </div>
                 <div class="col-12 col-md-6 text-md-end" style="color: #adb5bd;">
-                    <a href="{{ url_for('privacy_policy') }}" style="color: #adb5bd; text-decoration: none;">Privacy Policy</a> |
-                    <a href="{{ url_for('terms_conditions') }}" style="color: #adb5bd; text-decoration: none;">Terms & Conditions</a> |
-                    <a href="{{ url_for('shipping_policy') }}" style="color: #adb5bd; text-decoration: none;">Shipping Policy</a> |
-                    <a href="{{ url_for('return_policy') }}" style="color: #adb5bd; text-decoration: none;">Return Policy</a>
+                    <a href="#" style="color: #adb5bd; text-decoration: none;">Privacy Policy</a> |
+                    <a href="#" style="color: #adb5bd; text-decoration: none;">Terms & Conditions</a> |
+                    <a href="#" style="color: #adb5bd; text-decoration: none;">Shipping Policy</a> |
+                    <a href="#" style="color: #adb5bd; text-decoration: none;">Return Policy</a>
                 </div>
             </div>
         </div>
