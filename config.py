@@ -36,13 +36,13 @@ class Config:
 
     # Business details
     BUSINESS_NAME = 'PrintCraft 3D'
-    BUSINESS_EMAIL = os.environ.get('BUSINESS_EMAIL', 'info@printcraft3d.com')
-    WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '+919876543210')
-    BUSINESS_ADDRESS = 'Pune, Maharashtra, India'
+    BUSINESS_EMAIL = os.environ.get('BUSINESS_EMAIL', 'rahuljokare7470@gmail.com')
+    WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '+919890304065')
+    BUSINESS_ADDRESS = 'Solapur, Maharashtra, India'
 
     # Admin credentials
     ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
-    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
+    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'adminn1009')
 
     # Payment gateway - Razorpay
     RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
