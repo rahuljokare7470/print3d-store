@@ -1,53 +1,87 @@
 {% extends "base.html" %}
 
+{% block title %}Contact Us - {{ config.BUSINESS_NAME }}{% endblock %}
+
 {% block content %}
-<!-- Hero Section -->
-<section class="bg-dark text-white py-5">
+
+<!-- Hero -->
+<section class="contact-hero">
   <div class="container">
-    <div class="row align-items-center">
+    <div class="row align-items-center g-4">
       <div class="col-lg-6">
-        <h1 class="display-4 fw-bold mb-4">Contact Us</h1>
-        <p class="lead">Have questions about our 3D printing services? We'd love to hear from you. Get in touch with our team and let's discuss your project.</p>
+        <span class="hero-tag mb-3 d-inline-block">Get in Touch</span>
+        <h1 class="hero-title mb-3">We'd Love to Hear<br>From You</h1>
+        <p class="hero-sub text-white-50">
+          Have questions about our 3D printing services? Need a custom quote?<br>
+          Our team is here to help bring your ideas to life.
+        </p>
       </div>
-      <div class="col-lg-6 text-center">
-        <i class="fas fa-envelope fa-10x text-primary opacity-50"></i>
+      <div class="col-lg-6 d-none d-lg-flex justify-content-end">
+        <div class="hero-illustration">
+          <div class="hero-cube">📦</div>
+          <div class="hero-dot d-1"></div>
+          <div class="hero-dot d-2"></div>
+          <div class="hero-dot d-3"></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Contact Form & Info Section -->
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-4">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Contact Form + Info -->
 <section class="py-5">
   <div class="container">
-    <div class="row g-4">
-      <!-- Contact Form -->
+    <div class="row g-5">
+
+      <!-- ===== LEFT: Contact Form ===== -->
       <div class="col-lg-7">
-        <div class="card shadow-sm border-0">
-          <div class="card-body p-4">
-            <h3 class="card-title fw-bold mb-4">Send us a Message</h3>
-            <form method="POST" action="{{ url_for('contact') }}" class="needs-validation">
-              <div class="mb-3">
-                <label for="name" class="form-label fw-bold">Full Name</label>
-                <input type="text" class="form-control form-control-lg" id="name" name="name" placeholder="Your Name" required>
-                <div class="invalid-feedback">Please provide your name.</div>
+        <div class="contact-card">
+          <div class="contact-card-header">
+            <i class="fas fa-paper-plane me-2"></i>Send us a Message
+          </div>
+          <div class="contact-card-body">
+            <form method="POST" action="{{ url_for('contact') }}" id="contactForm" novalidate>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                  <input type="text" class="contact-input" name="name"
+                         placeholder="Your full name" required>
+                  <div class="invalid-msg">Please enter your name.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Phone Number <span class="text-danger">*</span></label>
+                  <input type="tel" class="contact-input" name="phone"
+                         placeholder="+91 XXXXX XXXXX" required>
+                  <div class="invalid-msg">Please enter your phone number.</div>
+                </div>
               </div>
 
               <div class="mb-3">
-                <label for="email" class="form-label fw-bold">Email Address</label>
-                <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="your@email.com" required>
-                <div class="invalid-feedback">Please provide a valid email address.</div>
+                <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+                <input type="email" class="contact-input" name="email"
+                       placeholder="you@example.com" required>
+                <div class="invalid-msg">Please enter a valid email address.</div>
               </div>
 
               <div class="mb-3">
-                <label for="phone" class="form-label fw-bold">Phone Number</label>
-                <input type="tel" class="form-control form-control-lg" id="phone" name="phone" placeholder="+91-XXXXX XXXXX" required>
-                <div class="invalid-feedback">Please provide a phone number.</div>
-              </div>
-
-              <div class="mb-3">
-                <label for="subject" class="form-label fw-bold">Subject</label>
-                <select class="form-select form-select-lg" id="subject" name="subject" required>
-                  <option value="">Select a subject...</option>
+                <label class="form-label fw-semibold">Subject <span class="text-danger">*</span></label>
+                <select class="contact-input contact-select" name="subject" required>
+                  <option value="">Select a subject…</option>
                   <option value="quote">Quote Request</option>
                   <option value="design">Design Consultation</option>
                   <option value="material">Material Inquiry</option>
@@ -55,113 +89,108 @@
                   <option value="partnership">Partnership Opportunity</option>
                   <option value="general">General Inquiry</option>
                 </select>
-                <div class="invalid-feedback">Please select a subject.</div>
+                <div class="invalid-msg">Please select a subject.</div>
               </div>
 
-              <div class="mb-3">
-                <label for="message" class="form-label fw-bold">Message</label>
-                <textarea class="form-control" id="message" name="message" rows="5" placeholder="Tell us about your project..." required></textarea>
-                <div class="invalid-feedback">Please provide a message.</div>
+              <div class="mb-4">
+                <label class="form-label fw-semibold">Message <span class="text-danger">*</span></label>
+                <textarea class="contact-input" name="message" rows="5"
+                          placeholder="Tell us about your project or question…" required></textarea>
+                <div class="invalid-msg">Please write a message.</div>
               </div>
 
-              <button type="submit" class="btn btn-primary btn-lg fw-bold w-100">
+              <button type="submit" class="btn-send w-100">
                 <i class="fas fa-paper-plane me-2"></i>Send Message
               </button>
+
             </form>
           </div>
         </div>
       </div>
 
-      <!-- Contact Info Cards -->
+      <!-- ===== RIGHT: Info Cards ===== -->
       <div class="col-lg-5">
-        <div class="mb-4">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body p-4">
-              <div class="d-flex align-items-start">
-                <div class="feature-icon bg-primary text-white rounded-circle me-3" style="width: 60px; height: 60px; min-width: 60px; display: flex; align-items: center; justify-content: center;">
-                  <i class="fas fa-map-marker-alt fa-xl"></i>
-                </div>
-                <div>
-                  <h5 class="fw-bold mb-2">Address</h5>
-                  <p class="text-muted mb-0">{{ config.get('BUSINESS_ADDRESS', 'Pune, Maharashtra, India') }}</p>
-                </div>
-              </div>
+
+        <div class="info-grid">
+
+          <!-- Address -->
+          <div class="info-card">
+            <div class="info-icon" style="background: var(--primary-light); color: var(--primary);">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div>
+              <h6 class="info-title">Address</h6>
+              <p class="info-text">{{ config.get('BUSINESS_ADDRESS', 'Pune, Maharashtra, India') }}</p>
             </div>
           </div>
-        </div>
 
-        <div class="mb-4">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body p-4">
-              <div class="d-flex align-items-start">
-                <div class="feature-icon bg-success text-white rounded-circle me-3" style="width: 60px; height: 60px; min-width: 60px; display: flex; align-items: center; justify-content: center;">
-                  <i class="fas fa-phone fa-xl"></i>
-                </div>
-                <div>
-                  <h5 class="fw-bold mb-2">Phone</h5>
-                  <p class="text-muted mb-0">
-                    <a href="tel:{{ config.get('BUSINESS_PHONE', '+91-9999-999999') }}" class="text-decoration-none text-muted">
-                      {{ config.get('BUSINESS_PHONE', '+91-9999-999999') }}
-                    </a>
-                  </p>
-                </div>
-              </div>
+          <!-- Phone -->
+          <div class="info-card">
+            <div class="info-icon" style="background: #D1FAE5; color: #065F46;">
+              <i class="fas fa-phone-alt"></i>
+            </div>
+            <div>
+              <h6 class="info-title">Phone</h6>
+              <p class="info-text">
+                <a href="tel:{{ config.get('BUSINESS_PHONE', '+91-9999-999999') }}"
+                   class="text-decoration-none text-muted">
+                  {{ config.get('BUSINESS_PHONE', '+91-9999-999999') }}
+                </a>
+              </p>
             </div>
           </div>
-        </div>
 
-        <div class="mb-4">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body p-4">
-              <div class="d-flex align-items-start">
-                <div class="feature-icon bg-info text-white rounded-circle me-3" style="width: 60px; height: 60px; min-width: 60px; display: flex; align-items: center; justify-content: center;">
-                  <i class="fas fa-envelope fa-xl"></i>
-                </div>
-                <div>
-                  <h5 class="fw-bold mb-2">Email</h5>
-                  <p class="text-muted mb-0">
-                    <a href="mailto:{{ config.get('BUSINESS_EMAIL', 'info@printcraft3d.com') }}" class="text-decoration-none text-muted">
-                      {{ config.get('BUSINESS_EMAIL', 'info@printcraft3d.com') }}
-                    </a>
-                  </p>
-                </div>
-              </div>
+          <!-- Email -->
+          <div class="info-card">
+            <div class="info-icon" style="background: #DBEAFE; color: #1E40AF;">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div>
+              <h6 class="info-title">Email</h6>
+              <p class="info-text">
+                <a href="mailto:{{ config.get('BUSINESS_EMAIL', 'info@printcraft3d.com') }}"
+                   class="text-decoration-none text-muted">
+                  {{ config.get('BUSINESS_EMAIL', 'info@printcraft3d.com') }}
+                </a>
+              </p>
             </div>
           </div>
-        </div>
 
-        <div class="mb-4">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body p-4">
-              <div class="d-flex align-items-start">
-                <div class="feature-icon bg-warning text-white rounded-circle me-3" style="width: 60px; height: 60px; min-width: 60px; display: flex; align-items: center; justify-content: center;">
-                  <i class="fas fa-clock fa-xl"></i>
-                </div>
-                <div>
-                  <h5 class="fw-bold mb-2">Business Hours</h5>
-                  <p class="text-muted mb-1">Mon - Fri: 9:00 AM - 6:00 PM</p>
-                  <p class="text-muted mb-0">Sat - Sun: 10:00 AM - 4:00 PM</p>
-                </div>
-              </div>
+          <!-- Hours -->
+          <div class="info-card">
+            <div class="info-icon" style="background: #FEF3C7; color: #92400E;">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div>
+              <h6 class="info-title">Business Hours</h6>
+              <p class="info-text mb-1">Mon – Fri: 9:00 AM – 6:00 PM</p>
+              <p class="info-text mb-0">Sat – Sun: 10:00 AM – 4:00 PM</p>
             </div>
           </div>
-        </div>
 
-        <!-- WhatsApp Quick Contact -->
-        <a href="https://wa.me/{{ config.get('BUSINESS_WHATSAPP', '919999999999') }}?text=Hi%20PrintCraft%203D,%20I%20have%20a%20query%20about%203D%20printing%20services" target="_blank" class="btn btn-success btn-lg w-100 fw-bold">
-          <i class="fab fa-whatsapp me-2"></i>Quick Chat on WhatsApp
+        </div><!-- /info-grid -->
+
+        <!-- WhatsApp CTA -->
+        <a href="https://wa.me/{{ config.get('BUSINESS_WHATSAPP', '919999999999') }}?text=Hi%20PrintCraft%203D,%20I%20have%20a%20query%20about%203D%20printing%20services"
+           target="_blank" class="btn-wa-contact w-100 mt-4 d-flex">
+          <i class="fab fa-whatsapp me-2 fa-lg"></i>Quick Chat on WhatsApp
         </a>
+
       </div>
     </div>
   </div>
 </section>
 
-<!-- Google Maps Embed -->
-<section class="py-5 bg-light">
+<!-- Google Maps -->
+<section class="py-4 bg-light">
   <div class="container">
-    <h3 class="text-center fw-bold mb-4">Find Us on the Map</h3>
-    <div class="map-container" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3782.5787969382374!2d73.8567!3d18.5204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c07d5b5e5b5b%3A0x5b5b5b5b5b5b5b5b!2sPune%2C%20Maharashtra%20411001!5e0!3m2!1sen!2sin!4v1234567890123" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <h3 class="fw-bold text-center mb-4">Find Us on the Map</h3>
+    <div style="border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3782.5787969382374!2d73.8567!3d18.5204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c07d5b5e5b5b%3A0x5b5b5b5b5b5b5b5b!2sPune%2C%20Maharashtra%20411001!5e0!3m2!1sen!2sin!4v1234567890123"
+        width="100%" height="400" style="border:0; display: block;"
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
     </div>
   </div>
 </section>
@@ -170,82 +199,45 @@
 <section class="py-5">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="display-5 fw-bold mb-3">Frequently Asked Questions</h2>
-      <p class="lead text-muted">Get answers to common questions about our 3D printing services</p>
+      <span class="section-tag">FAQ</span>
+      <h2 class="section-title mt-2">Frequently Asked Questions</h2>
+      <p class="text-muted">Quick answers about our 3D printing services</p>
     </div>
 
     <div class="row justify-content-center">
       <div class="col-lg-8">
-        <div class="accordion" id="faqAccordion">
-          <!-- FAQ 1 -->
-          <div class="accordion-item border-0 mb-3 shadow-sm">
-            <h2 class="accordion-header" id="headingOne">
-              <button class="accordion-button fw-bold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                <i class="fas fa-cube text-primary me-3"></i>What file formats do you accept for 3D printing?
-              </button>
-            </h2>
-            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">
-                We accept most common 3D file formats including STL, OBJ, STEP, IGES, and 3MF. If you have files in other formats, please contact us and we can help with the conversion process.
-              </div>
-            </div>
-          </div>
+        <div class="accordion faq-accordion" id="faqAccordion">
 
-          <!-- FAQ 2 -->
-          <div class="accordion-item border-0 mb-3 shadow-sm">
-            <h2 class="accordion-header" id="headingTwo">
-              <button class="accordion-button collapsed fw-bold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                <i class="fas fa-hourglass-end text-primary me-3"></i>How long does it take to complete an order?
-              </button>
-            </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">
-                Typical turnaround time is 3-7 business days depending on the complexity and size of your print. Urgent requests can often be accommodated. We'll provide a specific timeline after reviewing your design.
-              </div>
-            </div>
-          </div>
+          {% set faqs = [
+            ('fas fa-cube', 'What file formats do you accept for 3D printing?',
+             'We accept most common 3D file formats including STL, OBJ, STEP, IGES, and 3MF. If you have files in other formats, please contact us and we can help with the conversion.'),
+            ('fas fa-hourglass-half', 'How long does it take to complete an order?',
+             'Typical turnaround is 3–7 business days depending on complexity and size. Urgent requests can often be accommodated — we will provide a specific timeline after reviewing your design.'),
+            ('fas fa-palette', 'What materials and colors are available?',
+             'We offer PLA, ABS, PETG, TPU, and resin. Colors include black, white, gray, red, blue, green, yellow, and more. Contact us for a complete material and color catalog.'),
+            ('fas fa-magic', 'Do you offer post-processing services?',
+             'Yes! We provide sanding, painting, chemical smoothing, and assembly. These services enhance the appearance and functionality of your prints — mention your requirements when ordering.'),
+            ('fas fa-tags', 'Do you offer bulk discounts?',
+             'Absolutely! We offer competitive pricing for bulk orders and can provide custom quotes based on your volume and specifications. Contact our team to discuss your requirements.')
+          ] %}
 
-          <!-- FAQ 3 -->
-          <div class="accordion-item border-0 mb-3 shadow-sm">
-            <h2 class="accordion-header" id="headingThree">
-              <button class="accordion-button collapsed fw-bold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                <i class="fas fa-palette text-primary me-3"></i>What materials and colors are available?
+          {% for icon, question, answer in faqs %}
+            <div class="faq-item">
+              <button class="faq-btn {% if not loop.first %}collapsed{% endif %}"
+                      type="button" data-bs-toggle="collapse"
+                      data-bs-target="#faq{{ loop.index }}"
+                      aria-expanded="{{ 'true' if loop.first else 'false' }}">
+                <span class="faq-icon"><i class="{{ icon }}"></i></span>
+                {{ question }}
+                <i class="fas fa-chevron-down faq-chevron ms-auto"></i>
               </button>
-            </h2>
-            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">
-                We offer a wide range of materials including PLA, ABS, PETG, TPU, and resin. Colors available include black, white, gray, red, blue, green, yellow, and more. Contact us for a complete material and color catalog.
+              <div id="faq{{ loop.index }}" class="collapse {% if loop.first %}show{% endif %}"
+                   data-bs-parent="#faqAccordion">
+                <div class="faq-body">{{ answer }}</div>
               </div>
             </div>
-          </div>
+          {% endfor %}
 
-          <!-- FAQ 4 -->
-          <div class="accordion-item border-0 mb-3 shadow-sm">
-            <h2 class="accordion-header" id="headingFour">
-              <button class="accordion-button collapsed fw-bold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                <i class="fas fa-check-circle text-primary me-3"></i>Do you offer post-processing services?
-              </button>
-            </h2>
-            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">
-                Yes! We provide various post-processing services including sanding, painting, chemical smoothing, and assembly. These services can enhance the appearance and functionality of your prints. Please mention your requirements when placing an order.
-              </div>
-            </div>
-          </div>
-
-          <!-- FAQ 5 -->
-          <div class="accordion-item border-0 shadow-sm">
-            <h2 class="accordion-header" id="headingFive">
-              <button class="accordion-button collapsed fw-bold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                <i class="fas fa-tags text-primary me-3"></i>Do you offer bulk discounts?
-              </button>
-            </h2>
-            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">
-                Absolutely! We offer competitive pricing for bulk orders and can provide custom quotes based on your volume and specifications. Contact our sales team to discuss your bulk order requirements.
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -253,30 +245,280 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 bg-primary text-white">
+<section class="cta-section py-5">
   <div class="container text-center">
-    <h3 class="fw-bold mb-3">Still have questions?</h3>
-    <p class="lead mb-4">Our team is ready to help you bring your ideas to life</p>
-    <a href="{{ url_for('index') }}" class="btn btn-light btn-lg fw-bold">Back to Home</a>
+    <h3 class="fw-bold text-white mb-3">Still have questions?</h3>
+    <p class="text-white-50 mb-4">Our team is ready to help you bring your ideas to life</p>
+    <a href="{{ url_for('home') }}" class="btn-cta-home me-3">
+      <i class="fas fa-home me-2"></i>Back to Home
+    </a>
+    <a href="{{ url_for('products') }}" class="btn-cta-products">
+      <i class="fas fa-th-large me-2"></i>Browse Products
+    </a>
   </div>
 </section>
 
+{% endblock %}
+
+
+{% block extra_css %}
+<style>
+:root {
+  --primary:      #7C3AED;
+  --primary-dark: #5B21B6;
+  --primary-light:#EDE9FE;
+  --accent:       #F59E0B;
+  --border-color: #E5E7EB;
+  --card-shadow:  0 2px 12px rgba(124,58,237,0.08);
+  --radius:       14px;
+}
+
+/* ─── Hero ──────────────────────────────── */
+.contact-hero {
+  background: linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%);
+  padding: 4rem 0;
+}
+.hero-tag {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 5px 14px;
+  border-radius: 20px;
+}
+.hero-title {
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.2;
+}
+.hero-sub { line-height: 1.7; }
+
+.hero-illustration {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+.hero-cube {
+  font-size: 5rem;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: float 3s ease-in-out infinite;
+}
+.hero-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+}
+.hero-dot.d-1 { width: 16px; height: 16px; top: 20%; right: 10%; animation: pulse 2s ease-in-out infinite; }
+.hero-dot.d-2 { width: 10px; height: 10px; bottom: 25%; left: 15%; animation: pulse 2.5s ease-in-out infinite 0.5s; }
+.hero-dot.d-3 { width: 24px; height: 24px; bottom: 10%; right: 20%; animation: pulse 2s ease-in-out infinite 1s; }
+@keyframes float { 0%, 100% { transform: translate(-50%, -50%) translateY(0); } 50% { transform: translate(-50%, -50%) translateY(-12px); } }
+@keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.2); } }
+
+/* ─── Contact Card ──────────────────────── */
+.contact-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+.contact-card-header {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.9rem 1.5rem;
+}
+.contact-card-body { padding: 1.5rem; }
+
+.contact-input {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+  color: #0F0F1A;
+  font-family: inherit;
+}
+.contact-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+}
+.contact-select { appearance: none; cursor: pointer; }
+.invalid-msg { font-size: 0.78rem; color: #EF4444; margin-top: 4px; display: none; }
+.contact-input:invalid:not(:placeholder-shown) ~ .invalid-msg { display: block; }
+
+.btn-send {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.9rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  letter-spacing: 0.02em;
+}
+.btn-send:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124,58,237,0.4);
+}
+
+/* ─── Info Cards ────────────────────────── */
+.info-grid { display: flex; flex-direction: column; gap: 1rem; }
+.info-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.info-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124,58,237,0.12); }
+.info-icon {
+  width: 46px; height: 46px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.info-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; color: #0F0F1A; }
+.info-text  { font-size: 0.88rem; color: #6B7280; margin-bottom: 0; line-height: 1.5; }
+
+.btn-wa-contact {
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.btn-wa-contact:hover { background: #1fba59; color: #fff; }
+
+/* ─── Section Labels ────────────────────── */
+.section-tag {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 14px;
+  border-radius: 20px;
+}
+.section-title { font-size: 2rem; font-weight: 800; color: #0F0F1A; }
+
+/* ─── FAQ ───────────────────────────────── */
+.faq-accordion { display: flex; flex-direction: column; gap: 0.75rem; }
+.faq-item {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+.faq-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #0F0F1A;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.faq-btn:hover { background: var(--primary-light); }
+.faq-btn:not(.collapsed) { color: var(--primary); background: var(--primary-light); }
+.faq-icon {
+  width: 32px; height: 32px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; flex-shrink: 0;
+}
+.faq-btn:not(.collapsed) .faq-icon { background: var(--primary); color: #fff; }
+.faq-chevron {
+  transition: transform 0.3s;
+  color: var(--primary);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+.faq-btn:not(.collapsed) .faq-chevron { transform: rotate(180deg); }
+.faq-body {
+  padding: 0 1.25rem 1rem 1.25rem;
+  padding-left: calc(1.25rem + 32px + 0.75rem);
+  font-size: 0.9rem;
+  color: #6B7280;
+  line-height: 1.7;
+}
+
+/* ─── CTA Section ───────────────────────── */
+.cta-section {
+  background: linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%);
+}
+.btn-cta-home {
+  background: #fff;
+  color: var(--primary);
+  font-weight: 700;
+  padding: 0.75rem 1.75rem;
+  border-radius: 10px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.25s;
+}
+.btn-cta-home:hover { background: var(--primary-light); color: var(--primary); }
+.btn-cta-products {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-weight: 700;
+  padding: 0.75rem 1.75rem;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.3);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.25s;
+}
+.btn-cta-products:hover { background: rgba(255,255,255,0.25); color: #fff; }
+</style>
+{% endblock %}
+
+
+{% block extra_js %}
 <script>
-  // Form validation
-  (function() {
-    'use strict';
-    window.addEventListener('load', function() {
-      var forms = document.getElementsByClassName('needs-validation');
-      var validation = Array.prototype.filter.call(forms, function(form) {
-        form.addEventListener('submit', function(event) {
-          if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        }, false);
-      });
-    }, false);
-  })();
+// HTML5 form validation with custom messages
+(function () {
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  form.addEventListener('submit', function (e) {
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    form.classList.add('was-validated');
+  });
+})();
 </script>
 {% endblock %}

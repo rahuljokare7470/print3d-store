@@ -7,384 +7,530 @@
     <meta name="keywords" content="3D printing, 3D printed products, Pune, India">
     <title>{% block title %}{{ config.BUSINESS_NAME }}{% endblock %}</title>
 
-    <!-- Bootstrap 5.3.2 CSS CDN -->
+    <!-- Google Fonts: Plus Jakarta Sans + Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3.2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome 6 CDN -->
+    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Custom Styles -->
     <style>
+        /* ══════════════════════════════
+           GLOBAL VARIABLES & RESET
+        ══════════════════════════════ */
         :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
-            --success-color: #198754;
-            --dark-bg: #212529;
+            --primary:       #7C3AED;
+            --primary-dark:  #5B21B6;
+            --primary-light: #EDE9FE;
+            --accent:        #F59E0B;
+            --accent-dark:   #D97706;
+            --dark:          #0F0F1A;
+            --body-text:     #374151;
+            --muted:         #6B7280;
+            --surface:       #F9FAFB;
+            --card-bg:       #FFFFFF;
+            --border:        #E5E7EB;
+            --success:       #059669;
+            --danger:        #DC2626;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: var(--surface);
+            color: var(--body-text);
+            font-size: 0.95rem;
+            line-height: 1.65;
         }
 
-        /* Navbar Styles */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--dark);
+            line-height: 1.25;
+        }
+
+        /* ══════════════════════════════
+           NAVBAR
+        ══════════════════════════════ */
         .navbar {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: #FFFFFF;
+            box-shadow: 0 1px 0 var(--border);
             position: sticky;
             top: 0;
             z-index: 999;
+            padding: 12px 0;
         }
 
         .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color) !important;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary) !important;
             letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-brand i {
+            color: var(--accent);
         }
 
         .nav-link {
+            font-family: 'Inter', sans-serif;
             font-weight: 500;
-            transition: color 0.3s ease;
-            color: #333 !important;
+            font-size: 0.9rem;
+            color: var(--body-text) !important;
+            padding: 7px 14px !important;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
         }
 
         .nav-link:hover {
-            color: var(--primary-color) !important;
+            background: var(--primary-light);
+            color: var(--primary) !important;
         }
 
         .nav-link.active {
-            color: var(--primary-color) !important;
-            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary) !important;
+            background: var(--primary-light);
         }
 
         /* Search Bar */
         #liveSearch {
-            border: 1px solid #dee2e6;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 0.88rem;
+            background: var(--surface);
+            transition: border-color 0.25s, box-shadow 0.25s;
         }
 
         #liveSearch:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+            outline: none;
+            background: white;
         }
 
         #searchResults {
             border-top: none;
-        }
-
-        #searchResults a {
-            transition: background-color 0.2s;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
 
         #searchResults a:hover {
-            background-color: #f8f9fa;
+            background-color: var(--surface);
         }
 
-        /* Cart & Wishlist Badges */
-        .badge-counter {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #dc3545;
-            color: white;
-            border-radius: 50%;
-            min-width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
+        /* Nav Icons */
         .icon-link {
             position: relative;
-            display: inline-block;
-            margin: 0 10px;
-            text-decoration: none;
-            color: #333;
-            font-size: 1.25rem;
-            transition: color 0.3s;
-        }
-
-        .icon-link:hover {
-            color: var(--primary-color);
-        }
-
-        /* Flash Messages */
-        .alert {
-            margin-top: 20px;
-            margin-bottom: 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Main Content */
-        main {
-            min-height: calc(100vh - 400px);
-            padding: 30px 0;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--dark-bg);
-            color: #adb5bd;
-            padding: 50px 0 20px;
-            margin-top: 50px;
-        }
-
-        footer h5 {
-            color: white;
-            font-weight: 700;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-        }
-
-        footer a {
-            color: #adb5bd;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        footer a:hover {
-            color: white;
-        }
-
-        footer ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        footer li {
-            margin-bottom: 10px;
-        }
-
-        .footer-divider {
-            border-top: 1px solid #495057;
-            margin: 30px 0;
-        }
-
-        .footer-section {
-            margin-bottom: 30px;
-        }
-
-        .social-icons a {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
+            margin: 0 6px;
+            text-decoration: none;
+            color: var(--body-text);
+            font-size: 1.15rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .icon-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .badge-counter {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: white;
             border-radius: 50%;
-            margin-right: 10px;
-            transition: all 0.3s;
+            min-width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.68rem;
+            font-weight: 700;
+            border: 2px solid white;
         }
 
-        .social-icons a:hover {
-            background: var(--primary-color);
-            transform: translateY(-2px);
+        /* Admin Dropdown */
+        .dropdown-menu {
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            padding: 6px;
         }
 
-        /* Trust Badges */
+        .dropdown-item {
+            border-radius: 8px;
+            font-size: 0.88rem;
+            padding: 9px 14px;
+            color: var(--body-text);
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* ══════════════════════════════
+           FLASH ALERTS
+        ══════════════════════════════ */
+        .alert {
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* ══════════════════════════════
+           MAIN CONTENT
+           No container here — each page
+           controls its own width
+        ══════════════════════════════ */
+        main {
+            min-height: calc(100vh - 380px);
+        }
+
+        /* ══════════════════════════════
+           TRUST BADGES
+        ══════════════════════════════ */
         .trust-badges {
-            background: #f8f9fa;
-            border-top: 1px solid #dee2e6;
-            padding: 20px 0;
+            background: #FFFFFF;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 0;
         }
 
         .trust-badge {
-            text-align: center;
-            padding: 15px;
-        }
-
-        .trust-badge i {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-        }
-
-        .trust-badge small {
-            display: block;
-            margin-top: 5px;
-            color: #495057;
-        }
-
-        /* Floating WhatsApp Button */
-        .whatsapp-btn {
-            transition: all 0.3s;
-            border: none;
-        }
-
-        .whatsapp-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 20px rgba(25, 135, 84, 0.4);
-        }
-
-        /* Back to Top Button */
-        #backToTop {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1030;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s;
+            gap: 10px;
         }
 
-        #backToTop:hover {
-            background: #0b5ed7;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        #backToTop.show {
+        .trust-badge-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
         }
 
-        /* Recently Viewed Products */
+        .trust-badge-text strong {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--dark);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .trust-badge-text span {
+            font-size: 0.76rem;
+            color: var(--muted);
+        }
+
+        /* ══════════════════════════════
+           RECENTLY VIEWED
+        ══════════════════════════════ */
         .recently-viewed {
             background: white;
-            border-radius: 8px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 24px;
             margin: 40px 0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1.5px solid var(--border);
         }
 
         .recently-viewed h4 {
             margin-bottom: 20px;
             font-weight: 700;
-            color: #212529;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
+            color: var(--dark);
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--primary-light);
+            font-size: 1rem;
         }
 
         .recently-viewed-item {
             text-decoration: none;
-            color: #333;
-            transition: transform 0.3s;
+            color: var(--body-text);
+            transition: transform 0.25s;
+            display: block;
         }
 
-        .recently-viewed-item:hover {
-            transform: translateY(-2px);
-        }
+        .recently-viewed-item:hover { transform: translateY(-3px); }
 
         .recently-viewed-img {
             width: 100%;
-            height: 150px;
+            height: 130px;
             object-fit: cover;
-            border-radius: 6px;
-            background: #f8f9fa;
+            border-radius: 10px;
+            background: var(--surface);
         }
 
         .recently-viewed-name {
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             font-weight: 600;
             margin-top: 8px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            color: var(--dark);
         }
 
         .recently-viewed-price {
-            color: var(--success-color);
+            color: var(--primary);
             font-weight: 700;
-            margin-top: 5px;
+            font-size: 0.88rem;
+            margin-top: 4px;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .navbar-brand {
-                font-size: 1.25rem;
-            }
-
-            #liveSearch {
-                min-width: 180px !important;
-            }
-
-            main {
-                padding: 15px 0;
-            }
-
-            .icon-link {
-                margin: 0 5px;
-                font-size: 1.1rem;
-            }
-
-            .whatsapp-btn {
-                width: 50px !important;
-                height: 50px !important;
-            }
+        /* ══════════════════════════════
+           FOOTER
+        ══════════════════════════════ */
+        footer {
+            background: #0F0F1A;
+            color: rgba(255,255,255,0.6);
+            padding: 60px 0 0;
+            margin-top: 0;
         }
 
-        /* Animations */
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        footer h5 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 18px;
         }
 
-        #searchResults {
-            animation: slideDown 0.2s ease;
+        footer a {
+            color: rgba(255,255,255,0.58);
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: color 0.2s;
         }
 
-        /* Lazy Loading Images */
-        img[loading="lazy"] {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 2s infinite;
+        footer a:hover { color: var(--accent); }
+
+        footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
 
+        footer li { margin-bottom: 10px; }
+
+        .footer-brand-name {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .footer-brand-name i { color: var(--accent); }
+
+        .footer-desc {
+            font-size: 0.86rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.7;
+            max-width: 240px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.6);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+        }
+
+        .social-icons a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .footer-divider {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            margin: 40px 0 0;
+        }
+
+        .footer-bottom {
+            padding: 20px 0;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-bottom p {
+            margin: 0;
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.35);
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-bottom-links a {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.35);
+        }
+
+        .footer-bottom-links a:hover { color: var(--accent); }
+
+        /* ══════════════════════════════
+           WHATSAPP FLOATING BUTTON
+        ══════════════════════════════ */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 88px;
+            right: 20px;
+            width: 54px;
+            height: 54px;
+            background: #25D366;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 6px 20px rgba(37,211,102,0.4);
+            z-index: 1040;
+            text-decoration: none;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 10px 28px rgba(37,211,102,0.5);
+            color: white;
+        }
+
+        /* ══════════════════════════════
+           BACK TO TOP
+        ══════════════════════════════ */
+        #backToTop {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1030;
+            box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+            transition: all 0.25s;
+        }
+
+        #backToTop:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(124,58,237,0.4);
+        }
+
+        #backToTop.show { display: flex; }
+
+        /* ══════════════════════════════
+           SHIMMER LOADER
+        ══════════════════════════════ */
         @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        img[loading="lazy"] {
+            background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        /* ══════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════ */
+        @media (max-width: 768px) {
+            .navbar-brand { font-size: 1.15rem; }
+            #liveSearch { min-width: 160px !important; }
+            .icon-link { margin: 0 3px; }
+            .trust-badge { justify-content: flex-start; }
+            .footer-bottom { flex-direction: column; text-align: center; }
         }
     </style>
 
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container-fluid">
+
+    <!-- ══════════════════════════════
+         NAVIGATION BAR
+    ══════════════════════════════ -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid px-4">
+
             <!-- Logo -->
             <a class="navbar-brand" href="{{ url_for('home') }}">
-                <i class="fas fa-cube me-2"></i>{{ config.BUSINESS_NAME }}
+                <i class="fas fa-cube"></i>{{ config.BUSINESS_NAME }}
             </a>
 
-            <!-- Toggler Button for Mobile -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Mobile Toggler -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarContent" aria-controls="navbarContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <!-- Navbar Content -->
             <div class="collapse navbar-collapse" id="navbarContent">
-                <!-- Center Navigation Menu -->
-                <ul class="navbar-nav mx-auto">
+
+                <!-- Center Nav Links -->
+                <ul class="navbar-nav mx-auto gap-1">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('home') }}">Home</a>
                     </li>
@@ -399,65 +545,81 @@
                     </li>
                 </ul>
 
-                <!-- Live Search Bar -->
-                <form class="d-flex me-3 me-lg-2" id="searchForm" style="position: relative;">
+                <!-- Search Bar -->
+                <form class="d-flex me-2" id="searchForm" style="position: relative;">
                     <input type="text" class="form-control form-control-sm" id="liveSearch"
-                           placeholder="Search products..." autocomplete="off" style="min-width: 220px;">
-                    <div id="searchResults" class="position-absolute top-100 start-0 w-100 bg-white shadow-lg rounded-bottom d-none"
+                           placeholder="Search products..." autocomplete="off" style="min-width: 210px;">
+                    <div id="searchResults"
+                         class="position-absolute top-100 start-0 w-100 bg-white d-none"
                          style="z-index: 1050; max-height: 400px; overflow-y: auto;">
                     </div>
                 </form>
 
-                <!-- Right Side Icons -->
+                <!-- Right Icons -->
                 <div class="d-flex align-items-center">
-                    <!-- Wishlist Icon -->
+
+                    <!-- Wishlist -->
                     <a href="{{ url_for('get_wishlist') }}" class="icon-link" title="Wishlist">
                         <i class="far fa-heart"></i>
                         <span class="badge-counter" id="wishlistCount" style="display: none;">0</span>
                     </a>
 
-                    <!-- Cart Icon -->
-                    <a href="{{ url_for('cart') }}" class="icon-link" title="Shopping Cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="badge-counter" id="cartCount" {% if cart_count == 0 %}style="display: none;"{% endif %}>{{ cart_count }}</span>
+                    <!-- Cart -->
+                    <a href="{{ url_for('cart') }}" class="icon-link" title="Cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="badge-counter" id="cartCount"
+                              {% if cart_count == 0 %}style="display: none;"{% endif %}>{{ cart_count }}</span>
                     </a>
 
-                    <!-- Admin Dropdown (if logged in) -->
+                    <!-- Admin Dropdown -->
                     {% if current_user.is_authenticated and current_user.is_admin %}
-                    <div class="dropdown ms-3">
-                        <a class="icon-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="dropdown ms-1">
+                        <a class="icon-link" href="#" id="adminDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false" title="Admin">
                             <i class="fas fa-user-shield"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('admin_products') }}"><i class="fas fa-boxes me-2"></i>Products</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('admin_orders') }}"><i class="fas fa-receipt me-2"></i>Orders</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('admin_inquiries') }}"><i class="fas fa-envelope me-2"></i>Inquiries</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('admin_reviews') }}"><i class="fas fa-star me-2"></i>Reviews</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{{ url_for('admin_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                <i class="fas fa-chart-line me-2 text-primary"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_products') }}">
+                                <i class="fas fa-boxes me-2 text-success"></i>Products</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_orders') }}">
+                                <i class="fas fa-receipt me-2 text-warning"></i>Orders</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_inquiries') }}">
+                                <i class="fas fa-envelope me-2 text-info"></i>Inquiries</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_reviews') }}">
+                                <i class="fas fa-star me-2 text-warning"></i>Reviews</a></li>
+                            <li><hr class="dropdown-divider mx-2"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('admin_logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                         </ul>
                     </div>
+
                     {% elif current_user.is_authenticated %}
-                    <!-- User Dropdown (if logged in but not admin) -->
-                    <div class="dropdown ms-3">
-                        <a class="icon-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="dropdown ms-1">
+                        <a class="icon-link" href="#" id="userDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false" title="Account">
                             <i class="fas fa-user-circle"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-receipt me-2"></i>My Orders</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-map-marker-alt me-2"></i>Addresses</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{{ url_for('admin_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-user me-2 text-muted"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-receipt me-2 text-muted"></i>My Orders</a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-map-marker-alt me-2 text-muted"></i>Addresses</a></li>
+                            <li><hr class="dropdown-divider mx-2"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('admin_logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                         </ul>
                     </div>
+
                     {% else %}
-                    <!-- Login Link (if not logged in) -->
-                    <a href="{{ url_for('admin_login') }}" class="icon-link ms-3" title="Login">
+                    <a href="{{ url_for('admin_login') }}" class="icon-link ms-1" title="Login">
                         <i class="fas fa-sign-in-alt"></i>
                     </a>
                     {% endif %}
+
                 </div>
             </div>
         </div>
@@ -471,22 +633,22 @@
                     {% if category == 'error' %}
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <i class="fas fa-exclamation-circle me-2"></i>{{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% elif category == 'warning' %}
                         <div class="alert alert-warning alert-dismissible fade show" role="alert">
                             <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% elif category == 'info' %}
                         <div class="alert alert-info alert-dismissible fade show" role="alert">
                             <i class="fas fa-info-circle me-2"></i>{{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% else %}
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <i class="fas fa-check-circle me-2"></i>{{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% endif %}
                 {% endfor %}
@@ -494,196 +656,199 @@
         {% endif %}
     {% endwith %}
 
-    <!-- Main Content -->
-    <main class="container">
+    <!-- ══════════════════════════════
+         MAIN CONTENT
+         No container — pages control own width
+    ══════════════════════════════ -->
+    <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Recently Viewed Products -->
+    <!-- Recently Viewed (shown on inner pages) -->
     {% if request.path != url_for('home') %}
     <div class="container" id="recentlyViewedContainer" style="display: none;">
         <div class="recently-viewed">
-            <h4><i class="fas fa-history me-2"></i>Recently Viewed</h4>
-            <div class="row g-3" id="recentlyViewedProducts">
-                <!-- Populated by JavaScript -->
-            </div>
+            <h4><i class="fas fa-history me-2" style="color: var(--primary);"></i>Recently Viewed</h4>
+            <div class="row g-3" id="recentlyViewedProducts"></div>
         </div>
     </div>
     {% endif %}
 
-    <!-- Trust Badges Section -->
+    <!-- ══════════════════════════════
+         TRUST BADGES
+    ══════════════════════════════ -->
     <section class="trust-badges">
         <div class="container">
-            <div class="row text-center g-3">
+            <div class="row g-3 justify-content-center">
                 <div class="col-6 col-md-3">
                     <div class="trust-badge">
-                        <i class="fas fa-lock text-success"></i>
-                        <small class="fw-bold">Secure Checkout</small>
+                        <div class="trust-badge-icon" style="background:#EDE9FE; color:#7C3AED;">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="trust-badge-text">
+                            <strong>Secure Checkout</strong>
+                            <span>100% safe payment</span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="trust-badge">
-                        <i class="fas fa-flag text-primary"></i>
-                        <small class="fw-bold">Made in India</small>
+                        <div class="trust-badge-icon" style="background:#FEF3C7; color:#D97706;">
+                            <i class="fas fa-flag"></i>
+                        </div>
+                        <div class="trust-badge-text">
+                            <strong>Made in India</strong>
+                            <span>Crafted in Pune</span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="trust-badge">
-                        <i class="fas fa-truck text-warning"></i>
-                        <small class="fw-bold">Fast Delivery</small>
+                        <div class="trust-badge-icon" style="background:#D1FAE5; color:#059669;">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="trust-badge-text">
+                            <strong>Fast Delivery</strong>
+                            <span>Quick turnaround</span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="trust-badge">
-                        <i class="fas fa-gift text-danger"></i>
-                        <small class="fw-bold">Free Shipping ₹999+</small>
+                        <div class="trust-badge-icon" style="background:#FEE2E2; color:#DC2626;">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="trust-badge-text">
+                            <strong>Free Shipping</strong>
+                            <span>On orders ₹999+</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- ══════════════════════════════
+         FOOTER
+    ══════════════════════════════ -->
     <footer>
         <div class="container">
-            <div class="row">
-                <!-- About Section -->
-                <div class="col-12 col-md-3">
-                    <div class="footer-section">
-                        <h5><i class="fas fa-cube me-2"></i>{{ config.BUSINESS_NAME }}</h5>
-                        <p style="color: #adb5bd; line-height: 1.6;">Premium 3D printed products crafted with precision in Pune, India. Quality meets innovation.</p>
-                        <div class="social-icons mt-3">
-                            <a href="https://facebook.com/{{ config.FACEBOOK_PAGE }}" target="_blank" title="Facebook" style="color: #adb5bd;">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="https://instagram.com/{{ config.INSTAGRAM_HANDLE }}" target="_blank" title="Instagram" style="color: #adb5bd;">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a href="https://twitter.com/{{ config.TWITTER_HANDLE }}" target="_blank" title="Twitter" style="color: #adb5bd;">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a href="https://youtube.com/{{ config.YOUTUBE_CHANNEL }}" target="_blank" title="YouTube" style="color: #adb5bd;">
-                                <i class="fab fa-youtube"></i>
-                            </a>
-                        </div>
+            <div class="row g-5">
+
+                <!-- Brand Column -->
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="footer-brand-name">
+                        <i class="fas fa-cube"></i>{{ config.BUSINESS_NAME }}
+                    </div>
+                    <p class="footer-desc">Premium 3D printed products crafted with precision and care in Pune, India. Quality meets innovation.</p>
+                    <div class="social-icons">
+                        <a href="https://facebook.com/{{ config.FACEBOOK_PAGE }}" target="_blank" title="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://instagram.com/{{ config.INSTAGRAM_HANDLE }}" target="_blank" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://twitter.com/{{ config.TWITTER_HANDLE }}" target="_blank" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://youtube.com/{{ config.YOUTUBE_CHANNEL }}" target="_blank" title="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
                 </div>
 
                 <!-- Quick Links -->
-                <div class="col-12 col-md-2">
-                    <div class="footer-section">
-                        <h5>Quick Links</h5>
-                        <ul>
-                            <li><a href="{{ url_for('home') }}" style="color: #adb5bd;">Home</a></li>
-                            <li><a href="{{ url_for('products') }}" style="color: #adb5bd;">Products</a></li>
-                            <li><a href="{{ url_for('about') }}" style="color: #adb5bd;">About Us</a></li>
-                            <li><a href="{{ url_for('contact') }}" style="color: #adb5bd;">Contact</a></li>
-                            <li><a href="#" style="color: #adb5bd;">FAQ</a></li>
-                        </ul>
-                    </div>
+                <div class="col-6 col-md-2">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="{{ url_for('home') }}">Home</a></li>
+                        <li><a href="{{ url_for('products') }}">Products</a></li>
+                        <li><a href="{{ url_for('about') }}">About Us</a></li>
+                        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
                 </div>
 
                 <!-- Categories -->
-                <div class="col-12 col-md-2">
-                    <div class="footer-section">
-                        <h5>Categories</h5>
-                        <ul>
-                            {% if categories %}
-                                {% for category in categories[:5] %}
-                                <li><a href="{{ url_for('products', category=category.slug) }}" style="color: #adb5bd;">{{ category.name }}</a></li>
-                                {% endfor %}
-                            {% else %}
-                                <li><a href="{{ url_for('products') }}" style="color: #adb5bd;">View All</a></li>
-                            {% endif %}
-                        </ul>
+                <div class="col-6 col-md-2">
+                    <h5>Categories</h5>
+                    <ul>
+                        {% if categories %}
+                            {% for category in categories[:5] %}
+                            <li><a href="{{ url_for('products', category=category.slug) }}">{{ category.name }}</a></li>
+                            {% endfor %}
+                        {% else %}
+                            <li><a href="{{ url_for('products') }}">View All</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="col-12 col-md-4 col-lg-3">
+                    <h5>Contact Us</h5>
+                    <ul>
+                        <li>
+                            <i class="fas fa-map-marker-alt me-2" style="color: var(--primary); opacity:0.7;"></i>
+                            {{ config.BUSINESS_ADDRESS }}
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope me-2" style="color: var(--primary); opacity:0.7;"></i>
+                            <a href="mailto:{{ config.BUSINESS_EMAIL }}">{{ config.BUSINESS_EMAIL }}</a>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone me-2" style="color: var(--primary); opacity:0.7;"></i>
+                            <a href="tel:{{ config.BUSINESS_PHONE }}">{{ config.BUSINESS_PHONE }}</a>
+                        </li>
+                        <li>
+                            <i class="fab fa-whatsapp me-2" style="color: #25D366;"></i>
+                            <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" target="_blank">WhatsApp Us</a>
+                        </li>
+                    </ul>
+                    <div class="mt-3" style="font-size: 0.82rem; color: rgba(255,255,255,0.35);">
+                        <div><strong style="color:rgba(255,255,255,0.5);">Mon–Fri:</strong> 9:00 AM – 6:00 PM IST</div>
+                        <div><strong style="color:rgba(255,255,255,0.5);">Saturday:</strong> 10:00 AM – 4:00 PM IST</div>
+                        <div><strong style="color:rgba(255,255,255,0.5);">Sunday:</strong> Closed</div>
                     </div>
                 </div>
 
-                <!-- Contact Info -->
-                <div class="col-12 col-md-2">
-                    <div class="footer-section">
-                        <h5>Contact Us</h5>
-                        <ul style="list-style: none; padding: 0;">
-                            <li style="margin-bottom: 12px;">
-                                <i class="fas fa-map-marker-alt me-2" style="color: #adb5bd;"></i>
-                                <span style="color: #adb5bd;">{{ config.BUSINESS_ADDRESS }}</span>
-                            </li>
-                            <li style="margin-bottom: 12px;">
-                                <i class="fas fa-envelope me-2" style="color: #adb5bd;"></i>
-                                <a href="mailto:{{ config.BUSINESS_EMAIL }}" style="color: #adb5bd;">{{ config.BUSINESS_EMAIL }}</a>
-                            </li>
-                            <li style="margin-bottom: 12px;">
-                                <i class="fas fa-phone me-2" style="color: #adb5bd;"></i>
-                                <a href="tel:{{ config.BUSINESS_PHONE }}" style="color: #adb5bd;">{{ config.BUSINESS_PHONE }}</a>
-                            </li>
-                            <li style="margin-bottom: 12px;">
-                                <i class="fab fa-whatsapp me-2" style="color: #adb5bd;"></i>
-                                <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" target="_blank" style="color: #adb5bd;">WhatsApp</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Business Hours -->
-                <div class="col-12 col-md-3">
-                    <div class="footer-section">
-                        <h5>Business Hours</h5>
-                        <ul style="list-style: none; padding: 0;">
-                            <li style="margin-bottom: 8px; color: #adb5bd;">
-                                <strong>Monday - Friday:</strong><br>
-                                <span style="color: #adb5bd;">9:00 AM - 6:00 PM IST</span>
-                            </li>
-                            <li style="margin-bottom: 8px; color: #adb5bd;">
-                                <strong>Saturday:</strong><br>
-                                <span style="color: #adb5bd;">10:00 AM - 4:00 PM IST</span>
-                            </li>
-                            <li style="color: #adb5bd;">
-                                <strong>Sunday:</strong><br>
-                                <span style="color: #adb5bd;">Closed</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
             </div>
+        </div>
 
-            <div class="footer-divider"></div>
-
-            <!-- Footer Bottom -->
-            <div class="row">
-                <div class="col-12 col-md-6" style="color: #adb5bd;">
-                    <p>&copy; 2024 {{ config.BUSINESS_NAME }}. All rights reserved.</p>
-                </div>
-                <div class="col-12 col-md-6 text-md-end" style="color: #adb5bd;">
-                    <a href="#" style="color: #adb5bd; text-decoration: none;">Privacy Policy</a> |
-                    <a href="#" style="color: #adb5bd; text-decoration: none;">Terms & Conditions</a> |
-                    <a href="#" style="color: #adb5bd; text-decoration: none;">Shipping Policy</a> |
-                    <a href="#" style="color: #adb5bd; text-decoration: none;">Return Policy</a>
+        <!-- Footer Bottom Bar -->
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; {{ now.year }} {{ config.BUSINESS_NAME }}. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms & Conditions</a>
+                    <a href="#">Shipping Policy</a>
+                    <a href="#">Return Policy</a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- Floating WhatsApp Button -->
+    <!-- WhatsApp Float Button -->
     <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}?text=Hi!%20I'm%20interested%20in%20your%203D%20printed%20products."
-       class="btn btn-success rounded-circle shadow-lg position-fixed whatsapp-btn"
-       style="bottom: 90px; right: 20px; width: 56px; height: 56px; z-index: 1040; display: flex; align-items: center; justify-content: center; padding: 0;"
-       target="_blank"
-       title="Chat with us on WhatsApp">
-        <i class="fab fa-whatsapp fa-lg"></i>
+       class="whatsapp-float" target="_blank" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- Back to Top Button -->
-    <button id="backToTop" type="button" class="btn btn-primary rounded-circle shadow-lg" title="Back to top">
+    <!-- Back to Top -->
+    <button id="backToTop" type="button" title="Back to top">
         <i class="fas fa-chevron-up"></i>
     </button>
 
-    <!-- Bootstrap 5.3.2 JS Bundle CDN -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Main JavaScript -->
+    <!-- Main JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-    <!-- Live Search AJAX Script -->
+    <!-- Live Search -->
     <script>
         const searchInput = document.getElementById('liveSearch');
         const searchResults = document.getElementById('searchResults');
@@ -693,34 +858,29 @@
             searchInput.addEventListener('input', function() {
                 clearTimeout(searchTimeout);
                 const q = this.value.trim();
-
-                if (q.length < 2) {
-                    searchResults.classList.add('d-none');
-                    return;
-                }
+                if (q.length < 2) { searchResults.classList.add('d-none'); return; }
 
                 searchTimeout = setTimeout(() => {
                     fetch('/api/search?q=' + encodeURIComponent(q))
                         .then(r => r.json())
                         .then(data => {
                             if (data.length === 0) {
-                                searchResults.innerHTML = '<div class="p-3 text-muted"><i class="fas fa-search me-2"></i>No products found</div>';
+                                searchResults.innerHTML = '<div class="p-3 text-muted small"><i class="fas fa-search me-2"></i>No products found</div>';
                             } else {
                                 searchResults.innerHTML = data.map(p => `
-                                    <a href="/product/${p.slug}" class="d-flex align-items-center p-2 text-decoration-none border-bottom text-reset">
-                                        <div style="flex: 1;">
-                                            <div class="fw-bold text-dark">${p.name}</div>
-                                            <small class="text-success fw-bold">₹${p.price}</small>
-                                            <small class="text-muted ms-2">${p.category || 'Uncategorized'}</small>
+                                    <a href="/product/${p.slug}" class="d-flex align-items-center p-2 px-3 text-decoration-none border-bottom gap-2" style="color: inherit;">
+                                        <div style="flex:1;">
+                                            <div class="fw-semibold" style="font-size:0.88rem; color:#0F0F1A;">${p.name}</div>
+                                            <small style="color:#7C3AED; font-weight:700;">₹${p.price}</small>
+                                            <small class="text-muted ms-2">${p.category || ''}</small>
                                         </div>
                                     </a>
                                 `).join('');
                             }
                             searchResults.classList.remove('d-none');
                         })
-                        .catch(err => {
-                            console.error('Search error:', err);
-                            searchResults.innerHTML = '<div class="p-3 text-danger"><i class="fas fa-exclamation-circle me-2"></i>Search failed</div>';
+                        .catch(() => {
+                            searchResults.innerHTML = '<div class="p-3 text-danger small">Search failed. Try again.</div>';
                         });
                 }, 300);
             });
@@ -733,170 +893,105 @@
         }
     </script>
 
-    <!-- Wishlist localStorage Script -->
+    <!-- Wishlist -->
     <script>
-        // Initialize Wishlist
         function initWishlist() {
-            const wishlistCount = localStorage.getItem('wishlistCount') || 0;
-            const wishlistCountEl = document.getElementById('wishlistCount');
-
-            if (parseInt(wishlistCount) > 0) {
-                wishlistCountEl.textContent = wishlistCount;
-                wishlistCountEl.style.display = 'flex';
-            } else {
-                wishlistCountEl.style.display = 'none';
-            }
+            const count = parseInt(localStorage.getItem('wishlistCount') || 0);
+            const el = document.getElementById('wishlistCount');
+            if (!el) return;
+            if (count > 0) { el.textContent = count; el.style.display = 'flex'; }
+            else { el.style.display = 'none'; }
         }
 
-        // Add to Wishlist
         function addToWishlist(productId, productName) {
             let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-
             if (!wishlist.includes(productId)) {
                 wishlist.push(productId);
                 localStorage.setItem('wishlist', JSON.stringify(wishlist));
                 localStorage.setItem('wishlistCount', wishlist.length);
-
-                // Update badge
                 document.getElementById('wishlistCount').textContent = wishlist.length;
                 document.getElementById('wishlistCount').style.display = 'flex';
-
-                // Show notification
                 showNotification(`${productName} added to wishlist!`, 'success');
             } else {
-                showNotification(`${productName} is already in your wishlist!`, 'info');
+                showNotification(`Already in wishlist!`, 'info');
             }
         }
 
-        // Remove from Wishlist
         function removeFromWishlist(productId) {
             let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
             wishlist = wishlist.filter(id => id !== productId);
-
             localStorage.setItem('wishlist', JSON.stringify(wishlist));
             localStorage.setItem('wishlistCount', wishlist.length);
-
-            // Update badge
-            const wishlistCountEl = document.getElementById('wishlistCount');
-            if (wishlist.length > 0) {
-                wishlistCountEl.textContent = wishlist.length;
-            } else {
-                wishlistCountEl.style.display = 'none';
-            }
+            const el = document.getElementById('wishlistCount');
+            if (wishlist.length > 0) { el.textContent = wishlist.length; }
+            else { el.style.display = 'none'; }
         }
 
-        // Show notification
         function showNotification(message, type = 'info') {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-            alertDiv.role = 'alert';
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-
-            const container = document.querySelector('main');
-            container.insertBefore(alertDiv, container.firstChild);
-
-            setTimeout(() => alertDiv.remove(), 4000);
+            alertDiv.style.cssText = 'position:fixed;top:80px;right:20px;z-index:9999;min-width:280px;';
+            alertDiv.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 3500);
         }
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            initWishlist();
-        });
+        document.addEventListener('DOMContentLoaded', initWishlist);
     </script>
 
-    <!-- Recently Viewed Products Script -->
+    <!-- Recently Viewed -->
     <script>
-        // Track recently viewed products
         function trackRecentlyViewed(productId, productName, productPrice, productImage, productSlug) {
-            let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
-
-            // Remove if already exists (to avoid duplicates)
-            recentlyViewed = recentlyViewed.filter(item => item.id !== productId);
-
-            // Add to beginning
-            recentlyViewed.unshift({
-                id: productId,
-                name: productName,
-                price: productPrice,
-                image: productImage,
-                slug: productSlug
-            });
-
-            // Keep only last 8 items
-            if (recentlyViewed.length > 8) {
-                recentlyViewed = recentlyViewed.slice(0, 8);
-            }
-
-            localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+            let rv = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+            rv = rv.filter(item => item.id !== productId);
+            rv.unshift({ id: productId, name: productName, price: productPrice, image: productImage, slug: productSlug });
+            if (rv.length > 8) rv = rv.slice(0, 8);
+            localStorage.setItem('recentlyViewed', JSON.stringify(rv));
         }
 
-        // Display recently viewed products
         function displayRecentlyViewed() {
-            const recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+            const rv = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
             const container = document.getElementById('recentlyViewedProducts');
             const section = document.getElementById('recentlyViewedContainer');
-
-            if (recentlyViewed.length === 0) {
-                section.style.display = 'none';
-                return;
-            }
-
-            section.style.display = 'block';
-            container.innerHTML = recentlyViewed.map(product => `
+            if (!container || rv.length === 0) { if(section) section.style.display = 'none'; return; }
+            if(section) section.style.display = 'block';
+            container.innerHTML = rv.map(p => `
                 <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                    <a href="/product/${product.slug}" class="recently-viewed-item">
-                        <img src="${product.image}" alt="${product.name}" class="recently-viewed-img" loading="lazy">
-                        <div class="recently-viewed-name">${product.name}</div>
-                        <div class="recently-viewed-price">₹${product.price}</div>
+                    <a href="/product/${p.slug}" class="recently-viewed-item">
+                        <img src="${p.image}" alt="${p.name}" class="recently-viewed-img" loading="lazy">
+                        <div class="recently-viewed-name">${p.name}</div>
+                        <div class="recently-viewed-price">₹${p.price}</div>
                     </a>
                 </div>
             `).join('');
         }
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            displayRecentlyViewed();
-        });
+        document.addEventListener('DOMContentLoaded', displayRecentlyViewed);
     </script>
 
-    <!-- Back to Top Button Script -->
+    <!-- Back to Top -->
     <script>
         const backToTopBtn = document.getElementById('backToTop');
-
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 300) {
-                backToTopBtn.classList.add('show');
-            } else {
-                backToTopBtn.classList.remove('show');
-            }
+        window.addEventListener('scroll', () => {
+            backToTopBtn.classList.toggle('show', window.scrollY > 300);
         });
-
-        backToTopBtn.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
+        backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     </script>
 
-    <!-- Lazy Loading Images Support -->
+    <!-- Lazy Load Images -->
     <script>
         if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
+            const obs = new IntersectionObserver((entries, o) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const img = entry.target;
                         img.src = img.dataset.src || img.src;
                         img.classList.add('loaded');
-                        observer.unobserve(img);
+                        o.unobserve(img);
                     }
                 });
             });
-
-            document.querySelectorAll('img[loading="lazy"]').forEach(img => imageObserver.observe(img));
+            document.querySelectorAll('img[loading="lazy"]').forEach(img => obs.observe(img));
         }
     </script>
 

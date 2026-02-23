@@ -3,373 +3,944 @@
 {% block title %}Home - {{ config.BUSINESS_NAME }}{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section bg-gradient py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container py-5">
-        <div class="row align-items-center">
+
+<!-- ═══════════════════════════════════════════
+     HERO SECTION
+════════════════════════════════════════════ -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
             <div class="col-lg-6">
-                <h1 class="display-4 fw-bold text-white mb-3">Premium 3D Printed Products</h1>
-                <p class="lead text-white-50 mb-4">Discover custom-designed, high-quality 3D printed items crafted with precision and care.</p>
-                <div class="d-flex gap-3">
-                    <a href="{{ url_for('products') }}" class="btn btn-success btn-lg">Shop Now</a>
-                    <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg">Custom Order</a>
+                <p class="hero-label">🇮🇳 Made in Pune, India</p>
+                <h1 class="hero-title">Premium <span>3D Printed</span> Products</h1>
+                <p class="hero-subtitle">Discover custom-designed, high-quality 3D printed items crafted with precision and care — right from our workshop in Pune.</p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="{{ url_for('products') }}" class="btn hero-cta-primary">
+                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="btn hero-cta-secondary">
+                        <i class="fas fa-pencil-ruler me-2"></i>Custom Order
+                    </a>
+                </div>
+                <div class="hero-trust mt-4">
+                    <span><i class="fas fa-shield-alt me-1"></i> Secure Checkout</span>
+                    <span><i class="fas fa-truck me-1"></i> Fast Delivery</span>
+                    <span><i class="fas fa-star me-1"></i> Premium Quality</span>
                 </div>
             </div>
-            <div class="col-lg-6 text-center">
-                <img src="{{ url_for('static', filename='images/hero-3d-icon.svg') }}" alt="3D Printing" class="img-fluid" style="max-width: 400px;">
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Stats Bar -->
-<section class="stats-bar bg-dark text-white py-4">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-md-4 mb-3 mb-md-0">
-                <h3 class="display-6 fw-bold">{{ products_count|default(0, true) }}+</h3>
-                <p class="text-muted mb-0">Products in Stock</p>
-            </div>
-            <div class="col-md-4 mb-3 mb-md-0">
-                <h3 class="display-6 fw-bold">{{ happy_customers|default(0, true) }}+</h3>
-                <p class="text-muted mb-0">Happy Customers</p>
-            </div>
-            <div class="col-md-4">
-                <h3 class="display-6 fw-bold">📍</h3>
-                <p class="text-muted mb-0">Made in Pune, India</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Featured Products Section -->
-<section class="featured-products py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-2">Featured Products</h2>
-            <p class="text-muted">Hand-picked selection of our best-selling items</p>
-        </div>
-        <div class="row g-4">
-            {% for product in featured_products %}
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="card h-100 product-card shadow-sm hover-shadow transition">
-                    <!-- Product Image -->
-                    <div class="product-image-wrapper position-relative overflow-hidden bg-white" style="height: 250px;">
-                        {% if product.image_main %}
-                            <img src="{{ url_for('static', filename='uploads/' + product.image_main) }}"
-                                 alt="{{ product.name }}"
-                                 class="card-img-top h-100 object-fit-cover"
-                                 loading="lazy">
-                        {% else %}
-                            <div class="bg-secondary d-flex align-items-center justify-content-center h-100">
-                                <span class="text-white">No Image</span>
-                            </div>
-                        {% endif %}
-
-                        <!-- Category Badge -->
-                        <span class="position-absolute top-0 start-0 badge bg-primary m-2">{{ product.category }}</span>
-
-                        <!-- Discount Badge -->
-                        {% if product.original_price and product.original_price > product.price %}
-                            {% set discount_percent = ((product.original_price - product.price) / product.original_price * 100)|int %}
-                            <span class="position-absolute top-0 end-0 badge bg-danger m-2">-{{ discount_percent }}%</span>
-                        {% endif %}
-                    </div>
-
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-truncate">{{ product.name }}</h5>
-
-                        <!-- Price Display -->
-                        <div class="mb-3">
-                            {% if product.original_price and product.original_price > product.price %}
-                                <span class="text-decoration-line-through text-muted small">₹{{ product.original_price }}</span>
-                                <br>
-                                <span class="fw-bold text-danger display-6">₹{{ product.price }}</span>
-                            {% else %}
-                                <span class="fw-bold text-success display-6">₹{{ product.price }}</span>
-                            {% endif %}
-                        </div>
-
-                        <!-- Stock Status & Buttons -->
-                        <div class="mt-auto">
-                            {% if product.stock_status == 'in_stock' %}
-                                <form action="{{ url_for('cart_add') }}" method="POST" class="mb-2">
-                                    <input type="hidden" name="product_id" value="{{ product.id }}">
-                                    <button type="submit" class="btn btn-success btn-sm w-100">Add to Cart</button>
-                                </form>
-                            {% else %}
-                                <button class="btn btn-secondary btn-sm w-100" disabled>Out of Stock</button>
-                            {% endif %}
-                            <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn btn-outline-primary btn-sm w-100">View Details</a>
+            <div class="col-lg-6 text-center d-none d-lg-block">
+                <div class="hero-illustration">
+                    <div class="hero-shape-1"></div>
+                    <div class="hero-shape-2"></div>
+                    <div class="hero-icon-wrap">
+                        <i class="fas fa-cube hero-big-icon"></i>
+                        <div class="hero-orbit">
+                            <span class="orbit-dot" style="--angle:0deg">🎨</span>
+                            <span class="orbit-dot" style="--angle:72deg">⚙️</span>
+                            <span class="orbit-dot" style="--angle:144deg">🏠</span>
+                            <span class="orbit-dot" style="--angle:216deg">✨</span>
+                            <span class="orbit-dot" style="--angle:288deg">📦</span>
                         </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
     </div>
 </section>
 
-<!-- All Products Section -->
-<section class="all-products py-5">
+<!-- ═══════════════════════════════════════════
+     STATS BAR
+════════════════════════════════════════════ -->
+<section class="stats-section">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-2">All Products</h2>
-            <p class="text-muted">Browse our complete collection</p>
-        </div>
-
-        <!-- Category Filter Buttons -->
-        <div class="filter-buttons mb-4 text-center">
-            <button class="btn btn-outline-primary me-2 mb-2 category-filter active" onclick="filterProducts('all')" data-filter="all">All</button>
-            {% for category in categories %}
-                <button class="btn btn-outline-primary me-2 mb-2 category-filter" onclick="filterProducts('{{ category }}')" data-filter="{{ category }}">{{ category|capitalize }}</button>
-            {% endfor %}
-        </div>
-
-        <!-- Products Grid -->
-        <div class="row g-4" id="productsGrid">
-            {% for product in all_products %}
-            <div class="col-6 col-md-4 col-lg-3 product-item" data-category="{{ product.category }}">
-                <div class="card h-100 product-card shadow-sm hover-shadow transition">
-                    <!-- Product Image -->
-                    <div class="product-image-wrapper position-relative overflow-hidden bg-white" style="height: 250px;">
-                        {% if product.image_main %}
-                            <img src="{{ url_for('static', filename='uploads/' + product.image_main) }}"
-                                 alt="{{ product.name }}"
-                                 class="card-img-top h-100 object-fit-cover"
-                                 loading="lazy">
-                        {% else %}
-                            <div class="bg-secondary d-flex align-items-center justify-content-center h-100">
-                                <span class="text-white">No Image</span>
-                            </div>
-                        {% endif %}
-
-                        <!-- Category Badge -->
-                        <span class="position-absolute top-0 start-0 badge bg-primary m-2">{{ product.category }}</span>
-
-                        <!-- Discount Badge -->
-                        {% if product.original_price and product.original_price > product.price %}
-                            {% set discount_percent = ((product.original_price - product.price) / product.original_price * 100)|int %}
-                            <span class="position-absolute top-0 end-0 badge bg-danger m-2">-{{ discount_percent }}%</span>
-                        {% endif %}
-                    </div>
-
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-truncate">{{ product.name }}</h5>
-
-                        <!-- Price Display -->
-                        <div class="mb-3">
-                            {% if product.original_price and product.original_price > product.price %}
-                                <span class="text-decoration-line-through text-muted small">₹{{ product.original_price }}</span>
-                                <br>
-                                <span class="fw-bold text-danger display-6">₹{{ product.price }}</span>
-                            {% else %}
-                                <span class="fw-bold text-success display-6">₹{{ product.price }}</span>
-                            {% endif %}
-                        </div>
-
-                        <!-- Stock Status & Buttons -->
-                        <div class="mt-auto">
-                            {% if product.stock_status == 'in_stock' %}
-                                <form action="{{ url_for('cart_add') }}" method="POST" class="mb-2">
-                                    <input type="hidden" name="product_id" value="{{ product.id }}">
-                                    <button type="submit" class="btn btn-success btn-sm w-100">Add to Cart</button>
-                                </form>
-                            {% else %}
-                                <button class="btn btn-secondary btn-sm w-100" disabled>Out of Stock</button>
-                            {% endif %}
-                            <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn btn-outline-primary btn-sm w-100">View Details</a>
-                        </div>
-                    </div>
+        <div class="row text-center g-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">{{ all_products|length }}+</div>
+                    <div class="stat-label">Products Available</div>
                 </div>
             </div>
-            {% endfor %}
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">100+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">{{ categories|length }}+</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">5★</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Category Showcase Section -->
-<section class="category-showcase py-5 bg-light">
+<!-- ═══════════════════════════════════════════
+     SHOP BY CATEGORY
+════════════════════════════════════════════ -->
+<section class="category-showcase py-5">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-2">Shop by Category</h2>
-            <p class="text-muted">Explore our diverse product categories</p>
+        <div class="section-header text-center mb-5">
+            <p class="section-label">Browse</p>
+            <h2 class="section-title">Shop by Category</h2>
+            <p class="section-subtitle">Explore our diverse range of 3D printed products</p>
         </div>
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             {% set category_icons = {
-                'figurines': '🎨',
-                'miniatures': '🏰',
+                'desk-accessories': '🖊️',
+                'phone-stands': '📱',
                 'home-decor': '🏠',
+                'custom-orders': '🎨',
+                'keychains-gifts': '🎁',
+                'figurines': '🗿',
+                'miniatures': '🏰',
                 'accessories': '✨',
                 'toys': '🎮',
                 'jewelry': '💍',
                 'mechanical': '⚙️',
                 'other': '📦'
             } %}
-
             {% for category in categories %}
-            <div class="col-md-6 col-lg-4">
-                <a href="{{ url_for('products') }}?category={{ category }}" class="text-decoration-none">
-                    <div class="category-card p-4 bg-white rounded-3 shadow-sm text-center hover-shadow transition">
-                        <div class="display-4 mb-3">{{ category_icons.get(category, '📦') }}</div>
-                        <h4 class="mb-2">{{ category|capitalize }}</h4>
-                        <p class="text-muted small mb-0">Explore products</p>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{{ url_for('products', category=category.slug) }}" class="text-decoration-none">
+                    <div class="category-card">
+                        <div class="category-icon">{{ category_icons.get(category.slug, '📦') }}</div>
+                        <h5 class="category-name">{{ category.name }}</h5>
+                        <p class="category-sub">Explore products</p>
                     </div>
                 </a>
+            </div>
+            {% else %}
+            <div class="col-12 text-center text-muted py-4">
+                <i class="fas fa-box-open fa-2x mb-3 d-block" style="color: #D1D5DB;"></i>
+                No categories added yet.
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
 
-<!-- Why Choose Us Section -->
-<section class="why-choose-us py-5">
+<!-- ═══════════════════════════════════════════
+     FEATURED PRODUCTS
+════════════════════════════════════════════ -->
+{% if featured_products %}
+<section class="py-5" style="background: #F9FAFB;">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-2">Why Choose Us</h2>
-            <p class="text-muted">What makes us different</p>
+        <div class="section-header text-center mb-5">
+            <p class="section-label">Handpicked</p>
+            <h2 class="section-title">Featured Products</h2>
+            <p class="section-subtitle">Our best-selling, most loved items</p>
+        </div>
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        {% if product.image_url %}
+                            <img src="{{ url_for('static', filename='uploads/' + product.image_url) }}"
+                                 alt="{{ product.name }}" loading="lazy">
+                        {% else %}
+                            <div class="product-img-placeholder">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                        {% endif %}
+                        {% if product.discount_percentage and product.discount_percentage > 0 %}
+                            <span class="badge-discount">-{{ product.discount_percentage|int }}%</span>
+                        {% endif %}
+                        <span class="badge-category">{{ product.category.name if product.category else 'General' }}</span>
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name">{{ product.name }}</h5>
+                        <div class="product-price-wrap">
+                            {% if product.discount_percentage and product.discount_percentage > 0 %}
+                                {% set original = (product.price / (1 - product.discount_percentage / 100))|int %}
+                                <span class="price-original">₹{{ original }}</span>
+                                <span class="price-current">₹{{ product.price|int }}</span>
+                            {% else %}
+                                <span class="price-current">₹{{ product.price|int }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-actions">
+                            {% if product.stock_quantity > 0 %}
+                                <form action="{{ url_for('cart_add') }}" method="POST">
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <button type="submit" class="btn-add-cart">
+                                        <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                                    </button>
+                                </form>
+                            {% else %}
+                                <button class="btn-out-stock" disabled>Out of Stock</button>
+                            {% endif %}
+                            <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn-view-detail">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════
+     ALL PRODUCTS
+════════════════════════════════════════════ -->
+<section class="py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <p class="section-label">Collection</p>
+            <h2 class="section-title">All Products</h2>
+            <p class="section-subtitle">Browse our complete range</p>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="filter-bar mb-4">
+            <button class="filter-btn active" onclick="filterProducts('all', this)" data-filter="all">All</button>
+            {% for category in categories %}
+                <button class="filter-btn" onclick="filterProducts('{{ category.slug }}', this)" data-filter="{{ category.slug }}">{{ category.name }}</button>
+            {% endfor %}
+        </div>
+
+        <!-- Products Grid -->
+        <div class="row g-4" id="productsGrid">
+            {% for product in all_products %}
+            <div class="col-6 col-md-4 col-lg-3 product-item" data-category="{{ product.category.slug if product.category else 'other' }}">
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        {% if product.image_url %}
+                            <img src="{{ url_for('static', filename='uploads/' + product.image_url) }}"
+                                 alt="{{ product.name }}" loading="lazy">
+                        {% else %}
+                            <div class="product-img-placeholder">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                        {% endif %}
+                        {% if product.discount_percentage and product.discount_percentage > 0 %}
+                            <span class="badge-discount">-{{ product.discount_percentage|int }}%</span>
+                        {% endif %}
+                        <span class="badge-category">{{ product.category.name if product.category else 'General' }}</span>
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-name">{{ product.name }}</h5>
+                        <div class="product-price-wrap">
+                            {% if product.discount_percentage and product.discount_percentage > 0 %}
+                                {% set original = (product.price / (1 - product.discount_percentage / 100))|int %}
+                                <span class="price-original">₹{{ original }}</span>
+                                <span class="price-current">₹{{ product.price|int }}</span>
+                            {% else %}
+                                <span class="price-current">₹{{ product.price|int }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-actions">
+                            {% if product.stock_quantity > 0 %}
+                                <form action="{{ url_for('cart_add') }}" method="POST">
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <button type="submit" class="btn-add-cart">
+                                        <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                                    </button>
+                                </form>
+                            {% else %}
+                                <button class="btn-out-stock" disabled>Out of Stock</button>
+                            {% endif %}
+                            <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn-view-detail">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-box-open fa-3x mb-3 d-block" style="color: #D1D5DB;"></i>
+                <p class="text-muted">No products added yet. Check back soon!</p>
+                <a href="{{ url_for('contact') }}" class="btn btn-outline-primary mt-2">Request a Custom Order</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     WHY CHOOSE US
+════════════════════════════════════════════ -->
+<section class="py-5" style="background: #F9FAFB;">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <p class="section-label">Our Promise</p>
+            <h2 class="section-title">Why Choose Us</h2>
+            <p class="section-subtitle">Quality and care in every print</p>
         </div>
         <div class="row g-4">
             <div class="col-md-6 col-lg-3">
-                <div class="feature-card text-center p-4">
-                    <div class="display-4 mb-3" style="color: #667eea;">🎨</div>
-                    <h5 class="mb-2">Custom Designs</h5>
-                    <p class="text-muted small">Bring your ideas to life with our custom design services. We work with you to create unique products.</p>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: #EDE9FE; color: #7C3AED;">🎨</div>
+                    <h5>Custom Designs</h5>
+                    <p>Bring your ideas to life. We work with you to create truly unique products tailored to your vision.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="feature-card text-center p-4">
-                    <div class="display-4 mb-3" style="color: #764ba2;">⭐</div>
-                    <h5 class="mb-2">Quality Materials</h5>
-                    <p class="text-muted small">We use premium-grade materials to ensure durability and excellent finish on every product.</p>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: #FEF3C7; color: #D97706;">⭐</div>
+                    <h5>Premium Quality</h5>
+                    <p>We use top-grade materials ensuring durability and an excellent finish on every single product.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="feature-card text-center p-4">
-                    <div class="display-4 mb-3" style="color: #198754;">⚡</div>
-                    <h5 class="mb-2">Fast Delivery</h5>
-                    <p class="text-muted small">Quick turnaround time without compromising on quality. Get your orders delivered on time.</p>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: #D1FAE5; color: #059669;">⚡</div>
+                    <h5>Fast Delivery</h5>
+                    <p>Quick turnaround without compromising quality. Your orders delivered on time, every time.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="feature-card text-center p-4">
-                    <div class="display-4 mb-3" style="color: #ffc107;">💰</div>
-                    <h5 class="mb-2">Affordable Prices</h5>
-                    <p class="text-muted small">Premium quality at competitive prices. We believe great products should be accessible to everyone.</p>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: #FEE2E2; color: #DC2626;">💰</div>
+                    <h5>Affordable Prices</h5>
+                    <p>Premium quality at competitive prices. Great products should be accessible to everyone.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Newsletter CTA Section -->
-<section class="newsletter-cta py-5 bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+<!-- ═══════════════════════════════════════════
+     NEWSLETTER CTA
+════════════════════════════════════════════ -->
+<section class="cta-section">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8 text-center text-white">
-                <h2 class="display-5 fw-bold mb-3">Stay Updated</h2>
-                <p class="lead mb-4">Subscribe to our newsletter for exclusive offers, new product launches, and design inspiration.</p>
-                <form class="d-flex gap-2" method="POST" action="{{ url_for('contact') }}">
-                    <input type="email" class="form-control form-control-lg" placeholder="Enter your email" required>
-                    <button type="submit" class="btn btn-light btn-lg fw-bold">Subscribe</button>
+            <div class="col-lg-7 text-center">
+                <p class="cta-label">Stay in the Loop</p>
+                <h2 class="cta-title">Get Exclusive Offers & New Launches</h2>
+                <p class="cta-sub">Subscribe for design inspiration, early access to new products, and special discounts.</p>
+                <form class="cta-form" method="POST" action="{{ url_for('contact') }}">
+                    <input type="email" placeholder="Enter your email address" required>
+                    <button type="submit">Subscribe</button>
                 </form>
-                <small class="text-white-50 d-block mt-3">We respect your privacy. Unsubscribe anytime.</small>
+                <small class="cta-note">We respect your privacy. Unsubscribe anytime.</small>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Business Info Section -->
-<section class="business-info py-4 bg-light border-top">
-    <div class="container text-center text-muted small">
-        <p class="mb-2"><strong>{{ config.BUSINESS_NAME }}</strong></p>
-        <p class="mb-2">📍 {{ config.BUSINESS_ADDRESS }}</p>
-        <p class="mb-0">📱 <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" class="text-decoration-none text-muted">WhatsApp: {{ config.WHATSAPP_NUMBER }}</a></p>
+<!-- ═══════════════════════════════════════════
+     BUSINESS INFO STRIP
+════════════════════════════════════════════ -->
+<section class="business-strip">
+    <div class="container">
+        <div class="row justify-content-center text-center g-3">
+            <div class="col-auto">
+                <i class="fas fa-map-marker-alt me-2" style="color: #7C3AED;"></i>
+                <strong>{{ config.BUSINESS_NAME }}</strong> — {{ config.BUSINESS_ADDRESS }}
+            </div>
+            <div class="col-auto">
+                <i class="fab fa-whatsapp me-2" style="color: #25D366;"></i>
+                <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" class="text-decoration-none text-muted">
+                    WhatsApp: {{ config.WHATSAPP_NUMBER }}
+                </a>
+            </div>
+        </div>
     </div>
 </section>
 
 {% endblock %}
+
 
 {% block extra_css %}
 <style>
-    .hover-shadow {
-        transition: box-shadow 0.3s ease;
-    }
 
-    .hover-shadow:hover {
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
+/* ══════════════════════════════
+   CSS VARIABLES
+══════════════════════════════ */
+:root {
+    --primary:      #7C3AED;
+    --primary-dark: #5B21B6;
+    --accent:       #F59E0B;
+    --dark:         #0F0F1A;
+    --body-text:    #374151;
+    --muted:        #6B7280;
+    --surface:      #F9FAFB;
+    --card-bg:      #FFFFFF;
+    --border:       #E5E7EB;
+}
 
-    .product-card {
-        border: none;
-    }
+/* ══════════════════════════════
+   SECTION HEADERS
+══════════════════════════════ */
+.section-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
 
-    .product-image-wrapper {
-        overflow: hidden;
-    }
+.section-title {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 800;
+    color: var(--dark);
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+}
 
-    .object-fit-cover {
-        object-fit: cover;
-    }
+.section-subtitle {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 0;
+}
 
-    .transition {
-        transition: all 0.3s ease;
-    }
+/* ══════════════════════════════
+   HERO SECTION
+══════════════════════════════ */
+.hero-section {
+    background: linear-gradient(135deg, #0F0F1A 0%, #1E1040 55%, #2D1B69 100%);
+    min-height: 540px;
+    display: flex;
+    align-items: center;
+    padding: 80px 0 60px;
+    position: relative;
+    overflow: hidden;
+}
 
-    .category-filter.active {
-        background-color: #667eea;
-        color: white;
-        border-color: #667eea !important;
-    }
+.hero-section::after {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 65%);
+    top: -150px;
+    right: -150px;
+    pointer-events: none;
+}
 
-    .feature-card {
-        border-radius: 15px;
-        border: 1px solid #e9ecef;
-        transition: transform 0.3s ease;
-    }
+.hero-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+}
 
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-    }
+.hero-title {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.12;
+    letter-spacing: -1.5px;
+    margin-bottom: 16px;
+}
 
-    .hero-section {
-        min-height: 500px;
-        display: flex;
-        align-items: center;
-    }
+.hero-title span {
+    color: var(--accent);
+}
 
-    .bg-gradient {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
+.hero-subtitle {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.75;
+    max-width: 500px;
+}
 
-    .stats-bar {
-        position: relative;
-        top: -50px;
-        z-index: 1;
-        margin-bottom: -50px;
-    }
+.hero-cta-primary {
+    background: var(--accent);
+    color: #0F0F1A !important;
+    border: none;
+    padding: 14px 30px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hero-cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(245,158,11,0.45);
+    color: #0F0F1A !important;
+}
+
+.hero-cta-secondary {
+    background: transparent;
+    color: #FFFFFF !important;
+    border: 2px solid rgba(255,255,255,0.35);
+    padding: 14px 30px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.hero-cta-secondary:hover {
+    border-color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.08);
+    color: #FFFFFF !important;
+}
+
+.hero-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.55);
+}
+
+.hero-trust span { display: flex; align-items: center; gap: 4px; }
+
+.hero-illustration {
+    position: relative;
+    height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-icon-wrap {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-big-icon {
+    font-size: 7rem;
+    color: rgba(255,255,255,0.12);
+}
+
+.hero-shape-1 {
+    position: absolute;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(124,58,237,0.2);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.hero-shape-2 {
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(245,158,11,0.15);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+/* ══════════════════════════════
+   STATS SECTION
+══════════════════════════════ */
+.stats-section {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    padding: 48px 0;
+}
+
+.stat-item { text-align: center; }
+
+.stat-number {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.75);
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+/* ══════════════════════════════
+   CATEGORY CARDS
+══════════════════════════════ */
+.category-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 18px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    height: 100%;
+}
+
+.category-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 18px 40px rgba(124,58,237,0.13);
+    border-color: var(--primary);
+}
+
+.category-icon {
+    font-size: 2.4rem;
+    margin-bottom: 14px;
+    display: block;
+}
+
+.category-name {
+    font-weight: 700;
+    font-size: 0.97rem;
+    color: var(--dark);
+    margin-bottom: 4px;
+}
+
+.category-sub {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 0;
+}
+
+/* ══════════════════════════════
+   PRODUCT CARDS
+══════════════════════════════ */
+.product-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(0,0,0,0.1);
+}
+
+.product-img-wrap {
+    position: relative;
+    height: 220px;
+    background: #F3F4F6;
+    overflow: hidden;
+}
+
+.product-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-img-wrap img {
+    transform: scale(1.05);
+}
+
+.product-img-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #D1D5DB;
+}
+
+.badge-discount {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: #DC2626;
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 20px;
+}
+
+.badge-category {
+    position: absolute;
+    bottom: 10px; left: 10px;
+    background: rgba(15,15,26,0.72);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+}
+
+.product-info {
+    padding: 16px 18px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--dark);
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-price-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.price-current {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.price-original {
+    font-size: 0.9rem;
+    color: var(--muted);
+    text-decoration: line-through;
+}
+
+.product-actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+
+.btn-add-cart {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 10px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.btn-add-cart:hover {
+    background: var(--primary-dark);
+    transform: scale(1.02);
+}
+
+.btn-out-stock {
+    background: #F3F4F6;
+    color: var(--muted);
+    border: none;
+    border-radius: 9px;
+    padding: 10px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    width: 100%;
+    cursor: not-allowed;
+}
+
+.btn-view-detail {
+    display: block;
+    text-align: center;
+    padding: 9px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    color: var(--body-text);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-view-detail:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ══════════════════════════════
+   FILTER BAR
+══════════════════════════════ */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-btn {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--body-text);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+/* ══════════════════════════════
+   FEATURE CARDS
+══════════════════════════════ */
+.feature-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 18px;
+    padding: 30px 24px;
+    height: 100%;
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+.feature-icon {
+    font-size: 1.8rem;
+    width: 60px; height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.feature-card h5 {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* ══════════════════════════════
+   CTA SECTION
+══════════════════════════════ */
+.cta-section {
+    background: linear-gradient(135deg, #0F0F1A 0%, #1E1040 55%, #2D1B69 100%);
+    padding: 72px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%);
+    bottom: -100px; left: -100px;
+    pointer-events: none;
+}
+
+.cta-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+.cta-title {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+}
+
+.cta-sub {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 28px;
+}
+
+.cta-form {
+    display: flex;
+    gap: 10px;
+    max-width: 480px;
+    margin: 0 auto 14px;
+}
+
+.cta-form input {
+    flex: 1;
+    padding: 14px 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    outline: none;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 1.5px solid rgba(255,255,255,0.2);
+}
+
+.cta-form input::placeholder { color: rgba(255,255,255,0.45); }
+
+.cta-form input:focus { border-color: var(--accent); }
+
+.cta-form button {
+    padding: 14px 26px;
+    background: var(--accent);
+    color: #0F0F1A;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cta-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245,158,11,0.4);
+}
+
+.cta-note {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.4);
+}
+
+/* ══════════════════════════════
+   BUSINESS STRIP
+══════════════════════════════ */
+.business-strip {
+    background: #F3F4F6;
+    border-top: 1px solid var(--border);
+    padding: 20px 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 576px) {
+    .hero-section { padding: 60px 0 50px; }
+    .hero-title { letter-spacing: -0.5px; }
+    .hero-trust { gap: 10px; font-size: 0.76rem; }
+    .cta-form { flex-direction: column; }
+    .stat-number { font-size: 1.8rem; }
+}
 </style>
 {% endblock %}
 
+
 {% block extra_js %}
 <script>
-    function filterProducts(category) {
-        // Update active button
-        document.querySelectorAll('.category-filter').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        event.target.classList.add('active');
+function filterProducts(category, btn) {
+    // Update active button
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-        // Filter products
-        const products = document.querySelectorAll('.product-item');
-        products.forEach(product => {
-            if (category === 'all' || product.getAttribute('data-category') === category) {
-                product.style.display = '';
-            } else {
-                product.style.display = 'none';
-            }
-        });
-    }
+    // Filter products
+    document.querySelectorAll('.product-item').forEach(item => {
+        if (category === 'all' || item.getAttribute('data-category') === category) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
 </script>
 {% endblock %}

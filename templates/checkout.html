@@ -3,404 +3,481 @@
 {% block title %}Checkout - {{ config.BUSINESS_NAME }}{% endblock %}
 
 {% block content %}
-<!-- Breadcrumb -->
-<nav aria-label="breadcrumb" class="bg-light py-3 border-bottom">
-    <div class="container">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Home</a></li>
-            <li class="breadcrumb-item"><a href="{{ url_for('cart') }}" class="text-decoration-none">Cart</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Checkout</li>
-        </ol>
-    </div>
-</nav>
 
-<section class="checkout-section py-5">
-    <div class="container">
-        <h1 class="mb-4 fw-bold">Checkout</h1>
-
-        <div class="row g-4">
-            <!-- Left Column: Customer Details Form -->
-            <div class="col-md-7">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <h4 class="card-title mb-4 fw-bold">Delivery Details</h4>
-
-                        <form id="checkoutForm" method="POST" action="{{ url_for('checkout_process') }}">
-                            <!-- Name -->
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
-                                <input type="text"
-                                       class="form-control form-control-lg"
-                                       id="name"
-                                       name="name"
-                                       placeholder="John Doe"
-                                       required>
-                            </div>
-
-                            <!-- Email -->
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                                <input type="email"
-                                       class="form-control form-control-lg"
-                                       id="email"
-                                       name="email"
-                                       placeholder="john@example.com"
-                                       required>
-                            </div>
-
-                            <!-- Phone -->
-                            <div class="mb-3">
-                                <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
-                                <input type="tel"
-                                       class="form-control form-control-lg"
-                                       id="phone"
-                                       name="phone"
-                                       placeholder="+91 9876543210"
-                                       required>
-                            </div>
-
-                            <!-- Address -->
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
-                                <input type="text"
-                                       class="form-control form-control-lg"
-                                       id="address"
-                                       name="address"
-                                       placeholder="123 Main Street, Apartment 4B"
-                                       required>
-                            </div>
-
-                            <!-- City -->
-                            <div class="mb-3">
-                                <label for="city" class="form-label">City <span class="text-danger">*</span></label>
-                                <input type="text"
-                                       class="form-control form-control-lg"
-                                       id="city"
-                                       name="city"
-                                       placeholder="Pune"
-                                       value="Pune"
-                                       required>
-                            </div>
-
-                            <!-- Pincode -->
-                            <div class="mb-3">
-                                <label for="pincode" class="form-label">Pincode <span class="text-danger">*</span></label>
-                                <input type="text"
-                                       class="form-control form-control-lg"
-                                       id="pincode"
-                                       name="pincode"
-                                       placeholder="411001"
-                                       required>
-                            </div>
-
-                            <!-- Order Notes -->
-                            <div class="mb-4">
-                                <label for="order_notes" class="form-label">Order Notes (Optional)</label>
-                                <textarea class="form-control"
-                                          id="order_notes"
-                                          name="order_notes"
-                                          rows="3"
-                                          placeholder="Special instructions or requests..."></textarea>
-                            </div>
-
-                            <!-- Payment Method Selection -->
-                            <h4 class="mb-4 fw-bold">Payment Method</h4>
-
-                            <div class="mb-3">
-                                <div class="form-check p-3 border rounded-2 cursor-pointer" style="cursor: pointer;">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" checked>
-                                    <label class="form-check-label w-100" for="cod">
-                                        <strong>Cash on Delivery (COD)</strong>
-                                        <p class="text-muted small mb-0">Pay when you receive your order</p>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <div class="form-check p-3 border rounded-2 cursor-pointer" style="cursor: pointer;">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="razorpay" value="razorpay">
-                                    <label class="form-check-label w-100" for="razorpay">
-                                        <strong>Razorpay - Pay Online</strong>
-                                        <p class="text-muted small mb-2">UPI • Credit/Debit Card • Net Banking</p>
-                                        <img src="https://razorpay.com/i/emb/razorpay-glyph.svg" alt="Razorpay" style="height: 30px;">
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Terms and Conditions -->
-                            <div class="mb-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
-                                    <label class="form-check-label" for="terms">
-                                        I agree to the <a href="{{ url_for('contact') }}" class="text-decoration-none">Terms and Conditions</a>
-                                        and <a href="{{ url_for('contact') }}" class="text-decoration-none">Privacy Policy</a>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Hidden Fields for Razorpay -->
-                            <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
-                            <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
-                            <input type="hidden" name="razorpay_signature" id="razorpay_signature">
-
-                            <!-- Place Order Button -->
-                            <button type="submit" class="btn btn-success btn-lg w-100 fw-bold">
-                                Place Order
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column: Order Summary -->
-            <div class="col-md-5">
-                <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
-                    <div class="card-body p-4">
-                        <h4 class="card-title mb-4 fw-bold">Order Summary</h4>
-
-                        <!-- Cart Items -->
-                        <div class="order-items mb-4">
-                            {% if cart_items %}
-                                {% for item in cart_items %}
-                                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                                    <div>
-                                        <h6 class="mb-1">{{ item.product.name }}</h6>
-                                        <small class="text-muted">Qty: {{ item.quantity }}</small>
-                                    </div>
-                                    <div class="text-end">
-                                        <p class="mb-0 fw-bold">₹{{ (item.product.price * item.quantity)|int }}</p>
-                                        <small class="text-muted">₹{{ item.product.price }} each</small>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            {% else %}
-                                <p class="text-muted text-center py-4">Your cart is empty</p>
-                            {% endif %}
-                        </div>
-
-                        <!-- Pricing Details -->
-                        <div class="pricing-details">
-                            <!-- Subtotal -->
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="text-muted">Subtotal:</span>
-                                <span class="fw-bold">₹{{ subtotal|default(0, true) }}</span>
-                            </div>
-
-                            <!-- Discount (if any) -->
-                            {% if discount and discount > 0 %}
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="text-success">Discount:</span>
-                                <span class="text-success fw-bold">-₹{{ discount }}</span>
-                            </div>
-                            {% endif %}
-
-                            <!-- Delivery Charge -->
-                            <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
-                                <span class="text-muted">Delivery Charge:</span>
-                                <span class="fw-bold">
-                                    {% if delivery_charge == 0 %}
-                                        <span class="text-success">FREE</span>
-                                    {% else %}
-                                        ₹{{ delivery_charge }}
-                                    {% endif %}
-                                </span>
-                            </div>
-
-                            <!-- Grand Total -->
-                            <div class="d-flex justify-content-between mb-4">
-                                <span class="fw-bold fs-5">Grand Total:</span>
-                                <span class="fw-bold fs-5 text-success">₹{{ grand_total|default(0, true) }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Info Messages -->
-                        <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            <strong>📍 Free delivery</strong> for orders above ₹1000
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-
-                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <strong>⏱️ Quick delivery</strong> within 5-7 business days
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-
-                        <!-- Business Contact -->
-                        <div class="bg-light p-3 rounded-2 mt-4">
-                            <h6 class="mb-2">Need Help?</h6>
-                            <p class="small text-muted mb-2">Contact us via WhatsApp:</p>
-                            <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" class="btn btn-sm btn-outline-success w-100" target="_blank">
-                                <i class="bi bi-whatsapp"></i> Chat on WhatsApp
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- Page Header -->
+<section class="page-header py-4" style="background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-1">
+        <li class="breadcrumb-item">
+          <a href="{{ url_for('home') }}" class="text-white-50 text-decoration-none">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="{{ url_for('cart') }}" class="text-white-50 text-decoration-none">Cart</a>
+        </li>
+        <li class="breadcrumb-item text-white active" aria-current="page">Checkout</li>
+      </ol>
+    </nav>
+    <h1 class="h3 fw-bold text-white mb-0">
+      <i class="fas fa-credit-card me-2"></i>Checkout
+    </h1>
+  </div>
 </section>
 
-<!-- Razorpay Script -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- Progress Steps -->
+<div class="container py-3">
+  <div class="checkout-steps">
+    <div class="step done"><span class="step-circle"><i class="fas fa-check"></i></span><span class="step-label">Cart</span></div>
+    <div class="step-line done"></div>
+    <div class="step active"><span class="step-circle">2</span><span class="step-label">Checkout</span></div>
+    <div class="step-line"></div>
+    <div class="step"><span class="step-circle">3</span><span class="step-label">Confirmation</span></div>
+  </div>
+</div>
+
+<section class="py-4">
+  <div class="container">
+    <div class="row g-4">
+
+      <!-- ===== LEFT: Delivery + Payment Form ===== -->
+      <div class="col-md-7">
+
+        <!-- Delivery Details Card -->
+        <div class="checkout-card mb-4">
+          <div class="checkout-card-header">
+            <i class="fas fa-map-marker-alt me-2"></i>Delivery Details
+          </div>
+          <div class="checkout-card-body">
+            <form id="checkoutForm" method="POST" action="{{ url_for('checkout_process') }}">
+
+              <!-- Name + Phone -->
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control checkout-input"
+                         name="name" placeholder="Rahul Joshi" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Phone Number <span class="text-danger">*</span></label>
+                  <input type="tel" class="form-control checkout-input"
+                         name="phone" placeholder="+91 9876543210" required>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+                <input type="email" class="form-control checkout-input"
+                       name="email" placeholder="you@example.com" required>
+              </div>
+
+              <!-- Address -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Street Address <span class="text-danger">*</span></label>
+                <input type="text" class="form-control checkout-input"
+                       name="address" placeholder="House no, Street, Area" required>
+              </div>
+
+              <!-- City + Pincode -->
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">City <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control checkout-input"
+                         name="city" placeholder="Pune" value="Pune" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Pincode <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control checkout-input"
+                         name="pincode" placeholder="411001"
+                         pattern="[0-9]{6}" title="Enter a valid 6-digit pincode" required>
+                </div>
+              </div>
+
+              <!-- Order Notes -->
+              <div class="mb-0">
+                <label class="form-label fw-semibold">Order Notes <span class="text-muted">(Optional)</span></label>
+                <textarea class="form-control checkout-input"
+                          name="order_notes" rows="2"
+                          placeholder="Special instructions, preferences..."></textarea>
+              </div>
+
+            </div><!-- /checkout-card-body -->
+          </div><!-- /checkout-card (delivery) -->
+
+          <!-- Payment Method Card -->
+          <div class="checkout-card mb-4">
+            <div class="checkout-card-header">
+              <i class="fas fa-wallet me-2"></i>Payment Method
+            </div>
+            <div class="checkout-card-body">
+
+              <!-- COD Option -->
+              <label class="payment-option" for="cod">
+                <input class="payment-radio" type="radio" name="payment_method" id="cod" value="cod" checked>
+                <div class="payment-option-content">
+                  <div class="payment-icon" style="background: #D1FAE5; color: #065F46;">
+                    <i class="fas fa-money-bill-wave"></i>
+                  </div>
+                  <div>
+                    <strong>Cash on Delivery (COD)</strong>
+                    <p class="text-muted small mb-0">Pay in cash when your order arrives</p>
+                  </div>
+                </div>
+              </label>
+
+            </div>
+          </div>
+
+          <!-- Terms + Submit (still inside the <form> tag) -->
+          <div class="checkout-card">
+            <div class="checkout-card-body">
+
+              <!-- Terms -->
+              <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                <label class="form-check-label text-muted" for="terms">
+                  I agree to the
+                  <a href="#" class="text-decoration-none" style="color: var(--primary);">Terms & Conditions</a>
+                  and
+                  <a href="#" class="text-decoration-none" style="color: var(--primary);">Privacy Policy</a>
+                </label>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="btn-place-order w-100">
+                <i class="fas fa-lock me-2"></i>Place Order Securely
+              </button>
+
+              <p class="text-center text-muted small mt-3 mb-0">
+                <i class="fas fa-shield-alt me-1"></i>Your information is 100% secure and encrypted
+              </p>
+
+            </div>
+          </div>
+
+        </form><!-- /checkoutForm -->
+      </div>
+
+      <!-- ===== RIGHT: Order Summary ===== -->
+      <div class="col-md-5">
+        <div class="summary-card">
+          <h5 class="fw-bold mb-4">Order Summary</h5>
+
+          <!-- Items -->
+          <div class="order-items-list">
+            {% if cart_items %}
+              {% for item in cart_items %}
+                <div class="order-item">
+                  <div class="order-item-info">
+                    <span class="order-item-name">{{ item.product.name }}</span>
+                    <span class="order-item-qty">× {{ item.quantity }}</span>
+                  </div>
+                  <span class="order-item-price fw-bold">₹{{ (item.product.price * item.quantity)|int }}</span>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="text-muted text-center py-3">Your cart is empty</p>
+            {% endif %}
+          </div>
+
+          <!-- Pricing -->
+          <div class="pricing-breakdown mt-3">
+            <div class="pricing-row">
+              <span class="text-muted">Subtotal</span>
+              <span class="fw-semibold">₹{{ subtotal|default(0, true) }}</span>
+            </div>
+            {% if discount and discount > 0 %}
+              <div class="pricing-row">
+                <span class="text-success">Discount</span>
+                <span class="text-success fw-semibold">−₹{{ discount }}</span>
+              </div>
+            {% endif %}
+            <div class="pricing-row">
+              <span class="text-muted">Delivery</span>
+              <span class="fw-semibold">
+                {% if delivery_charge == 0 %}
+                  <span class="text-success">FREE</span>
+                {% else %}
+                  ₹{{ delivery_charge }}
+                {% endif %}
+              </span>
+            </div>
+            <div class="pricing-total">
+              <span>Grand Total</span>
+              <span style="color: var(--primary);">₹{{ grand_total|default(0, true) }}</span>
+            </div>
+          </div>
+
+          <!-- Info Banners -->
+          <div class="info-banner info mt-4">
+            <i class="fas fa-truck me-2"></i>
+            Free delivery on orders above ₹{{ config.FREE_DELIVERY_ABOVE }}
+          </div>
+          <div class="info-banner warn mt-2">
+            <i class="fas fa-clock me-2"></i>
+            Delivery within 5–7 business days
+          </div>
+
+          <!-- WhatsApp Help -->
+          <div class="whatsapp-help mt-4">
+            <p class="fw-semibold mb-2 small">Need help with your order?</p>
+            <a href="https://wa.me/{{ config.WHATSAPP_NUMBER }}" target="_blank" class="btn-wa-help w-100">
+              <i class="fab fa-whatsapp me-2"></i>Chat on WhatsApp
+            </a>
+          </div>
+        </div>
+      </div><!-- /col right -->
+
+    </div><!-- /row -->
+  </div><!-- /container -->
+</section>
 
 {% endblock %}
 
-{% block extra_js %}
-<script>
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-        const termsCheckbox = document.getElementById('terms');
-
-        // Validate terms
-        if (!termsCheckbox.checked) {
-            e.preventDefault();
-            alert('Please accept the terms and conditions');
-            return;
-        }
-
-        // Handle Razorpay payment
-        if (paymentMethod === 'razorpay') {
-            e.preventDefault();
-
-            // Show loading state
-            const submitBtn = event.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
-
-            // Create Razorpay order
-            fetch('/create-razorpay-order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: document.getElementById('name').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    amount: {{ grand_total|default(0, true) }}
-                })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    alert('Error: ' + data.error);
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
-                    return;
-                }
-
-                // Configure Razorpay options
-                const options = {
-                    key: data.key_id,
-                    amount: data.amount,
-                    currency: data.currency,
-                    name: '{{ config.BUSINESS_NAME }}',
-                    description: 'Order Payment',
-                    order_id: data.order_id,
-                    handler: function(response) {
-                        // Set hidden fields with payment response
-                        document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
-                        document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
-                        document.getElementById('razorpay_signature').value = response.razorpay_signature;
-
-                        // Submit the form
-                        document.getElementById('checkoutForm').submit();
-                    },
-                    prefill: {
-                        name: document.getElementById('name').value,
-                        email: document.getElementById('email').value,
-                        contact: document.getElementById('phone').value
-                    },
-                    notes: {
-                        address: document.getElementById('address').value,
-                        city: document.getElementById('city').value,
-                        pincode: document.getElementById('pincode').value
-                    },
-                    theme: {
-                        color: '#198754'
-                    },
-                    modal: {
-                        ondismiss: function() {
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = originalText;
-                            alert('Payment cancelled. Please try again.');
-                        }
-                    }
-                };
-
-                // Open Razorpay checkout
-                const rzp = new Razorpay(options);
-                rzp.open();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error creating payment order. Please try again.');
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
-            });
-        }
-        // For COD: form submits normally
-    });
-
-    // Enhance form UX: click on radio label to select payment method
-    document.querySelectorAll('.form-check-label').forEach(label => {
-        label.style.cursor = 'pointer';
-        label.addEventListener('click', function() {
-            const radio = this.parentElement.querySelector('input[type="radio"]');
-            if (radio) radio.checked = true;
-        });
-    });
-</script>
-{% endblock %}
 
 {% block extra_css %}
 <style>
-    .sticky-top {
-        top: 80px;
-    }
+:root {
+  --primary:      #7C3AED;
+  --primary-dark: #5B21B6;
+  --primary-light:#EDE9FE;
+  --accent:       #F59E0B;
+  --success:      #10B981;
+  --border-color: #E5E7EB;
+  --card-shadow:  0 2px 12px rgba(124,58,237,0.08);
+  --radius:       14px;
+}
 
-    .form-check {
-        cursor: pointer;
-    }
+/* ─── Progress Steps ─────────────────────── */
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0.5rem 0;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.step-circle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #E5E7EB;
+  color: #9CA3AF;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+.step.done .step-circle  { background: var(--success); color: #fff; }
+.step.active .step-circle { background: var(--primary); color: #fff; }
+.step-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9CA3AF;
+}
+.step.active .step-label { color: var(--primary); }
+.step.done .step-label   { color: var(--success); }
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: #E5E7EB;
+  max-width: 80px;
+  margin: 0 8px;
+  margin-bottom: 20px;
+  transition: background 0.3s;
+}
+.step-line.done { background: var(--success); }
 
-    .form-check:hover {
-        background-color: #f8f9fa;
-    }
+/* ─── Checkout Cards ─────────────────────── */
+.checkout-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+.checkout-card-header {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  padding: 0.85rem 1.25rem;
+}
+.checkout-card-body { padding: 1.25rem; }
 
-    .order-items {
-        max-height: 400px;
-        overflow-y: auto;
-    }
+/* Input fields */
+.checkout-input {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.checkout-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+  outline: none;
+}
 
-    .pricing-details {
-        background-color: #f8f9fa;
-        padding: 15px;
-        border-radius: 8px;
-    }
+/* Payment Options */
+.payment-option {
+  display: block;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-bottom: 0;
+}
+.payment-option:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+.payment-radio { position: absolute; opacity: 0; }
+.payment-option-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.payment-icon {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
 
-    .btn-close {
-        cursor: pointer;
-    }
+/* Place Order Button */
+.btn-place-order {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  letter-spacing: 0.02em;
+}
+.btn-place-order:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124,58,237,0.4);
+}
 
-    .spinner-border-sm {
-        width: 1rem;
-        height: 1rem;
-        border-width: 0.2em;
-    }
+/* ─── Summary Card ─────────────────────── */
+.summary-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: 1.5rem;
+  position: sticky;
+  top: 90px;
+}
+.order-items-list {
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #F3F4F6;
+}
+.order-item:last-child { border-bottom: none; }
+.order-item-info { flex: 1; margin-right: 0.5rem; }
+.order-item-name { display: block; font-size: 0.88rem; font-weight: 600; color: #0F0F1A; }
+.order-item-qty  { font-size: 0.8rem; color: #9CA3AF; }
+.order-item-price { white-space: nowrap; font-size: 0.9rem; color: var(--primary); }
 
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .sticky-top {
-            position: static !important;
-            top: auto !important;
-        }
+.pricing-breakdown {
+  background: #F9FAFB;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+.pricing-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  font-size: 0.9rem;
+}
+.pricing-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding-top: 0.75rem;
+  margin-top: 0.5rem;
+  border-top: 2px solid var(--border-color);
+}
 
-        .card {
-            margin-bottom: 2rem;
-        }
-    }
+/* Info Banners */
+.info-banner {
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+.info-banner.info { background: #EFF6FF; color: #1E40AF; }
+.info-banner.warn { background: #FFFBEB; color: #92400E; }
+
+/* WhatsApp Help */
+.whatsapp-help {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+.btn-wa-help {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-wa-help:hover { background: #1fba59; color: #fff; }
 </style>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+  const termsEl = document.getElementById('terms');
+  if (!termsEl || !termsEl.checked) {
+    e.preventDefault();
+    alert('Please accept the Terms & Conditions to continue.');
+    return;
+  }
+  // COD: form submits normally to checkout_process
+  const submitBtn = this.querySelector('.btn-place-order');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Placing Order…';
+  }
+});
+
+// Click anywhere on the payment-option card to select it
+document.querySelectorAll('.payment-option').forEach(card => {
+  card.addEventListener('click', function () {
+    const radio = this.querySelector('input[type="radio"]');
+    if (radio) radio.checked = true;
+  });
+});
+</script>
 {% endblock %}
